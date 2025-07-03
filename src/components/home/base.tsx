@@ -7,8 +7,10 @@ export function Base() {
   useEffect(() => {
     const fetchText = async () => {
       const result = await streamModelResponse('Write a short vegetarian pasta recipe.');
+      let accumulatedText = '';
       for await (const textPart of result.textStream) {
-        setText(prev => prev + textPart);
+        accumulatedText += textPart;
+        setText(accumulatedText);
       }
     };
     fetchText();
