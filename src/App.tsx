@@ -2,7 +2,7 @@
  * Main Layout Component
  */
 
-import { Base } from '@/components/home/base'
+import { Base } from '@/pages/home/base'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const queryClient = new QueryClient();
