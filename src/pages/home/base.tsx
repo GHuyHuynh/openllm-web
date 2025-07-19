@@ -1,5 +1,6 @@
 import { streamModelResponse } from '@/gen-ai/stream';
 import { useEffect, useState } from 'react';
+import { ModelSelector } from '@/components/shared/model-selector';
 
 export function Base() {
   const [text, setText] = useState('');
@@ -20,6 +21,7 @@ export function Base() {
 
   return (
     <div>
+      <ModelSelector selectedModelId="deepseek-r1" />
       <h1>Hello World</h1>
         <div className="mt-4 p-4 border rounded-md">
           <h2 className="text-lg font-semibold mb-2">AI Response:</h2>

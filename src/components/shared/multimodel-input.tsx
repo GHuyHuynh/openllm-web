@@ -15,7 +15,7 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
-import { ArrowUpIcon, PaperclipIcon, StopIcon } from '@/components/shared/icons';
+import { ArrowUpIcon, PaperclipIcon, StopIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { SuggestedActions } from '@/components/shared/suggested-actions';
