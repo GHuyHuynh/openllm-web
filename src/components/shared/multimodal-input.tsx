@@ -31,8 +31,6 @@ function PureMultimodalInput({
   setInput,
   status,
   stop,
-  attachments,
-  setAttachments,
   messages,
   setMessages,
   append,
@@ -44,8 +42,6 @@ function PureMultimodalInput({
   setInput: UseChatHelpers['setInput'];
   status: UseChatHelpers['status'];
   stop: () => void;
-  attachments: Array<Attachment>;
-  setAttachments: Dispatch<SetStateAction<Array<Attachment>>>;
   messages: Array<UIMessage>;
   setMessages: UseChatHelpers['setMessages'];
   append: UseChatHelpers['append'];
@@ -108,10 +104,10 @@ function PureMultimodalInput({
     window.history.replaceState({}, '', `/chat/${chatId}`);
 
     handleSubmit(undefined, {
-      experimental_attachments: attachments,
+      //experimental_attachments: attachments,
     });
 
-    setAttachments([]);
+    //setAttachments([]);
     setLocalStorageInput('');
     resetHeight();
 
@@ -119,9 +115,9 @@ function PureMultimodalInput({
       textareaRef.current?.focus();
     }
   }, [
-    attachments,
+    //attachments,
     handleSubmit,
-    setAttachments,
+    //setAttachments,
     setLocalStorageInput,
     width,
     chatId,
@@ -153,32 +149,6 @@ function PureMultimodalInput({
       toast.error('Failed to upload file, please try again!');
     }
   };
-
-  const handleFileChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const files = Array.from(event.target.files || []);
-
-      setUploadQueue(files.map((file) => file.name));
-
-      try {
-        const uploadPromises = files.map((file) => uploadFile(file));
-        const uploadedAttachments = await Promise.all(uploadPromises);
-        const successfullyUploadedAttachments = uploadedAttachments.filter(
-          (attachment) => attachment !== undefined,
-        );
-
-        setAttachments((currentAttachments) => [
-          ...currentAttachments,
-          ...successfullyUploadedAttachments,
-        ]);
-      } catch (error) {
-        console.error('Error uploading files!', error);
-      } finally {
-        setUploadQueue([]);
-      }
-    },
-    [setAttachments],
-  );
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();
 
@@ -216,7 +186,7 @@ function PureMultimodalInput({
       </AnimatePresence>
 
       {messages.length === 0 &&
-        attachments.length === 0 &&
+        //attachments.length === 0 &&
         uploadQueue.length === 0 && (
           <SuggestedActions
             append={append}
@@ -224,14 +194,13 @@ function PureMultimodalInput({
           />
         )}
 
-      <input
+      {/* <input
         type="file"
         className="fixed -top-4 -left-4 size-0.5 opacity-0 pointer-events-none"
         ref={fileInputRef}
         multiple
-        onChange={handleFileChange}
         tabIndex={-1}
-      />
+      /> */}
 
       <Textarea
         data-testid="multimodal-input"
@@ -263,7 +232,7 @@ function PureMultimodalInput({
       />
 
       <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
-        <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+        {/*<AttachmentsButton fileInputRef={fileInputRef} status={status} />*/}
       </div>
 
       <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
@@ -286,7 +255,7 @@ export const MultimodalInput = memo(
   (prevProps, nextProps) => {
     if (prevProps.input !== nextProps.input) return false;
     if (prevProps.status !== nextProps.status) return false;
-    if (!equal(prevProps.attachments, nextProps.attachments)) return false;
+    //if (!equal(prevProps.attachments, nextProps.attachments)) return false;
 
     return true;
   },

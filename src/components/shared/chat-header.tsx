@@ -7,7 +7,7 @@ import { useWindowSize } from 'usehooks-ts';
 import { ModelSelector } from '@/components/shared/model-selector';
 import { SidebarToggle } from '@/components/shared/sidebar-toggle';
 import { Button } from '@/components/ui/button';
-import { PlusIcon, VercelIcon } from '../ui/icons';
+import { PlusIcon, VercelIcon } from '@/components/ui/icons';
 import { useSidebar } from '@/components/ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';

@@ -25,7 +25,6 @@ export function ModelSelector({
 
   const { data, isLoading, error } = useListModels();
 
-  // Move useMemo before conditional returns to fix Rules of Hooks violation
   const selectedChatModel = useMemo(
     () =>
       data?.find((chatModel) => chatModel.id === optimisticModelId),

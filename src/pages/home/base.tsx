@@ -1,6 +1,9 @@
 import { streamModelResponse } from '@/gen-ai/stream';
 import { useEffect, useState } from 'react';
 import { ModelSelector } from '@/components/shared/model-selector';
+import { MultimodalInput } from '@/components/shared/multimodal-input';
+import { Chat } from '../chat/chat';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 
 export function Base() {
   const [text, setText] = useState('');
@@ -8,25 +11,31 @@ export function Base() {
   useEffect(() => {
     const fetchText = async () => {
       const result = await streamModelResponse('Write a short vegetarian pasta recipe.');
-      
+
       let accumulatedText = '';
       for await (const textPart of result.textStream) {
         accumulatedText += textPart;
         setText(accumulatedText);
       }
     };
-    
+
     fetchText();
   }, []);
 
   return (
-    <div>
-      <ModelSelector selectedModelId="deepseek-r1" />
-      <h1>Hello World</h1>
-        <div className="mt-4 p-4 border rounded-md">
-          <h2 className="text-lg font-semibold mb-2">AI Response:</h2>
-        <div className="whitespace-pre-wrap">{text}</div>
-      </div>
-    </div>
+    <>
+    <SidebarProvider defaultOpen={true}>
+        <SidebarInset>
+          <Chat
+            id={'1'}
+            initialMessages={[]}
+            initialChatModel={'deepseek-r1'}
+            isReadonly={false}
+            autoResume={true}
+          />
+        </SidebarInset>
+      </SidebarProvider>
+      
+    </>
   )
 }

@@ -4,16 +4,15 @@ import type { Attachment, UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
-import { ChatHeader } from '@/components/chat-header';
+import { ChatHeader } from '@/components/shared/chat-header';
 
 import { fetcher, fetchWithErrorHandlers, generateUUID } from '@/lib/utils';
-import { Artifact } from '@/components/shared/artifact';
-import { MultimodalInput } from '@/components/shared/multimodel-input';
+import { MultimodalInput } from '@/components/shared/multimodal-input';
 import { Messages } from '@/components/shared/messages';
 import { unstable_serialize } from 'swr/infinite';
-import { getChatHistoryPaginationKey } from './sidebar-history';
+//import { getChatHistoryPaginationKey } from './sidebar-history';
 import { toast } from 'sonner';
-import { useSearchParams } from 'next/navigation';
+//import { useSearchParams } from 'next/navigation';
 import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
 
@@ -21,25 +20,16 @@ export function Chat({
   id,
   initialMessages,
   initialChatModel,
-  initialVisibilityType,
   isReadonly,
-  session,
   autoResume,
 }: {
   id: string;
   initialMessages: Array<UIMessage>;
   initialChatModel: string;
-  initialVisibilityType: VisibilityType;
   isReadonly: boolean;
-  session: Session;
   autoResume: boolean;
 }) {
   const { mutate } = useSWRConfig();
-
-  const { visibilityType } = useChatVisibility({
-    chatId: id,
-    initialVisibilityType,
-  });
 
   const {
     messages,
@@ -64,45 +54,35 @@ export function Chat({
       id,
       message: body.messages.at(-1),
       selectedChatModel: initialChatModel,
-      selectedVisibilityType: visibilityType,
     }),
-    onFinish: () => {
-      mutate(unstable_serialize(getChatHistoryPaginationKey));
-    },
+    // onFinish: () => {
+    //   mutate(unstable_serialize(getChatHistoryPaginationKey));
+    // },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
-        toast({
-          type: 'error',
-          description: error.message,
-        });
+        toast.error(error.message);
       }
     },
   });
 
-  const searchParams = useSearchParams();
-  const query = searchParams.get('query');
+  //const searchParams = useSearchParams();
+  //const query = searchParams.get('query');
 
   const [hasAppendedQuery, setHasAppendedQuery] = useState(false);
 
-  useEffect(() => {
-    if (query && !hasAppendedQuery) {
-      append({
-        role: 'user',
-        content: query,
-      });
+  // useEffect(() => {
+  //   if (input && !hasAppendedQuery) {
+  //     append({
+  //       role: 'user',
+  //       content: input,
+  //     });
 
-      setHasAppendedQuery(true);
-      window.history.replaceState({}, '', `/chat/${id}`);
-    }
-  }, [query, append, hasAppendedQuery, id]);
+  //     setHasAppendedQuery(true);
+  //     window.history.replaceState({}, '', `/chat/${id}`);
+  //   }
+  // }, [query, append, hasAppendedQuery, id]);
 
-  const { data: votes } = useSWR<Array<Vote>>(
-    messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
-    fetcher,
-  );
-
-  const [attachments, setAttachments] = useState<Array<Attachment>>([]);
-  const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
+  //const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
   useAutoResume({
     autoResume,
@@ -118,20 +98,17 @@ export function Chat({
         <ChatHeader
           chatId={id}
           selectedModelId={initialChatModel}
-          selectedVisibilityType={initialVisibilityType}
           isReadonly={isReadonly}
-          session={session}
         />
 
         <Messages
           chatId={id}
           status={status}
-          votes={votes}
           messages={messages}
           setMessages={setMessages}
           reload={reload}
           isReadonly={isReadonly}
-          isArtifactVisible={isArtifactVisible}
+          //isArtifactVisible={isArtifactVisible}
         />
 
         <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
@@ -143,18 +120,18 @@ export function Chat({
               handleSubmit={handleSubmit}
               status={status}
               stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
+              //attachments={attachments}
+              //setAttachments={setAttachments}
               messages={messages}
               setMessages={setMessages}
               append={append}
-              selectedVisibilityType={visibilityType}
+              //selectedVisibilityType={visibilityType}
             />
           )}
         </form>
       </div>
 
-      <Artifact
+      {/* <Artifact
         chatId={id}
         input={input}
         setInput={setInput}
@@ -170,7 +147,7 @@ export function Chat({
         votes={votes}
         isReadonly={isReadonly}
         selectedVisibilityType={visibilityType}
-      />
+      /> */}
     </>
   );
 }

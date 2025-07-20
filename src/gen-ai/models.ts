@@ -15,7 +15,6 @@ export interface ChatModel {
   tags: string[];
 }
 
-// Interface for the actual API response
 interface OllamaModel {
   name: string;
   model: string;
@@ -45,9 +44,8 @@ async function fetchModels(): Promise<ChatModel[]> {
 
   const data: OllamaTagsResponse = await response.json();
   
-  // Map the API response to our ChatModel format
   return data.models.map((model): ChatModel => ({
-    id: model.name, // Use name as id
+    id: model.name,
     name: model.name,
     description: `${model.details.parameter_size} ${model.details.family} model (${model.details.quantization_level})`,
     tags: model.details.families || [model.details.family],
