@@ -2,6 +2,8 @@ import { createOllama } from 'ollama-ai-provider';
 import { OLLAMA_BASE_URL, DEFAULT_OLLAMA_MODEL } from '@/constants/constants';
 import { useQuery } from '@tanstack/react-query';
 
+export const DEFAULT_CHAT_MODEL: string = 'smollm2:135m';
+
 const ollama = createOllama({
   baseURL: `${OLLAMA_BASE_URL}/api`,
 });
@@ -35,7 +37,7 @@ interface OllamaTagsResponse {
   models: OllamaModel[];
 }
 
-async function fetchModels(): Promise<ChatModel[]> {
+async function fetchModels(): Promise<Array<ChatModel>> {
   const response = await fetch(`${OLLAMA_BASE_URL}/api/tags`);
 
   if (!response.ok) {

@@ -23,7 +23,7 @@ export function ModelSelector({
   const [optimisticModelId, setOptimisticModelId] =
     useOptimistic(selectedModelId);
 
-  const { data, isLoading, error } = useListModels();
+  const { data, error } = useListModels();
 
   const selectedChatModel = useMemo(
     () =>
@@ -31,9 +31,7 @@ export function ModelSelector({
     [optimisticModelId, data],
   );
 
-  if (isLoading) return <div>Loading models...</div>;
-
-  if (error) return <div>Error: {error.message}</div>;
+  if (error) throw new Error(`Error: ${error.message}`);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>

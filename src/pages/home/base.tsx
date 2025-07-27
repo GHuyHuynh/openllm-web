@@ -4,6 +4,7 @@ import { ModelSelector } from '@/components/shared/model-selector';
 import { MultimodalInput } from '@/components/shared/multimodal-input';
 import { Chat } from '../chat/chat';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { DEFAULT_CHAT_MODEL } from '@/gen-ai/models';
 
 export function Base() {
   const [text, setText] = useState('');
@@ -29,7 +30,7 @@ export function Base() {
           <Chat
             id={'1'}
             initialMessages={[]}
-            initialChatModel={'deepseek-r1'}
+            initialChatModel={DEFAULT_CHAT_MODEL}
             isReadonly={false}
             autoResume={true}
           />
