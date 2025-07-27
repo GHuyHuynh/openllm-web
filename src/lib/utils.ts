@@ -1,20 +1,15 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import type {
-  CoreAssistantMessage,
-  CoreToolMessage,
-  UIMessage,
-  UIMessagePart,
-} from 'ai';
+import type { CoreAssistantMessage, CoreToolMessage, UIMessage } from 'ai';
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import { ChatSDKError, type ErrorCode } from '@/lib/errors';
-import type { ChatMessage, ChatTools, CustomUIDataTypes } from '@/lib/types';
+import { ollamaServerUrl } from '@/lib/constants';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
 export function pingOllama(): Promise<boolean> {
-  return fetch("http://localhost:11434").then((res) => res.ok)
+  return fetch(ollamaServerUrl).then((res) => res.ok);
 }
 
 export const fetcher = async (url: string) => {
@@ -87,11 +82,4 @@ export function getTrailingMessageId({
 
 export function sanitizeText(text: string) {
   return text.replace('<has_function_call>', '');
-}
-
-export function getTextFromMessage(message: ChatMessage): string {
-  return message.parts
-    .filter((part) => part.type === 'text')
-    .map((part) => part.text)
-    .join('');
 }
