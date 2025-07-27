@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
+
 import { ArrowUpIcon, StopIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -146,13 +147,12 @@ function PureMultimodalInput({
         )}
       </AnimatePresence>
 
-      {messages.length === 0 &&
-        (
-          <SuggestedActions
-            append={append}
-            chatId={chatId}
-          />
-        )}
+      {messages.length === 0 && (
+        <SuggestedActions
+          append={append}
+          chatId={chatId}
+        />
+      )}
 
       <Textarea
         data-testid="multimodal-input"
