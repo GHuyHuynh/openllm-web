@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { memo, useState } from 'react';
 import { PencilEditIcon, SparklesIcon } from '@/components/ui/icons';
 import { Markdown } from '@/components/shared/markdown';
+import { MessageActions } from '@/components/shared/message-actions';
 import equal from 'fast-deep-equal';
 import { cn, sanitizeText } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -13,10 +14,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { MessageEditor } from '@/components/shared/message-editor';
 import { MessageReasoning } from '@/components/shared/message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import { MessageActions } from '@/components/shared/message-actions';
 
 const PurePreviewMessage = ({
-  chatId,
   message,
   isLoading,
   setMessages,
@@ -24,7 +23,6 @@ const PurePreviewMessage = ({
   isReadonly,
   requiresScrollPadding,
 }: {
-  chatId: string;
   message: UIMessage;
   isLoading: boolean;
   setMessages: UseChatHelpers['setMessages'];
@@ -130,8 +128,6 @@ const PurePreviewMessage = ({
                   );
                 }
               }
-
-             
             })}
 
             {!isReadonly && (

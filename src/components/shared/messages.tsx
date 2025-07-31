@@ -1,6 +1,6 @@
 import type { UIMessage } from 'ai';
 import { PreviewMessage, ThinkingMessage } from './message';
-import { Greeting } from '@/components/shared/greeting';
+import { Greeting } from './greeting';
 import { memo } from 'react';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
@@ -14,7 +14,6 @@ interface MessagesProps {
   setMessages: UseChatHelpers['setMessages'];
   reload: UseChatHelpers['reload'];
   isReadonly: boolean;
-  //isArtifactVisible: boolean;
 }
 
 function PureMessages({
@@ -46,7 +45,6 @@ function PureMessages({
       {messages.map((message, index) => (
         <PreviewMessage
           key={message.id}
-          chatId={chatId}
           message={message}
           isLoading={status === 'streaming' && messages.length - 1 === index}
           setMessages={setMessages}
@@ -73,8 +71,6 @@ function PureMessages({
 }
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
-  //if (prevProps.isArtifactVisible && nextProps.isArtifactVisible) return true;
-
   if (prevProps.status !== nextProps.status) return false;
   if (prevProps.status && nextProps.status) return false;
   if (prevProps.messages.length !== nextProps.messages.length) return false;
