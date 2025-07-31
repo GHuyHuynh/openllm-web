@@ -16,6 +16,7 @@ import {
   TrashIcon,
 } from '@/components/ui/icons';
 import { memo } from 'react';
+import { type Chat } from '@/lib/db/dexie-db';
 
 const PureChatItem = ({
   chat,
@@ -23,9 +24,7 @@ const PureChatItem = ({
   onDelete,
   setOpenMobile,
 }: {
-  // TODO: add back Chat type
-  //chat: Chat;
-  chat: any;
+  chat: Chat;
   isActive: boolean;
   onDelete: (chatId: string) => void;
   setOpenMobile: (open: boolean) => void;
