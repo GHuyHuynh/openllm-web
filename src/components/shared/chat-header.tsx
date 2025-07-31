@@ -10,13 +10,17 @@ import { useSidebar } from '@/components/ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
+interface ChatHeaderProps {
+  selectedModelId: string;
+  onModelChange?: (modelId: string) => void;
+  isReadonly: boolean;
+}
+
 function PureChatHeader({
   selectedModelId,
+  onModelChange,
   isReadonly,
-}: {
-  selectedModelId: string;
-  isReadonly: boolean;
-}) {
+}: ChatHeaderProps) {
   const { open } = useSidebar();
 
   const { width: windowWidth } = useWindowSize();
@@ -47,6 +51,7 @@ function PureChatHeader({
       {!isReadonly && (
         <ModelSelector
           selectedModelId={selectedModelId}
+          onModelChange={onModelChange}
           className="order-1 md:order-2"
         />
       )}
@@ -54,6 +59,13 @@ function PureChatHeader({
   );
 }
 
-export const ChatHeader = memo(PureChatHeader, (prevProps, nextProps) => {
-  return prevProps.selectedModelId === nextProps.selectedModelId;
-});
+export const ChatHeader = memo(
+  PureChatHeader,
+  (prevProps: ChatHeaderProps, nextProps: ChatHeaderProps) => {
+    return (
+      prevProps.selectedModelId === nextProps.selectedModelId &&
+      prevProps.onModelChange === nextProps.onModelChange &&
+      prevProps.isReadonly === nextProps.isReadonly
+    );
+  }
+);

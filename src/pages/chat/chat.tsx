@@ -3,12 +3,12 @@
 import type { UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
-import { useSWRConfig } from 'swr';
+// import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/shared/chat-header';
 import { fetchWithErrorHandlers, generateUUID } from '@/lib/utils';
 import { MultimodalInput } from '@/components/shared/multimodal-input';
 import { Messages } from '@/components/shared/messages';
-import { unstable_serialize } from 'swr/infinite';
+//import { unstable_serialize } from 'swr/infinite';
 //import { getChatHistoryPaginationKey } from '@/components/shared/sidebar-history';
 import { toast } from '@/components/shared/toast';
 import { useSearchParams } from 'react-router';
@@ -28,7 +28,8 @@ export function Chat({
   isReadonly: boolean;
   autoResume: boolean;
 }) {
-  const { mutate } = useSWRConfig();
+  // const { mutate } = useSWRConfig();
+  const [selectedModel, setSelectedModel] = useState(initialChatModel);
 
   const {
     messages,
@@ -52,7 +53,8 @@ export function Chat({
     experimental_prepareRequestBody: (body) => ({
       id,
       message: body.messages.at(-1),
-      selectedChatModel: initialChatModel,
+      // TODO: handle model change in the backend
+      selectedChatModel: selectedModel,
     }),
     onFinish: () => {
       //mutate(unstable_serialize(getChatHistoryPaginationKey));
@@ -96,7 +98,8 @@ export function Chat({
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
-          selectedModelId={initialChatModel}
+          selectedModelId={selectedModel}
+          onModelChange={setSelectedModel}
           isReadonly={isReadonly}
         />
 

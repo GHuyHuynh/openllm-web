@@ -13,9 +13,12 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* Browser Router */}
       <BrowserRouter>
         <Base />
       </BrowserRouter>
+
+      {/* React Query Devtools */}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   )

@@ -15,9 +15,11 @@ import { useListModels } from '@/gen-ai/models';
 
 export function ModelSelector({
   selectedModelId,
+  onModelChange,
   className,
 }: {
   selectedModelId: string;
+  onModelChange?: (modelId: string) => void;
 } & React.ComponentProps<typeof Button>) {
   const [open, setOpen] = useState(false);
   const [optimisticModelId, setOptimisticModelId] =
@@ -65,6 +67,8 @@ export function ModelSelector({
                 startTransition(() => {
                   setOptimisticModelId(id);
                 });
+
+                onModelChange?.(id);
               }}
               data-active={id === optimisticModelId}
               asChild
