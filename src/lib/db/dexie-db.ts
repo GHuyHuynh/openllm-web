@@ -28,7 +28,6 @@ const StreamSchema = z.object({
   id: uuidSchema,
   chatId: uuidSchema,
   createdAt: createdAtSchema,
-  chatRef: uuidSchema,
 });
 
 type User = z.infer<typeof UserSchema>;
@@ -49,7 +48,7 @@ db.version(1).stores({
   chats: '&id, title, createdAt, userId',
   messages: '&id, chatId, role, createdAt, parts',
   users: '&id',
-  streams: '&id, chatId, createdAt, chatRef',
+  streams: '&id, chatId, createdAt',
 });
 
 export async function createUser({ id }: { id: string }) {
@@ -255,3 +254,67 @@ export async function deleteMessagesByChatIdAfterTimestamp({
   }
 }
 
+export async function getMessageCountByUserId({
+  id,
+  differenceInHours,
+}: { 
+  id: string; differenceInHours: number 
+}) {
+  try {
+    const twentyFourHoursAgo = new Date(
+      Date.now() - differenceInHours * 60 * 60 * 1000,
+    );
+
+    const userChats = await db.chat
+      .where('userId')
+      .equals(id)
+      .toArray();
+    
+    const userChatIds = userChats.map(chat => chat.id);
+
+    if (userChatIds.length === 0) {
+      return 0;
+    }
+
+    const messageCount = await db.message
+      .where('role')
+      .equals('user')
+      .and(message => 
+        message.createdAt >= twentyFourHoursAgo && 
+        userChatIds.includes(message.chatId)
+      )
+      .count();
+
+    return messageCount;
+  } catch (error) {
+    throw new ChatSDKError('bad_request:database', 'Failed to get message count by user id');
+  }
+}
+
+export async function createStreamId({
+  streamId,
+  chatId,
+}: {
+  streamId: string;
+  chatId: string;
+}) {
+  try {
+    return await db.stream.add({
+      id: streamId,
+      chatId,
+      createdAt: new Date(),
+    });
+  } catch (error) {
+    throw new ChatSDKError('bad_request:database', 'Failed to create stream id');
+  }
+}
+
+export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
+  try {
+    const streamIds = await db.stream.where('chatId').equals(chatId).toArray();
+    const returnStreamIds = streamIds.map(stream => stream.id);
+    return returnStreamIds;
+  } catch (error) {
+    throw new ChatSDKError('bad_request:database', 'Failed to get stream ids by chat id');
+  }
+}
