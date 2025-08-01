@@ -1,5 +1,5 @@
 import { ChatSDKError } from '@/lib/errors';
-import { db, type Chat, type DBMessage } from '@/lib/db/dexie-db';
+import { db, type Chat, type DBMessage } from '@/lib/db/schema';
 
 export async function createUser({ id }: { id: string }) {
   try {

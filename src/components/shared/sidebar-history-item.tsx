@@ -16,7 +16,7 @@ import {
   TrashIcon,
 } from '@/components/ui/icons';
 import { memo } from 'react';
-import { type Chat } from '@/lib/db/dexie-db';
+import { type Chat } from '@/lib/db/schema';
 
 const PureChatItem = ({
   chat,
