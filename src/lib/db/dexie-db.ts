@@ -44,8 +44,8 @@ export interface DalAIDatabase extends Dexie {
 export const db = new Dexie('dal-ai-db') as DalAIDatabase;
 
 db.version(1).stores({
-  chats: '&id, title, createdAt, userId',
-  messages: '&id, chatId, role, createdAt, parts',
-  users: '&id',
-  streams: '&id, chatId, createdAt',
+  chat: '&id, title, createdAt, userId',
+  message: '&id, chatId, role, createdAt, parts',
+  user: '&id',
+  stream: '&id, chatId, createdAt',
 });

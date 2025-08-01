@@ -52,8 +52,8 @@ export async function getChatById({ id }: { id: string }) {
 
 export async function getMessageById({ id }: { id: string }) {
   try {
-    const message = await db.message.get(id);
-    return message;
+    const returnMessage = await db.message.where('id').equals(id).toArray();
+    return returnMessage;
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',

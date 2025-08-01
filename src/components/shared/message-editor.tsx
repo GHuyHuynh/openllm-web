@@ -4,7 +4,7 @@ import { type Message } from 'ai';
 import { Button } from '@/components/ui/button';
 import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
-//import { deleteTrailingMessages } from '@/app/(chat)/actions';
+import { deleteTrailingMessages } from '@/lib/db/functions';
 import { type UseChatHelpers } from '@ai-sdk/react';
 
 export type MessageEditorProps = {
@@ -71,10 +71,9 @@ export function MessageEditor({
           onClick={async () => {
             setIsSubmitting(true);
 
-            // TODO: implement deleteTrailingMessages with IndexDB
-            // await deleteTrailingMessages({
-            //   id: message.id,
-            // });
+            await deleteTrailingMessages({
+              id: message.id,
+            });
 
             // @ts-expect-error todo: support UIMessage in setMessages
             setMessages((messages) => {
