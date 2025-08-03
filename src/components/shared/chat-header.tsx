@@ -9,6 +9,7 @@ import { PlusIcon } from '@/components/ui/icons';
 import { useSidebar } from '@/components/ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 interface ChatHeaderProps {
   selectedModelId: string;
@@ -55,6 +56,10 @@ function PureChatHeader({
           className="order-1 md:order-2"
         />
       )}
+
+      <ThemeToggle
+        className="dark:bg-zinc-900 bg-zinc-100 dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4 md:ml-auto"
+      />
     </header>
   );
 }
