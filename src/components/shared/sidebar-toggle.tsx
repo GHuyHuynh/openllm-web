@@ -11,7 +11,10 @@ import { SidebarLeftIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 
 export function SidebarToggle({
-  className,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // TODO: Remove the following line once we have a proper sidebar and delete the bottom line
+  //className,
+  className: _className,
 }: ComponentProps<typeof SidebarTrigger>) {
   const { toggleSidebar } = useSidebar();
 

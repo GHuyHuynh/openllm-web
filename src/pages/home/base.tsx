@@ -1,13 +1,14 @@
 import { streamModelResponse } from '@/gen-ai/stream';
 import { useEffect, useState } from 'react';
-import { ModelSelector } from '@/components/shared/model-selector';
-import { MultimodalInput } from '@/components/shared/multimodal-input';
+// import { ModelSelector } from '@/components/shared/model-selector';
+// import { MultimodalInput } from '@/components/shared/multimodal-input';
 import { Chat } from '../chat/chat';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { DEFAULT_CHAT_MODEL } from '@/gen-ai/models';
 
 export function Base() {
-  const [text, setText] = useState('');
+  // TODO: Remove this 
+  const [_, setText] = useState('');
 
   useEffect(() => {
     const fetchText = async () => {
