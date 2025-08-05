@@ -1,7 +1,7 @@
 import { getChatsByUserId } from "@/lib/db/queries";
 import { ChatSDKError } from '@/lib/errors';
 
-interface GetChatHistoryWithPaginationParams {
+export interface GetChatHistoryWithPaginationParams {
   id: string;
   limit: number;
   startingAfter: string | null;

@@ -8,11 +8,37 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider } from '@/components/ui/theme-provider'
-import { UserProvider } from './components/shared/user-provider';
-import { Suspense } from 'react';
+import { UserProvider } from '@/components/shared/user-provider';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { Suspense, type ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { AppSidebar } from '@/components/shared/app-sidebar';
 
 const queryClient = new QueryClient();
+
+interface ProvidersProps {
+  children: ReactNode;
+}
+
+function Providers({ children }: ProvidersProps) {
+  return (
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ErrorBoundary fallback={<div>Error</div>}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <UserProvider>
+              <SidebarProvider>
+                <BrowserRouter>
+                  {children}
+                </BrowserRouter>
+              </SidebarProvider>
+            </UserProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </QueryClientProvider>
+    </ThemeProvider>
+  );
+}
 
 function AppContent() {
   return (
@@ -20,10 +46,8 @@ function AppContent() {
       {/* Toaster */}
       <Toaster position="top-center" />
 
-      {/* Browser Router */}
-      <BrowserRouter>
-        <Base />
-      </BrowserRouter>
+      {/* Main Content */}
+      <Base />
 
       {/* React Query Devtools */}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
@@ -33,18 +57,12 @@ function AppContent() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        {/* TODO: Add error boundary and loading screen */}
-        <ErrorBoundary fallback={<div>Error</div>}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <UserProvider>
-              <AppContent />
-            </UserProvider>
-          </Suspense>
-        </ErrorBoundary>
-      </QueryClientProvider>
-    </ThemeProvider>
+    <Providers>
+      <AppSidebar />
+      <SidebarInset>
+        <AppContent />
+      </SidebarInset>
+    </Providers>
   )
 }
 

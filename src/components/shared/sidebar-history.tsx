@@ -26,6 +26,8 @@ import { fetcher } from '@/lib/utils';
 import { ChatItem } from '@/components/shared/sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from '@/components/ui/icons';
+import { type GetChatHistoryWithPaginationParams } from '@/actions/history';
+import { useUserId } from '@/hooks/use-user-id';
 
 type GroupedChats = {
   today: Chat[];
@@ -76,26 +78,37 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 };
 
 export function getChatHistoryPaginationKey(
+  userId: string,
   pageIndex: number,
   previousPageData: ChatHistory,
 ) {
+  let defaultGetChatHistoryParams: GetChatHistoryWithPaginationParams = {
+    id: userId,
+    limit: PAGE_SIZE,
+    startingAfter: null,
+    endingBefore: null,
+  };
+
   if (previousPageData && previousPageData.hasMore === false) {
     return null;
   }
 
-  if (pageIndex === 0) return `/api/history?limit=${PAGE_SIZE}`;
+  if (pageIndex === 0) return defaultGetChatHistoryParams;
 
   const firstChatFromPage = previousPageData.chats.at(-1);
 
   if (!firstChatFromPage) return null;
 
-  // TODO: implement history pagination
-  return `/api/history?ending_before=${firstChatFromPage.id}&limit=${PAGE_SIZE}`;
+  return {
+    ...defaultGetChatHistoryParams,
+    endingBefore: firstChatFromPage.id,
+  };
 }
 
 export function SidebarHistory() {
   const { setOpenMobile } = useSidebar();
   const { id } = useParams();
+  const userId = useUserId();
 
   const {
     data: paginatedChatHistories,
@@ -103,9 +116,14 @@ export function SidebarHistory() {
     isValidating,
     isLoading,
     mutate,
-  } = useSWRInfinite<ChatHistory>(getChatHistoryPaginationKey, fetcher, {
-    fallbackData: [],
-  });
+  } = useSWRInfinite<ChatHistory>(
+    (pageIndex, previousPageData) => 
+      getChatHistoryPaginationKey(userId, pageIndex, previousPageData),
+    fetcher,
+    {
+      fallbackData: [],
+    }
+  );
 
   const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
