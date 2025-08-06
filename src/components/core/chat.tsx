@@ -14,6 +14,7 @@ import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
+import { BASE_URL } from '@/constants/constants';
 
 export function Chat({
   id,
@@ -81,7 +82,7 @@ export function Chat({
       });
 
       setHasAppendedQuery(true);
-      window.history.replaceState({}, '', `/chat/${id}`);
+      window.history.replaceState({}, '', `${BASE_URL}/chat/${id}`);
     }
   }, [query, append, hasAppendedQuery, id]);
 

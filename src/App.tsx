@@ -13,6 +13,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense, type ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AppSidebar } from '@/components/core/app-sidebar';
+import { BASE_URL } from '@/constants/constants';
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,7 @@ function Providers({ children }: ProvidersProps) {
           <Suspense fallback={<div>Loading...</div>}>
             <UserProvider>
               <SidebarProvider>
-                <BrowserRouter>
+                <BrowserRouter basename={BASE_URL}>
                   {children}
                 </BrowserRouter>
               </SidebarProvider>

@@ -18,6 +18,7 @@ import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowDown } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
+import { BASE_URL } from '@/constants/constants';
 
 function PureMultimodalInput({
   chatId,
@@ -92,7 +93,7 @@ function PureMultimodalInput({
   };
 
   const submitForm = useCallback(() => {
-    window.history.replaceState({}, '', `/chat/${chatId}`);
+    window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
 
     handleSubmit(undefined, {
     });

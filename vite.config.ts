@@ -7,7 +7,7 @@ import { defineConfig } from "vite"
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   // Set base for Dal Server
-  base: "/~huyh/dalchat/",
+  base: "/~huyh/dalchat",
   build: {
     outDir: 'dalchat' // Set build output directory name
   },

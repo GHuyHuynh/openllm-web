@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { Button } from '@/components/ui/button';
 import { memo } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { BASE_URL } from '@/constants/constants';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -52,7 +53,7 @@ function PureSuggestedActions({
           <Button
             variant="ghost"
             onClick={async () => {
-              window.history.replaceState({}, '', `/chat/${chatId}`);
+              window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
 
               append({
                 role: 'user',
