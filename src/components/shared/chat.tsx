@@ -3,7 +3,7 @@ import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
 // import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/shared/chat-header';
-import { fetchWithErrorHandlers, generateUUID } from '@/lib/utils';
+import { fetchWithErrorHandlers } from '@/lib/utils';
 import { MultimodalInput } from '@/components/shared/multimodal-input';
 import { Messages } from '@/components/shared/messages';
 //import { unstable_serialize } from 'swr/infinite';
@@ -12,6 +12,7 @@ import { toast } from '@/components/shared/toast';
 import { useSearchParams } from 'react-router';
 import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
+import { v4 as uuidv4 } from 'uuid';
 
 export function Chat({
   id,
@@ -46,7 +47,7 @@ export function Chat({
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
-    generateId: generateUUID,
+    generateId: () => uuidv4(),
     fetch: fetchWithErrorHandlers,
     experimental_prepareRequestBody: (body) => ({
       id,

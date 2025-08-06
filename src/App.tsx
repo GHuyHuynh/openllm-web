@@ -3,7 +3,7 @@
  */
 
 import { Toaster } from 'sonner';
-import { Base } from '@/pages/home/base'
+import { Base } from '@/pages/home/home-page'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter } from 'react-router'

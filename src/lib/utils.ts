@@ -51,14 +51,14 @@ export function getLocalStorage(key: string) {
   }
   return [];
 }
-
-export function generateUUID(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
+// Deprecated -> use uuidv4 from 'uuid' instead
+// export function generateUUID(): string {
+//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+//     const r = (Math.random() * 16) | 0;
+//     const v = c === 'x' ? r : (r & 0x3) | 0x8;
+//     return v.toString(16);
+//   });
+// }
 
 type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;
 type ResponseMessage = ResponseMessageWithoutId & { id: string };

@@ -6,7 +6,7 @@
  * Most components should use useUserId() instead for better performance.
  */
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { initializeUser } from '@/lib/services/user-service';
+import { initializeUser } from '@/services/user-service';
 
 export function useUser() {
   const { data } = useSuspenseQuery({
