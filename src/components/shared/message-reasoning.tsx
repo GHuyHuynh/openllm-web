@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { ChevronDownIcon, LoaderIcon } from '@/components/ui/icons';
 import { motion, AnimatePresence } from 'motion/react';

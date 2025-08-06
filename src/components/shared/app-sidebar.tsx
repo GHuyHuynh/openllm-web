@@ -1,5 +1,3 @@
-'use client';
-
 import { useNavigate } from 'react-router';
 
 import { PlusIcon } from '@/components/ui/icons';

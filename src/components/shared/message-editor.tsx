@@ -1,5 +1,3 @@
-'use client';
-
 import { type Message } from 'ai';
 import { Button } from '@/components/ui/button';
 import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from 'react';

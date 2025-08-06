@@ -1,5 +1,3 @@
-'use client';
-
 import { useWindowSize } from 'usehooks-ts';
 
 import { ModelSelector } from '@/components/shared/model-selector';
