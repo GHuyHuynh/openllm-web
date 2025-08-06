@@ -164,6 +164,8 @@ function PureMultimodalInput({
         )}
         rows={2}
         autoFocus
+        autoComplete="new-password" // Special browser behavior to prevent autocomplete
+        name="chat-input"
         onKeyDown={(event) => {
           if (
             event.key === 'Enter' &&
