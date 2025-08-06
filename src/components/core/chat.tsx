@@ -1,18 +1,19 @@
 import type { UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
-// import { useSWRConfig } from 'swr';
+import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/core/chat-header';
 import { fetchWithErrorHandlers } from '@/lib/utils';
 import { MultimodalInput } from '@/components/core/multimodal-input';
 import { Messages } from '@/components/core/messages';
-//import { unstable_serialize } from 'swr/infinite';
-//import { getChatHistoryPaginationKey } from '@/components/core/sidebar-history';
+import { unstable_serialize } from 'swr/infinite';
+import { createChatHistoryPaginationKeyGetter } from '@/components/core/sidebar-history';
 import { toast } from '@/components/core/toast';
-import { useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router'
 import { useAutoResume } from '@/hooks/use-auto-resume';
 import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
+import { useUserId } from '@/hooks/use-user-id';
 
 export function Chat({
   id,
@@ -27,8 +28,8 @@ export function Chat({
   isReadonly: boolean;
   autoResume: boolean;
 }) {
-  // const { mutate } = useSWRConfig();
-  const [selectedModel, setSelectedModel] = useState(initialChatModel);
+  const { mutate } = useSWRConfig();
+  const userId = useUserId();
 
   const {
     messages,
@@ -52,11 +53,10 @@ export function Chat({
     experimental_prepareRequestBody: (body) => ({
       id,
       message: body.messages.at(-1),
-      // TODO: handle model change in the backend
-      selectedChatModel: selectedModel,
+      selectedChatModel: initialChatModel,
     }),
     onFinish: () => {
-      //mutate(unstable_serialize(getChatHistoryPaginationKey));
+      mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
@@ -97,8 +97,7 @@ export function Chat({
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
-          selectedModelId={selectedModel}
-          onModelChange={setSelectedModel}
+          selectedModelId={initialChatModel}
           isReadonly={isReadonly}
         />
 

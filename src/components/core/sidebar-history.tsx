@@ -75,7 +75,7 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
   );
 };
 
-export function getChatHistoryPaginationKey(
+function getChatHistoryPaginationKey(
   userId: string,
   pageIndex: number,
   previousPageData: ChatHistory,
@@ -103,6 +103,11 @@ export function getChatHistoryPaginationKey(
   };
 }
 
+export function createChatHistoryPaginationKeyGetter(userId: string) {
+  return (pageIndex: number, previousPageData: ChatHistory) =>
+    getChatHistoryPaginationKey(userId, pageIndex, previousPageData);
+}
+
 export function SidebarHistory() {
   const { setOpenMobile } = useSidebar();
   const { id } = useParams();
@@ -115,8 +120,7 @@ export function SidebarHistory() {
     isLoading,
     mutate,
   } = useSWRInfinite<ChatHistory>(
-    (pageIndex, previousPageData) => 
-      getChatHistoryPaginationKey(userId, pageIndex, previousPageData),
+    createChatHistoryPaginationKeyGetter(userId),
     fetcher,
     {
       fallbackData: [],
