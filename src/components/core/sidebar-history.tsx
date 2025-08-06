@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/sidebar';
 import type { Chat } from '@/lib/db/schema';
 import { fetcher } from '@/lib/utils';
-import { ChatItem } from '@/components/shared/sidebar-history-item';
+import { ChatItem } from '@/components/core/sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from '@/components/ui/icons';
 import { type GetChatHistoryWithPaginationParams } from '@/actions/history';

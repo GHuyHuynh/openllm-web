@@ -13,7 +13,7 @@ import { useLocalStorage, useWindowSize } from 'usehooks-ts';
 import { ArrowUpIcon, StopIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { SuggestedActions } from '@/components/shared/suggested-actions';
+import { SuggestedActions } from '@/components/core/suggested-actions';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowDown } from 'lucide-react';

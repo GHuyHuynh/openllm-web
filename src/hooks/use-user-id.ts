@@ -6,7 +6,7 @@
  * Preferred over useUser() for better performance - no extra React Query subscription.
  */
 import { useContext } from 'react';
-import { UserContext } from '@/components/shared/user-provider';
+import { UserContext } from '@/components/core/user-provider';
 import { ChatSDKError } from '@/lib/errors';
 
 export function useUserId() {

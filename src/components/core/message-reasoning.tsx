@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronDownIcon, LoaderIcon } from '@/components/ui/icons';
 import { motion, AnimatePresence } from 'motion/react';
-import { Markdown } from '@/components/shared/markdown';
+import { Markdown } from '@/components/core/markdown';
 
 interface MessageReasoningProps {
   isLoading: boolean;

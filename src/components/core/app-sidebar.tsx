@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router';
 
 import { PlusIcon } from '@/components/ui/icons';
-import { SidebarHistory } from '@/components/shared/sidebar-history';
+import { SidebarHistory } from '@/components/core/sidebar-history';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,

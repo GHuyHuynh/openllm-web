@@ -1,11 +1,11 @@
 import { streamModelResponse } from '@/gen-ai/stream';
 import { useEffect, useState } from 'react';
-// import { ModelSelector } from '@/components/shared/model-selector';
-// import { MultimodalInput } from '@/components/shared/multimodal-input';
-import { Chat } from '../../components/shared/chat';
+// import { ModelSelector } from '@/components/core/model-selector';
+// import { MultimodalInput } from '@/components/core/multimodal-input';
+import { Chat } from '../../components/core/chat';
 import { DEFAULT_CHAT_MODEL } from '@/gen-ai/models';
 
-export function Base() {
+export function HomePage() {
   // TODO: Remove this 
   const [_, setText] = useState('');
 

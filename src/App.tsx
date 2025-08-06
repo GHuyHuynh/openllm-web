@@ -3,16 +3,16 @@
  */
 
 import { Toaster } from 'sonner';
-import { Base } from '@/pages/home/home-page'
+import { HomePage } from '@/pages/home/home-page'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter } from 'react-router'
 import { ThemeProvider } from '@/components/ui/theme-provider'
-import { UserProvider } from '@/components/shared/user-provider';
+import { UserProvider } from '@/components/core/user-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense, type ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { AppSidebar } from '@/components/shared/app-sidebar';
+import { AppSidebar } from '@/components/core/app-sidebar';
 
 const queryClient = new QueryClient();
 
@@ -47,7 +47,7 @@ function AppContent() {
       <Toaster position="top-center" />
 
       {/* Main Content */}
-      <Base />
+      <HomePage />
 
       {/* React Query Devtools */}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}

@@ -1,7 +1,7 @@
 import { useWindowSize } from 'usehooks-ts';
 
-import { ModelSelector } from '@/components/shared/model-selector';
-import { SidebarToggle } from '@/components/shared/sidebar-toggle';
+import { ModelSelector } from '@/components/core/model-selector';
+import { SidebarToggle } from '@/components/core/sidebar-toggle';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/ui/icons';
 import { useSidebar } from '@/components/ui/sidebar';
