@@ -1,14 +1,15 @@
 import { createOllama } from 'ollama-ai-provider';
-import { OLLAMA_BASE_URL, DEFAULT_OLLAMA_MODEL } from '@/constants/constants';
+import { OLLAMA_BASE_URL } from '@/constants/constants';
 import { useQuery } from '@tanstack/react-query';
 
 export const DEFAULT_CHAT_MODEL: string = 'smollm2:135m';
+export const DEFAULT_TITLE_MODEL: string = 'smollm2:135m';
+export const DEFAULT_REASONING_MODEL: string = 'deepseek-r1:1.5b';
 
-const ollama = createOllama({
+export const ollama = createOllama({
   baseURL: `${OLLAMA_BASE_URL}/api`,
 });
 
-export const defaultModel = ollama(DEFAULT_OLLAMA_MODEL);
 
 export interface ChatModel {
   id: string;
