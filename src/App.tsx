@@ -14,6 +14,7 @@ import { Suspense, type ReactNode } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AppSidebar } from '@/components/core/app-sidebar';
 import { BASE_URL } from '@/constants/constants';
+import { DataStreamProvider } from '@/components/core/data-stream-provider';
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,9 @@ function Providers({ children }: ProvidersProps) {
             <UserProvider>
               <SidebarProvider>
                 <BrowserRouter basename={BASE_URL}>
-                  {children}
+                  <DataStreamProvider>
+                    {children}
+                  </DataStreamProvider>
                 </BrowserRouter>
               </SidebarProvider>
             </UserProvider>

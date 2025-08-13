@@ -1,4 +1,3 @@
-import type { UIMessage } from 'ai';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'motion/react';
 import { memo, useState } from 'react';
@@ -12,23 +11,27 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { MessageEditor } from '@/components/core/message-editor';
 import { MessageReasoning } from '@/components/core/message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import type { ChatMessage } from '@/lib/types';
+import { useDataStream } from '@/components/core/data-stream-provider';
 
 const PurePreviewMessage = ({
   message,
   isLoading,
   setMessages,
-  reload,
+  regenerate,
   isReadonly,
   requiresScrollPadding,
 }: {
-  message: UIMessage;
+  message: ChatMessage;
   isLoading: boolean;
-  setMessages: UseChatHelpers['setMessages'];
-  reload: UseChatHelpers['reload'];
+  setMessages: UseChatHelpers<any>['setMessages'];
+  regenerate: UseChatHelpers<any>['regenerate'];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
+
+  useDataStream();
 
   return (
     <AnimatePresence>
@@ -70,7 +73,7 @@ const PurePreviewMessage = ({
                   <MessageReasoning
                     key={key}
                     isLoading={isLoading}
-                    reasoning={part.reasoning}
+                    reasoning={part.text}
                   />
                 );
               }
@@ -120,7 +123,7 @@ const PurePreviewMessage = ({
                         message={message}
                         setMode={setMode}
                         setMessages={setMessages}
-                        reload={reload}
+                        regenerate={regenerate}
                       />
                     </div>
                   );
@@ -151,7 +154,7 @@ export const PreviewMessage = memo(
       return false;
     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
-    return true;
+    return false;
   },
 );
 

@@ -1,4 +1,3 @@
-import type { Message } from 'ai';
 import { useCopyToClipboard } from 'usehooks-ts';
 
 import { CopyIcon } from '@/components/ui/icons';
@@ -11,12 +10,13 @@ import {
 } from '@/components/ui/tooltip';
 import { memo } from 'react';
 import { toast } from 'sonner';
+import type { ChatMessage } from '@/lib/types';
 
 export function PureMessageActions({
   message,
   isLoading,
 }: {
-  message: Message;
+  message: ChatMessage;
   isLoading: boolean;
 }) {
   const [_, copyToClipboard] = useCopyToClipboard();

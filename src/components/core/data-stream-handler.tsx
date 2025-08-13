@@ -1,23 +1,9 @@
-import { useChat } from '@ai-sdk/react';
 import { useEffect, useRef } from 'react';
+import { useDataStream } from './data-stream-provider';
 
-export type DataStreamDelta = {
-  type:
-    | 'text-delta'
-    | 'code-delta'
-    | 'sheet-delta'
-    | 'image-delta'
-    | 'title'
-    | 'id'
-    | 'suggestion'
-    | 'clear'
-    | 'finish'
-    | 'kind';
-  content: string;
-};
+export function DataStreamHandler() {
+  const { dataStream } = useDataStream();
 
-export function DataStreamHandler({ id }: { id: string }) {
-  const { data: dataStream } = useChat({ id });
   const lastProcessedIndex = useRef(-1);
 
   useEffect(() => {
@@ -26,41 +12,35 @@ export function DataStreamHandler({ id }: { id: string }) {
     const newDeltas = dataStream.slice(lastProcessedIndex.current + 1);
     lastProcessedIndex.current = dataStream.length - 1;
 
-    (newDeltas as DataStreamDelta[]).forEach((delta: DataStreamDelta) => {
+    newDeltas.forEach((delta) => {
 
-        switch (delta.type) {
-          case 'id':
-            return {
-              documentId: delta.content as string,
-              status: 'streaming',
-            };
+      switch (delta.type) {
+        case 'data-id':
+          return {
+            documentId: delta.data,
+            status: 'streaming',
+          };
 
-          case 'title':
-            return {
-              title: delta.content as string,
-              status: 'streaming',
-            };
+        case 'data-title':
+          return {
+            title: delta.data,
+            status: 'streaming',
+          };
 
-          case 'kind':
-            return {
-              kind: delta.content as string,
-              status: 'streaming',
-            };
+        case 'data-clear':
+          return {
+            content: '',
+            status: 'streaming',
+          };
 
-          case 'clear':
-            return {
-              content: '',
-              status: 'streaming',
-            };
+        case 'data-finish':
+          return {
+            status: 'idle',
+          };
 
-          case 'finish':
-            return {
-              status: 'idle',
-            };
-
-          default:
-            return null;
-        }
+        default:
+          return null;
+      }
     });
   }, [dataStream]);
 

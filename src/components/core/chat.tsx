@@ -1,4 +1,6 @@
-import type { UIMessage } from 'ai';
+import { DefaultChatTransport } from 'ai';
+import { type ChatMessage } from '@/lib/types';
+import { useDataStream } from '@/components/core/data-stream-provider';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
 import { useSWRConfig } from 'swr';
@@ -24,41 +26,49 @@ export function Chat({
   autoResume,
 }: {
   id: string;
-  initialMessages: Array<UIMessage>;
+  initialMessages: ChatMessage[];
   initialChatModel: string;
   isReadonly: boolean;
   autoResume: boolean;
 }) {
   const { mutate } = useSWRConfig();
   const userId = useUserId();
+  const { setDataStream } = useDataStream();
+
+  const [input, setInput] = useState<string>('');
 
   const {
     messages,
     setMessages,
-    handleSubmit,
-    input,
-    setInput,
-    append,
+    sendMessage,
     status,
     stop,
-    reload,
-    experimental_resume,
-    data,
+    regenerate
   } = useChat({
-    api: 'http://localhost:11434/api/chat',
     id,
-    initialMessages,
+    messages: initialMessages,
     experimental_throttle: 100,
-    sendExtraMessageFields: true,
     generateId: () => uuidv4(),
-    fetch: fetchWithErrorHandlers,
-    experimental_prepareRequestBody: (body) => ({
-      id,
-      message: body.messages.at(-1),
-      selectedChatModel: initialChatModel,
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+      fetch: fetchWithErrorHandlers,
+      prepareSendMessagesRequest({ messages, id, body }) {
+        return {
+          body: {
+            id,
+            message: messages.at(-1),
+            selectedChatModel: initialChatModel,
+            selectedVisibilityType: visibilityType,
+            ...body,
+          },
+        };
+      },
     }),
+    onData: (dataPart) => {
+      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
+    },
     onFinish: () => {
-      mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
+      mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
@@ -90,8 +100,7 @@ export function Chat({
   useAutoResume({
     autoResume,
     initialMessages,
-    experimental_resume,
-    data,
+    resumeStream,
     setMessages,
   });
 
@@ -106,9 +115,9 @@ export function Chat({
         <Messages
           chatId={id}
           status={status}
-          messages={messages}
+          messages={messages as ChatMessage[]}
           setMessages={setMessages}
-          reload={reload}
+          regenerate={regenerate}
           isReadonly={isReadonly}
         />
 

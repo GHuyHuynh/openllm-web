@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CheckCircleFillIcon, ChevronDownIcon } from '@/components/ui/icons';
-import { useListModels } from '@/gen-ai/models';
+import { chatModels } from '@/gen-ai/models';
 
 export function ModelSelector({
   selectedModelId,
@@ -23,15 +23,11 @@ export function ModelSelector({
   const [optimisticModelId, setOptimisticModelId] =
     useOptimistic(selectedModelId);
 
-  const { data, error } = useListModels();
-
   const selectedChatModel = useMemo(
     () =>
-      data?.find((chatModel) => chatModel.id === optimisticModelId),
-    [optimisticModelId, data],
+      chatModels.find((chatModel) => chatModel.id === optimisticModelId),
+    [optimisticModelId],
   );
-
-  if (error) throw new Error(`Error: ${error.message}`);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -52,7 +48,7 @@ export function ModelSelector({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-[300px]">
-        {data?.map((chatModel) => {
+        {chatModels.map((chatModel) => {
           const { id } = chatModel;
 
           return (

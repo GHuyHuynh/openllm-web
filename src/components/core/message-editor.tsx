@@ -1,26 +1,35 @@
-import { type Message } from 'ai';
 import { Button } from '@/components/ui/button';
-import { type Dispatch, type SetStateAction, useEffect, useRef, useState } from 'react';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { deleteTrailingMessages } from '@/lib/db/functions';
-import { type UseChatHelpers } from '@ai-sdk/react';
+import type { UseChatHelpers } from '@ai-sdk/react';
+import type { UIMessage } from 'ai';
+import type { ChatMessage } from '@/lib/types';
+import { getTextFromMessage } from '@/lib/utils';
 
 export type MessageEditorProps = {
-  message: Message;
+  message: ChatMessage;
   setMode: Dispatch<SetStateAction<'view' | 'edit'>>;
-  setMessages: UseChatHelpers['setMessages'];
-  reload: UseChatHelpers['reload'];
+  // any type here because UseChatHelpers still in beta
+  setMessages: UseChatHelpers<any>['setMessages'];
+  regenerate: UseChatHelpers<any>['regenerate'];
 };
 
 export function MessageEditor({
   message,
   setMode,
   setMessages,
-  reload,
+  regenerate,
 }: MessageEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [draftContent, setDraftContent] = useState<string>(message.content);
+  const [draftContent, setDraftContent] = useState<string>(getTextFromMessage(message));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -73,14 +82,12 @@ export function MessageEditor({
               id: message.id,
             });
 
-            // @ts-expect-error todo: support UIMessage in setMessages
             setMessages((messages) => {
               const index = messages.findIndex((m) => m.id === message.id);
 
               if (index !== -1) {
-                const updatedMessage = {
+                const updatedMessage: ChatMessage = {
                   ...message,
-                  content: draftContent,
                   parts: [{ type: 'text', text: draftContent }],
                 };
 
@@ -91,7 +98,7 @@ export function MessageEditor({
             });
 
             setMode('view');
-            reload();
+            regenerate();
           }}
         >
           {isSubmitting ? 'Sending...' : 'Send'}

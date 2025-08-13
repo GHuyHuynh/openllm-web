@@ -7,16 +7,16 @@ import {
   DEFAULT_CHAT_MODEL,
   DEFAULT_REASONING_MODEL,
   DEFAULT_TITLE_MODEL,
-  ollama,
+  vllm,
 } from '@/gen-ai/models';
 
 export const myProvider = customProvider({
   languageModels: {
-    'chat-model': ollama(DEFAULT_CHAT_MODEL),
+    'chat-model': vllm(DEFAULT_CHAT_MODEL),
     'chat-model-reasoning': wrapLanguageModel({
-      model: ollama(DEFAULT_REASONING_MODEL),
+      model: vllm(DEFAULT_REASONING_MODEL),
       middleware: extractReasoningMiddleware({ tagName: 'think' }),
     }),
-    'title-model': ollama(DEFAULT_TITLE_MODEL),
+    'title-model': vllm(DEFAULT_TITLE_MODEL),
   },
 });

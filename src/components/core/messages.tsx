@@ -1,4 +1,3 @@
-import type { UIMessage } from 'ai';
 import { PreviewMessage, ThinkingMessage } from './message';
 import { Greeting } from './greeting';
 import { memo } from 'react';
@@ -6,14 +5,17 @@ import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { motion } from 'motion/react';
 import { useMessages } from '@/hooks/use-messages';
+import type { ChatMessage } from '@/lib/types';
+import { useDataStream } from '@/components/core/data-stream-provider';
 
 interface MessagesProps {
   chatId: string;
-  status: UseChatHelpers['status'];
-  messages: Array<UIMessage>;
-  setMessages: UseChatHelpers['setMessages'];
-  reload: UseChatHelpers['reload'];
+  status: UseChatHelpers<any>['status'];
+  messages: ChatMessage[];
+  setMessages: UseChatHelpers<any>['setMessages'];
+  regenerate: UseChatHelpers<any>['regenerate'];
   isReadonly: boolean;
+  isArtifactVisible: boolean;
 }
 
 function PureMessages({
@@ -21,7 +23,7 @@ function PureMessages({
   status,
   messages,
   setMessages,
-  reload,
+  regenerate,
   isReadonly,
 }: MessagesProps) {
   const {
@@ -34,6 +36,8 @@ function PureMessages({
     chatId,
     status,
   });
+
+  useDataStream();
 
   return (
     <div
@@ -48,7 +52,7 @@ function PureMessages({
           message={message}
           isLoading={status === 'streaming' && messages.length - 1 === index}
           setMessages={setMessages}
-          reload={reload}
+          regenerate={regenerate}
           isReadonly={isReadonly}
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
@@ -76,5 +80,5 @@ export const Messages = memo(PureMessages, (prevProps, nextProps) => {
   if (prevProps.messages.length !== nextProps.messages.length) return false;
   if (!equal(prevProps.messages, nextProps.messages)) return false;
 
-  return true;
+  return false;
 });

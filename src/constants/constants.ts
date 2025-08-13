@@ -1,5 +1,5 @@
-export const OLLAMA_BASE_URL = 'http://localhost:11434';
-export const DEFAULT_OLLAMA_MODEL = 'smollm2:135m';
+export const VLLM_BASE_URL = 'http://localhost:11434';
+export const DEFAULT_VLLM_MODEL = 'smollm2:135m';
 
 export const BASE_URL = import.meta.env.BASE_URL;
 

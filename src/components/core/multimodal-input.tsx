@@ -6,10 +6,11 @@ import {
   useEffect,
   useCallback,
   memo,
+  type Dispatch,
+  type SetStateAction,
 } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
-
 import { ArrowUpIcon, StopIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,19 +29,17 @@ function PureMultimodalInput({
   stop,
   messages,
   setMessages,
-  append,
-  handleSubmit,
+  sendMessage,
   className,
 }: {
   chatId: string;
-  input: UseChatHelpers['input'];
-  setInput: UseChatHelpers['setInput'];
-  status: UseChatHelpers['status'];
+  input: string;
+  setInput: Dispatch<SetStateAction<string>>;
+  status: UseChatHelpers<any>['status'];
   stop: () => void;
   messages: Array<UIMessage>;
-  setMessages: UseChatHelpers['setMessages'];
-  append: UseChatHelpers['append'];
-  handleSubmit: UseChatHelpers['handleSubmit'];
+  setMessages: UseChatHelpers<any>['setMessages'];
+  sendMessage: UseChatHelpers<any>['sendMessage'];
   className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -95,7 +94,14 @@ function PureMultimodalInput({
   const submitForm = useCallback(() => {
     window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
 
-    handleSubmit(undefined, {
+    sendMessage({
+      role: 'user',
+      parts: [
+        {
+          type: 'text',
+          text: input,
+        },
+      ],
     });
 
     setLocalStorageInput('');
@@ -105,7 +111,7 @@ function PureMultimodalInput({
       textareaRef.current?.focus();
     }
   }, [
-    handleSubmit,
+    sendMessage,
     setLocalStorageInput,
     width,
     chatId,
@@ -148,7 +154,7 @@ function PureMultimodalInput({
 
       {messages.length === 0 && (
         <SuggestedActions
-          append={append}
+          sendMessage={sendMessage}
           chatId={chatId}
         />
       )}
@@ -213,7 +219,7 @@ function PureStopButton({
   setMessages,
 }: {
   stop: () => void;
-  setMessages: UseChatHelpers['setMessages'];
+  setMessages: UseChatHelpers<any>['setMessages'];
 }) {
   return (
     <Button
@@ -247,7 +253,7 @@ function PureSendButton({
         event.preventDefault();
         submitForm();
       }}
-      disabled={input.length === 0}
+      disabled={!input || input.length === 0}
     >
       <ArrowUpIcon size={14} />
     </Button>

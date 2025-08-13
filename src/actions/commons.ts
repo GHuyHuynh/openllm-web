@@ -31,3 +31,8 @@ export async function deleteTrailingMessages({ id }: { id: string }) {
     timestamp: message.createdAt,
   });
 }
+
+export async function saveChatModelAsCookie(model: string) {
+  // max-age=31536000 is 365 days (1 year)
+  document.cookie = `chat-model=${model}; path=/; max-age=31536000;`;
+}

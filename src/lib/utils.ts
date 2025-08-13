@@ -1,8 +1,16 @@
-import type { CoreAssistantMessage, CoreToolMessage, UIMessage } from 'ai';
+import type {
+  CoreAssistantMessage,
+  CoreToolMessage,
+  UIMessage,
+  UIMessagePart,
+} from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ChatSDKError, type ErrorCode } from '@/lib/errors';
 import { ollamaServerUrl } from '@/lib/constants';
+import type { ChatMessage, ChatTools, CustomUIDataTypes } from '@/lib/types';
+import { type DBMessage } from '@/lib/db/schema';
+import { formatISO } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -51,6 +59,7 @@ export function getLocalStorage(key: string) {
   }
   return [];
 }
+
 // Deprecated -> use uuidv4 from 'uuid' instead
 // export function generateUUID(): string {
 //   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -82,4 +91,22 @@ export function getTrailingMessageId({
 
 export function sanitizeText(text: string) {
   return text.replace('<has_function_call>', '');
+}
+
+export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
+  return messages.map((message) => ({
+    id: message.id,
+    role: message.role as 'user' | 'assistant' | 'system',
+    parts: message.parts as UIMessagePart<CustomUIDataTypes, ChatTools>[],
+    metadata: {
+      createdAt: formatISO(message.createdAt),
+    },
+  }));
+}
+
+export function getTextFromMessage(message: ChatMessage): string {
+  return message.parts
+    .filter((part) => part.type === 'text')
+    .map((part) => part.text)
+    .join('');
 }

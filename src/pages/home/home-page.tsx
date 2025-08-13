@@ -6,17 +6,35 @@ import { DataStreamHandler } from '@/components/core/data-stream-handler';
 export function HomePage() {
   const id = uuidv4();
 
+  const chatModelFromCookie = document.cookie.split('; ').find(row => row.startsWith('chat-model='));
+
+  if (!chatModelFromCookie) {
+    return (
+      <>
+        <Chat
+          key={id}
+          id={id}
+          initialMessages={[]}
+          initialChatModel={DEFAULT_CHAT_MODEL}
+          isReadonly={false}
+          autoResume={false}
+        />
+        <DataStreamHandler />
+      </>
+    );
+  }
+
   return (
     <>
       <Chat
         key={id}
         id={id}
         initialMessages={[]}
-        initialChatModel={DEFAULT_CHAT_MODEL}
+        initialChatModel={chatModelFromCookie}
         isReadonly={false}
         autoResume={false}
       />
-      <DataStreamHandler id={id} />
+      <DataStreamHandler />
     </>
   );
 }
