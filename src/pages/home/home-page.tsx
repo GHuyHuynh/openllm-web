@@ -17,7 +17,6 @@ export function HomePage() {
           initialMessages={[]}
           initialChatModel={DEFAULT_CHAT_MODEL}
           isReadonly={false}
-          autoResume={false}
         />
         <DataStreamHandler />
       </>
@@ -32,7 +31,6 @@ export function HomePage() {
         initialMessages={[]}
         initialChatModel={chatModelFromCookie}
         isReadonly={false}
-        autoResume={false}
       />
       <DataStreamHandler />
     </>

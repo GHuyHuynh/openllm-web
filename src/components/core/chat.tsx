@@ -11,8 +11,7 @@ import { Messages } from '@/components/core/messages';
 import { unstable_serialize } from 'swr/infinite';
 import { createChatHistoryPaginationKeyGetter } from '@/components/core/sidebar-history';
 import { toast } from '@/components/core/toast';
-import { useSearchParams } from 'react-router'
-import { useAutoResume } from '@/hooks/use-auto-resume';
+import { useSearchParams } from 'react-router';
 import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
@@ -23,13 +22,11 @@ export function Chat({
   initialMessages,
   initialChatModel,
   isReadonly,
-  autoResume,
 }: {
   id: string;
   initialMessages: ChatMessage[];
   initialChatModel: string;
   isReadonly: boolean;
-  autoResume: boolean;
 }) {
   const { mutate } = useSWRConfig();
   const userId = useUserId();
