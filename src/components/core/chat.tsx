@@ -58,7 +58,6 @@ export function Chat({
             id,
             message: messages.at(-1),
             selectedChatModel: initialChatModel,
-            selectedVisibilityType: visibilityType,
             ...body,
           },
         };
@@ -68,7 +67,7 @@ export function Chat({
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
     },
     onFinish: () => {
-      mutate(unstable_serialize(getChatHistoryPaginationKey));
+      mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
@@ -87,22 +86,15 @@ export function Chat({
 
   useEffect(() => {
     if (query && !hasAppendedQuery) {
-      append({
-        role: 'user',
-        content: query,
+      sendMessage({
+        role: 'user' as const,
+        parts: [{ type: 'text', text: query }],
       });
 
       setHasAppendedQuery(true);
       window.history.replaceState({}, '', `${BASE_URL}/chat/${id}`);
     }
-  }, [query, append, hasAppendedQuery, id]);
-
-  useAutoResume({
-    autoResume,
-    initialMessages,
-    resumeStream,
-    setMessages,
-  });
+  }, [query, sendMessage, hasAppendedQuery, id]);
 
   return (
     <>
@@ -115,10 +107,11 @@ export function Chat({
         <Messages
           chatId={id}
           status={status}
-          messages={messages as ChatMessage[]}
+          messages={messages}
           setMessages={setMessages}
           regenerate={regenerate}
           isReadonly={isReadonly}
+          isArtifactVisible={false}
         />
 
         <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
@@ -127,12 +120,11 @@ export function Chat({
               chatId={id}
               input={input}
               setInput={setInput}
-              handleSubmit={handleSubmit}
               status={status}
               stop={stop}
               messages={messages}
               setMessages={setMessages}
-              append={append}
+              sendMessage={sendMessage}
             />
           )}
         </form>
