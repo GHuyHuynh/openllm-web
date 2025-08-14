@@ -22,6 +22,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-query": "^5.84.1",
     "ai": "5.0.0-beta.6",
+    "ai-latest": "npm:ai@^5.0.14",
     "class-variance-authority": "^0.7.1",
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",

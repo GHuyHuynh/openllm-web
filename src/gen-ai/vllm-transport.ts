@@ -1,5 +1,5 @@
-import type { ChatTransport, ChatRequestOptions, UIMessage, UIMessageChunk } from 'ai';
-
+import type { UIMessage } from '@ai-sdk/react';
+import type { UIMessageChunk, ChatRequestOptions, ChatTransport } from 'ai-latest';
 
 /**
  * Custom chat transport for vllm backend that implements the ChatTransport interface.
@@ -138,7 +138,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
                   // End the text stream
                   controller.enqueue({
                     type: 'text-end',
-                    messageId,
+                    id: messageId,
                   });
                   controller.close();
                   return;
@@ -153,7 +153,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
                     if (!hasStarted) {
                       controller.enqueue({
                         type: 'text-start',
-                        messageId,
+                        id: messageId,
                       });
                       hasStarted = true;
                     }
@@ -161,8 +161,8 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
                     // Send text delta
                     controller.enqueue({
                       type: 'text-delta',
-                      messageId,
-                      textDelta: delta.content,
+                      id: messageId,
+                      delta: delta.content,
                     });
                   }
                 } catch (parseError) {
@@ -183,7 +183,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
           if (hasStarted) {
             controller.enqueue({
               type: 'text-end',
-              messageId,
+              id: messageId,
             });
           }
           controller.close();
@@ -191,7 +191,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
         } catch (error) {
           controller.enqueue({
             type: 'error',
-            error: error as Error,
+            errorText: (error as Error).message,
           });
           controller.close();
         } finally {
@@ -209,7 +209,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
       start(controller) {
         controller.enqueue({
           type: 'error',
-          error,
+          errorText: error.message,
         });
         controller.close();
       },

@@ -16,6 +16,12 @@ import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
 import { BASE_URL } from '@/constants/constants';
+import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
+
+const vllmTransport = new VLLMChatTransport({
+  baseUrl: 'http://129.173.22.43:30001',
+  model: 'Qwen/Qwen3-0.6B',
+});
 
 export function Chat({
   id,
@@ -44,22 +50,12 @@ export function Chat({
   } = useChat({
     id,
     messages: initialMessages,
-    experimental_throttle: 100,
+    //experimental_throttle: 100,
     generateId: () => uuidv4(),
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      fetch: fetchWithErrorHandlers,
-      prepareSendMessagesRequest({ messages, id, body }) {
-        return {
-          body: {
-            id,
-            message: messages.at(-1),
-            selectedChatModel: initialChatModel,
-            ...body,
-          },
-        };
-      },
-    }),
+    // NOTE: This is a workaround to use the vllm transport with the ai sdk because of the beta
+    // Nothing major because of the tool type mismatch but we dont use tools in this app
+    // @ts-expect-error - tool type mismatch
+    transport: vllmTransport,
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
     },
