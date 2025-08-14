@@ -7,7 +7,7 @@ import type { ChatMessage } from '@/lib/types';
 
 interface SuggestedActionsProps {
   chatId: string;
-  sendMessage: UseChatHelpers<any>['sendMessage'];
+  sendMessage: UseChatHelpers<ChatMessage>['sendMessage'];
 }
 
 function PureSuggestedActions({

@@ -20,6 +20,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ArrowDown } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import { BASE_URL } from '@/constants/constants';
+import type { ChatMessage } from '@/lib/types';
 
 function PureMultimodalInput({
   chatId,
@@ -35,11 +36,11 @@ function PureMultimodalInput({
   chatId: string;
   input: string;
   setInput: Dispatch<SetStateAction<string>>;
-  status: UseChatHelpers<any>['status'];
+  status: UseChatHelpers<ChatMessage>['status'];
   stop: () => void;
-  messages: Array<UIMessage>;
-  setMessages: UseChatHelpers<any>['setMessages'];
-  sendMessage: UseChatHelpers<any>['sendMessage'];
+  messages: Array<ChatMessage>;
+  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
+  sendMessage: UseChatHelpers<ChatMessage>['sendMessage'];
   className?: string;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -219,7 +220,7 @@ function PureStopButton({
   setMessages,
 }: {
   stop: () => void;
-  setMessages: UseChatHelpers<any>['setMessages'];
+  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
 }) {
   return (
     <Button

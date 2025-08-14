@@ -10,10 +10,10 @@ import { useDataStream } from '@/components/core/data-stream-provider';
 
 interface MessagesProps {
   chatId: string;
-  status: UseChatHelpers<any>['status'];
+  status: UseChatHelpers<ChatMessage>['status'];
   messages: ChatMessage[];
-  setMessages: UseChatHelpers<any>['setMessages'];
-  regenerate: UseChatHelpers<any>['regenerate'];
+  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
+  regenerate: UseChatHelpers<ChatMessage>['regenerate'];
   isReadonly: boolean;
   isArtifactVisible: boolean;
 }

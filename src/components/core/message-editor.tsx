@@ -9,16 +9,14 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { deleteTrailingMessages } from '@/lib/db/functions';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import type { UIMessage } from 'ai';
 import type { ChatMessage } from '@/lib/types';
 import { getTextFromMessage } from '@/lib/utils';
 
 export type MessageEditorProps = {
   message: ChatMessage;
   setMode: Dispatch<SetStateAction<'view' | 'edit'>>;
-  // any type here because UseChatHelpers still in beta
-  setMessages: UseChatHelpers<any>['setMessages'];
-  regenerate: UseChatHelpers<any>['regenerate'];
+  setMessages: UseChatHelpers<ChatMessage>['setMessages'];
+  regenerate: UseChatHelpers<ChatMessage>['regenerate'];
 };
 
 export function MessageEditor({
