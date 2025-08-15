@@ -1,11 +1,9 @@
-import { DefaultChatTransport } from 'ai';
 import { type ChatMessage } from '@/lib/types';
 import { useDataStream } from '@/components/core/data-stream-provider';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
 import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/core/chat-header';
-import { fetchWithErrorHandlers } from '@/lib/utils';
 import { MultimodalInput } from '@/components/core/multimodal-input';
 import { Messages } from '@/components/core/messages';
 import { unstable_serialize } from 'swr/infinite';
@@ -20,7 +18,7 @@ import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
 
 const vllmTransport = new VLLMChatTransport({
   baseUrl: 'http://129.173.22.43:30001',
-  model: 'Qwen/Qwen3-0.6B',
+  model: 'Qwen/Qwen2.5-0.5B',
 });
 
 export function Chat({

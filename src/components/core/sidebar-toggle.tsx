@@ -9,10 +9,11 @@ import {
 
 import { SidebarLeftIcon } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export function SidebarToggle({
   className,
-}: ComponentProps<typeof SidebarTrigger>) {
+}: ComponentProps<typeof SidebarTrigger> & { className?: string }) {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -22,7 +23,7 @@ export function SidebarToggle({
           data-testid="sidebar-toggle-button"
           onClick={toggleSidebar}
           variant="outline"
-          className="md:px-2 md:h-fit"
+          className={cn("md:px-2 md:h-fit", className)}
         >
           <SidebarLeftIcon size={16} />
         </Button>

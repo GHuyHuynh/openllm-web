@@ -32,10 +32,10 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
     messages: UIMessage[];
     abortSignal: AbortSignal | undefined;
   } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk>> {
-    
+
     // Convert UI messages to OpenAI format
     const openAIMessages = this.convertToOpenAIMessages(options.messages);
-    
+
     // Prepare the request body for vllm
     const requestBody = {
       model: this.model,
@@ -69,16 +69,17 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
 
       // Convert the SSE stream to UIMessageChunk stream
       return this.convertSSEToUIMessageStream(response.body, options.abortSignal);
-      
+
     } catch (error) {
       // Return an error stream
       return this.createErrorStream(error as Error);
     }
   }
 
-  async reconnectToStream(options: {
-    chatId: string;
-  } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk> | null> {
+  async reconnectToStream(
+    _options: {
+      chatId: string;
+    } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk> | null> {
     // vllm doesn't typically support reconnecting to streams
     // Return null to indicate no active stream to reconnect to
     return null;
@@ -121,19 +122,19 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
         try {
           while (true) {
             const { done, value } = await reader.read();
-            
+
             if (done) break;
-            
+
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
             buffer = lines.pop() || ''; // Keep incomplete line in buffer
 
             for (const line of lines) {
               if (line.trim() === '') continue;
-              
+
               if (line.startsWith('data: ')) {
                 const data = line.slice(6); // Remove 'data: ' prefix
-                
+
                 if (data === '[DONE]') {
                   // End the text stream
                   controller.enqueue({
@@ -147,7 +148,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
                 try {
                   const parsed = JSON.parse(data);
                   const delta = parsed.choices?.[0]?.delta;
-                  
+
                   if (delta?.content) {
                     // Send text-start if this is the first chunk
                     if (!hasStarted) {
@@ -178,7 +179,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
               return;
             }
           }
-          
+
           // If we reach here without seeing [DONE], close gracefully
           if (hasStarted) {
             controller.enqueue({
@@ -187,7 +188,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
             });
           }
           controller.close();
-          
+
         } catch (error) {
           controller.enqueue({
             type: 'error',
