@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useDataStream } from './data-stream-provider';
+import { useDataStream } from '@/components/core/data-stream-provider';
 
 export function DataStreamHandler() {
   const { dataStream } = useDataStream();
