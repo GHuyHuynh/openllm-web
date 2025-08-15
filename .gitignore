@@ -31,3 +31,6 @@ dist-ssr
 
 # Build output
 dalchat
+
+# Claude Code
+CLAUDE.md

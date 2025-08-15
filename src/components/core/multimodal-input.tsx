@@ -104,6 +104,7 @@ function PureMultimodalInput({
       ],
     });
 
+    setInput('');
     setLocalStorageInput('');
     resetHeight();
 
@@ -112,9 +113,11 @@ function PureMultimodalInput({
     }
   }, [
     sendMessage,
+    setInput,
     setLocalStorageInput,
     width,
     chatId,
+    input,
   ]);
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();

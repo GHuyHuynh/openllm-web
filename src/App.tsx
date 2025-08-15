@@ -29,7 +29,7 @@ function Providers({ children }: ProvidersProps) {
         <ErrorBoundary fallback={<div>Error</div>}>
           <Suspense fallback={<div>Loading...</div>}>
             <UserProvider>
-              <SidebarProvider>
+              <SidebarProvider defaultOpen={false}>
                 <BrowserRouter basename={BASE_URL}>
                   <DataStreamProvider>
                     {children}
@@ -54,7 +54,7 @@ function AppContent() {
       <HomePage />
 
       {/* React Query Devtools */}
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
     </>
   )
 }

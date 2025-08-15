@@ -17,8 +17,8 @@ import { BASE_URL } from '@/constants/constants';
 import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
 
 const vllmTransport = new VLLMChatTransport({
-  baseUrl: 'http://129.173.22.43:30001',
-  model: 'Qwen/Qwen2.5-0.5B',
+  baseUrl: 'http://localhost:11434',
+  model: 'smollm2:135m',
 });
 
 export function Chat({
