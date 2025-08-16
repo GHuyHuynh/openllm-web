@@ -11,7 +11,7 @@ export async function generateTitleFromUserMessage({
   message: UIMessage;
 }) {
   const { text: title } = await generateText({
-    model: myProvider.languageModel('chat-model'),
+    model: myProvider.languageModel('title-model'),
     system: `\n
     You are a title generator. Read the user's message and create a short title (2-12 words) that summarizes their question or topic. Respond with ONLY the title text - no JSON, no formatting, no explanations, no quotes.`,
     prompt: JSON.stringify(message),
