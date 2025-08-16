@@ -18,7 +18,7 @@ import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
 
 const vllmTransport = new VLLMChatTransport({
   baseUrl: 'http://localhost:11434',
-  model: 'smollm2:135m',
+  model: 'gemma3:270m',
 });
 
 export function Chat({

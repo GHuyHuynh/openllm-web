@@ -20,6 +20,11 @@ import { ArrowDown } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import { BASE_URL } from '@/constants/constants';
 import type { ChatMessage } from '@/lib/types';
+import { saveChat, saveMessages, getChatById } from '@/lib/db/queries';
+import { generateTitleFromUserMessage } from '@/actions/commons';
+import { useUserId } from '@/hooks/use-user-id';
+import { v4 as uuidv4 } from 'uuid';
+import { ChatSDKError } from '@/lib/errors';
 
 function PureMultimodalInput({
   chatId,
@@ -44,6 +49,7 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const userId = useUserId();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -91,10 +97,11 @@ function PureMultimodalInput({
     adjustHeight();
   };
 
-  const submitForm = useCallback(() => {
+  const submitForm = useCallback(async () => {
     window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
 
-    sendMessage({
+    const userMessage: ChatMessage = {
+      id: uuidv4(),
       role: 'user',
       parts: [
         {
@@ -102,8 +109,9 @@ function PureMultimodalInput({
           text: input,
         },
       ],
-    });
+    };
 
+    sendMessage(userMessage);
     setInput('');
     setLocalStorageInput('');
     resetHeight();
@@ -111,6 +119,43 @@ function PureMultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
+
+    async function saveToDatabase() {
+      try {
+        const existingChat = await getChatById({ id: chatId });
+        if (!existingChat) {
+          const title = await generateTitleFromUserMessage({
+            message: userMessage,
+          });
+          console.log("[MultimodalInput] title: ", title);
+          
+          await saveChat({
+            id: chatId,
+            userId,
+            title,
+          });
+        }
+        else {
+          if (existingChat.userId !== userId) {
+            return new ChatSDKError('forbidden:chat').toResponse();
+          }
+        }
+
+        await saveMessages({
+          messages: [{
+            chatId: chatId,
+            id: userMessage.id,
+            role: 'user',
+            parts: userMessage.parts,
+            createdAt: new Date(),
+          }],
+        });
+      } catch (error) {
+        toast.error('Failed to save message');
+      }
+    };
+
+    saveToDatabase();
   }, [
     sendMessage,
     setInput,
@@ -118,6 +163,7 @@ function PureMultimodalInput({
     width,
     chatId,
     input,
+    userId,
   ]);
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();

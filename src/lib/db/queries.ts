@@ -42,7 +42,7 @@ export async function getChatById({ id }: { id: string }) {
   try {
     const selectedChat = await db.chat.get(id);
     if (!selectedChat) {
-      throw new ChatSDKError('not_found:database', 'Chat not found');
+      return null;
     }
     return selectedChat;
   } catch (error) {
