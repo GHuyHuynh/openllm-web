@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
 import { BASE_URL } from '@/constants/constants';
 import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
+import { saveMessages } from '@/lib/db/queries';
 
 const vllmTransport = new VLLMChatTransport({
   baseUrl: 'http://localhost:11434',
@@ -57,8 +58,18 @@ export function Chat({
     onData: (dataPart) => {
       setDataStream((ds) => (ds ? [...ds, dataPart] : []));
     },
-    onFinish: () => {
+    onFinish: async ({ message }) => {
       mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
+      
+      await saveMessages({
+        messages: [{
+          id: message.id,
+          role: message.role,
+          parts: message.parts,
+          createdAt: new Date(),
+          chatId: id,
+        }],
+      });
     },
     onError: (error) => {
       if (error instanceof ChatSDKError) {
