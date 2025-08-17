@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/icons';
 import { memo } from 'react';
 import { type Chat } from '@/lib/db/schema';
-import { BASE_URL } from '@/constants/constants';
 
 const PureChatItem = ({
   chat,

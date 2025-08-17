@@ -18,13 +18,14 @@ import type { UseChatHelpers } from '@ai-sdk/react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowDown } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
-import { BASE_URL } from '@/constants/constants';
 import type { ChatMessage } from '@/lib/types';
 import { saveChat, saveMessages, getChatById } from '@/lib/db/queries';
 import { generateTitleFromUserMessage } from '@/actions/commons';
 import { useUserId } from '@/hooks/use-user-id';
 import { v4 as uuidv4 } from 'uuid';
 import { ChatSDKError } from '@/lib/errors';
+import { useLocation } from 'react-router';
+import { BASE_URL } from '@/constants/constants';
 
 function PureMultimodalInput({
   chatId,
@@ -50,6 +51,7 @@ function PureMultimodalInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
   const userId = useUserId();
+  const location = useLocation();
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -98,8 +100,6 @@ function PureMultimodalInput({
   };
 
   const submitForm = useCallback(async () => {
-    window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
-
     const userMessage: ChatMessage = {
       id: uuidv4(),
       role: 'user',
@@ -166,6 +166,14 @@ function PureMultimodalInput({
   ]);
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();
+
+  // Update URL after message is sent from homepage
+  useEffect(() => {
+    if (location.pathname === '/' && messages.length > 0) {
+      // Update URL to reflect the chat ID without navigating
+      window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
+    }
+  }, [messages.length, location.pathname, chatId]);
 
   useEffect(() => {
     if (status === 'submitted') {

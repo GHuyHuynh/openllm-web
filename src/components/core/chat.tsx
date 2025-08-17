@@ -94,6 +94,7 @@ export function Chat({
       });
 
       setHasAppendedQuery(true);
+      // Remove query parameter after processing
       window.history.replaceState({}, '', `${BASE_URL}/chat/${id}`);
     }
   }, [query, sendMessage, hasAppendedQuery, id]);
