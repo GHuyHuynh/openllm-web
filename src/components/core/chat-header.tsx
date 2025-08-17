@@ -8,6 +8,7 @@ import { useSidebar } from '@/components/ui/sidebar';
 import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useNavigate } from 'react-router';
 
 interface ChatHeaderProps {
   selectedModelId: string;
@@ -21,7 +22,7 @@ function PureChatHeader({
   isReadonly,
 }: ChatHeaderProps) {
   const { open } = useSidebar();
-
+  const navigate = useNavigate();
   const { width: windowWidth } = useWindowSize();
 
   return (
@@ -35,8 +36,7 @@ function PureChatHeader({
               variant="outline"
               className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
               onClick={() => {
-                //router.push('/');
-                //router.refresh();
+                navigate('/');
               }}
             >
               <PlusIcon />

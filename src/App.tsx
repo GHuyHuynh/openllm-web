@@ -5,8 +5,9 @@
 import { Toaster } from 'sonner';
 import { HomePage } from '@/pages/home/home-page'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { BrowserRouter } from 'react-router'
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { BrowserRouter, Routes, Route } from 'react-router'
+import { ChatPage } from '@/pages/chat/chat-page'
 import { ThemeProvider } from '@/components/ui/theme-provider'
 import { UserProvider } from '@/components/core/user-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -51,7 +52,10 @@ function AppContent() {
       <Toaster position="top-center" />
 
       {/* Main Content */}
-      <HomePage />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/chat/:id" element={<ChatPage />} />
+      </Routes>
 
       {/* React Query Devtools */}
       {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}

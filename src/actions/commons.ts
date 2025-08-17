@@ -18,6 +18,11 @@ export async function generateTitleFromUserMessage({
     prompt: JSON.stringify(message),
   });
 
+  // Fallback to "Untitled" if no title is generated from the title model
+  if (!title) {
+    return "Untitled";
+  }
+
   return title;
 }
 
