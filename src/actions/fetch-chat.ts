@@ -6,7 +6,7 @@ import {
 } from 'ai';
 import { systemPrompt } from '@/gen-ai/prompts';
 import {
-  createStreamId,
+  //createStreamId,
   deleteChatById,
   getChatById,
   getMessagesByChatId,
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
     });
 
     const streamId = uuidv4();
-    await createStreamId({ streamId, chatId: id });
+    //await createStreamId({ streamId, chatId: id });
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
@@ -137,7 +137,7 @@ export async function DELETE(request: Request) {
 
   const chat = await getChatById({ id });
 
-  if (chat.userId !== userId) {
+  if (chat?.userId !== userId) {
     return new ChatSDKError('forbidden:chat').toResponse();
   }
 

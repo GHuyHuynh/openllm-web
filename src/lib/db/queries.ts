@@ -42,7 +42,7 @@ export async function getChatById({ id }: { id: string }) {
   try {
     const selectedChat = await db.chat.get(id);
     if (!selectedChat) {
-      throw new ChatSDKError('not_found:database', 'Chat not found');
+      return null;
     }
     return selectedChat;
   } catch (error) {
@@ -241,30 +241,30 @@ export async function getMessageCountByUserId({
   }
 }
 
-export async function createStreamId({
-  streamId,
-  chatId,
-}: {
-  streamId: string;
-  chatId: string;
-}) {
-  try {
-    return await db.stream.add({
-      id: streamId,
-      chatId,
-      createdAt: new Date(),
-    });
-  } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to create stream id');
-  }
-}
+// export async function createStreamId({
+//   streamId,
+//   chatId,
+// }: {
+//   streamId: string;
+//   chatId: string;
+// }) {
+//   try {
+//     return await db.stream.add({
+//       id: streamId,
+//       chatId,
+//       createdAt: new Date(),
+//     });
+//   } catch (error) {
+//     throw new ChatSDKError('bad_request:database', 'Failed to create stream id');
+//   }
+// }
 
-export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
-  try {
-    const streamIds = await db.stream.where('chatId').equals(chatId).toArray();
-    const returnStreamIds = streamIds.map(stream => stream.id);
-    return returnStreamIds;
-  } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to get stream ids by chat id');
-  }
-}
+// export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
+//   try {
+//     const streamIds = await db.stream.where('chatId').equals(chatId).toArray();
+//     const returnStreamIds = streamIds.map(stream => stream.id);
+//     return returnStreamIds;
+//   } catch (error) {
+//     throw new ChatSDKError('bad_request:database', 'Failed to get stream ids by chat id');
+//   }
+// }
