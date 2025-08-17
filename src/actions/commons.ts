@@ -2,6 +2,7 @@ import { generateText, type UIMessage } from 'ai';
 import {
   deleteMessagesByChatIdAfterTimestamp,
   getMessageById,
+  deleteChatById,
 } from '@/lib/db/queries';
 import { myProvider } from '@/gen-ai/providers';
 
@@ -27,6 +28,10 @@ export async function deleteTrailingMessages({ id }: { id: string }) {
     chatId: message.chatId,
     timestamp: message.createdAt,
   });
+}
+
+export async function deleteChatAction({ id }: { id: string }) {
+  await deleteChatById({ id });
 }
 
 export async function saveChatModelAsCookie(model: string) {

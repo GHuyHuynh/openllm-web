@@ -171,6 +171,7 @@ export async function getMessagesByChatId({
 export async function deleteChatById({ id }: { id: string }) {
   try {
     await db.chat.delete(id);
+    await db.message.where('chatId').equals(id).delete();
   } catch (error) {
     throw new ChatSDKError('bad_request:database', 'Failed to delete chat by id');
   }
