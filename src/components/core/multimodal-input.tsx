@@ -127,8 +127,7 @@ function PureMultimodalInput({
           const title = await generateTitleFromUserMessage({
             message: userMessage,
           });
-          console.log("[MultimodalInput] title: ", title);
-          
+
           await saveChat({
             id: chatId,
             userId,
