@@ -60,7 +60,8 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
       }
 
       if (!response.body) {

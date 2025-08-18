@@ -31,7 +31,19 @@ const PurePreviewMessage = ({
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
 
-  useDataStream();
+  const { dataStream } = useDataStream();
+  
+  // Get streaming content for this message if it's the latest assistant message and is loading
+  const getStreamingContent = () => {
+    if (!isLoading || message.role !== 'assistant') return '';
+    
+    return dataStream
+      .filter(chunk => chunk.type === 'text-delta')
+      .map(chunk => (chunk as any).delta)
+      .join('');
+  };
+  
+  const streamingContent = getStreamingContent();
 
   return (
     <AnimatePresence>
@@ -80,6 +92,11 @@ const PurePreviewMessage = ({
 
               if (type === 'text') {
                 if (mode === 'view') {
+                  // For assistant messages that are loading, combine the existing text with streaming content
+                  const displayText = message.role === 'assistant' && isLoading 
+                    ? part.text + streamingContent 
+                    : part.text;
+                    
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
                       {message.role === 'user' && !isReadonly && (
@@ -107,7 +124,7 @@ const PurePreviewMessage = ({
                             message.role === 'user',
                         })}
                       >
-                        <Markdown>{sanitizeText(part.text)}</Markdown>
+                        <Markdown>{sanitizeText(displayText)}</Markdown>
                       </div>
                     </div>
                   );
@@ -154,7 +171,10 @@ export const PreviewMessage = memo(
       return false;
     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
-    return false;
+    // Always re-render when loading (for streaming updates)
+    if (nextProps.isLoading) return false;
+
+    return true;
   },
 );
 

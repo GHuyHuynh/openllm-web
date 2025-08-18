@@ -18,8 +18,8 @@ import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
 import { saveMessages } from '@/lib/db/queries';
 
 const vllmTransport = new VLLMChatTransport({
-  baseUrl: 'http://localhost:11434',
-  model: 'gemma3:270m',
+  baseUrl: 'http://129.173.22.43:30001',
+  model: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B',
 });
 
 export function Chat({
