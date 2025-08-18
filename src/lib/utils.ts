@@ -7,7 +7,7 @@ import type {
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ChatSDKError, type ErrorCode } from '@/lib/errors';
-import { ollamaServerUrl } from '@/lib/constants';
+import { VLLM_BASE_URL } from '@/constants/constants';
 import type { ChatMessage, ChatTools, CustomUIDataTypes } from '@/lib/types';
 import { type DBMessage } from '@/lib/db/schema';
 import { formatISO } from 'date-fns';
@@ -17,7 +17,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function pingOllama(): Promise<boolean> {
-  return fetch(ollamaServerUrl).then((res) => res.ok);
+  return fetch(VLLM_BASE_URL).then((res) => res.ok);
 }
 
 export const fetcher = async (url: string) => {

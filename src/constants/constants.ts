@@ -1,8 +1,22 @@
-export const VLLM_BASE_URL = 'http://localhost:11434';
-export const DEFAULT_VLLM_MODEL = 'smollm2:135m';
+export const VLLM_BASE_URL = 'http://129.173.22.43:30001';
+export const DEFAULT_VLLM_MODEL = 'gemma3:270m';
+export const DEFAULT_TITLE_MODEL = 'gemma3:270m';
 
-export const BASE_URL = import.meta.env.BASE_URL;
-
-if (BASE_URL === '' || BASE_URL === '/' || BASE_URL === undefined || BASE_URL === null) {
-  throw new Error('BASE_URL is not set');
+function calculateBaseUrl(): string {
+  if (typeof window !== 'undefined') {
+    const pathname = window.location.pathname;
+    
+    const userPathMatch = pathname.match(/^(\/~[^\/]+\/[^\/]+)/);
+    if (userPathMatch) {
+      return userPathMatch[1];
+    }
+    
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return '';
+    }
+  }
+  
+  return '/~huyh/dalchat';
 }
+
+export const BASE_URL = calculateBaseUrl();

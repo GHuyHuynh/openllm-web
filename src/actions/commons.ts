@@ -1,10 +1,11 @@
-import { generateText, type UIMessage } from 'ai';
+import { type UIMessage } from 'ai';
 import {
   deleteMessagesByChatIdAfterTimestamp,
   getMessageById,
   deleteChatById,
 } from '@/lib/db/queries';
-import { myProvider } from '@/gen-ai/providers';
+import { getTitleTransport } from '@/lib/vllm-transport-singleton';
+import { v4 as uuidv4 } from 'uuid';
 
 // Promise cache to prevent duplicate concurrent title generation for the same message
 const titlePromiseCache = new Map<string, Promise<string>>();
@@ -14,11 +15,7 @@ export async function generateTitleFromUserMessage({
 }: {
   message: UIMessage;
 }) {
-  console.log("generateTitleFromUserMessage called for message ID:", message.id);
-  
-  // Check if we already have a promise for this message ID
   if (titlePromiseCache.has(message.id)) {
-    console.log("Returning existing promise for message ID:", message.id);
     return await titlePromiseCache.get(message.id)!;
   }
   
@@ -28,7 +25,6 @@ export async function generateTitleFromUserMessage({
   
   try {
     const result = await titlePromise;
-    console.log("Generated title:", result, "for message ID:", message.id);
     
     // Clean up the promise cache after successful completion
     setTimeout(() => titlePromiseCache.delete(message.id), 5000);
@@ -37,21 +33,60 @@ export async function generateTitleFromUserMessage({
   } catch (error) {
     // Remove failed promise from cache immediately
     titlePromiseCache.delete(message.id);
-    throw error;
+    return "Untitled";
   }
 }
 
 async function generateTitleInternal(message: UIMessage): Promise<string> {
+  try {
+    const transport = getTitleTransport();
+    
+    // Create a system message and user message for title generation
+    const titleMessages = [
+      {
+        id: uuidv4(),
+        role: 'system' as const,
+        parts: [{ 
+          type: 'text' as const, 
+          text: 'You are a title generator. Read the user\'s message and create a short title (2-8 words) that summarizes their question or topic. Respond with ONLY the title text - no JSON, no formatting, no explanations, no quotes.' 
+        }],
+      },
+      {
+        id: uuidv4(),
+        role: 'user' as const,
+        parts: [{ 
+          type: 'text' as const, 
+          text: `Generate a title for this message: ${JSON.stringify(message.parts.filter(p => p.type === 'text').map(p => (p as any).text).join(''))}` 
+        }],
+      }
+    ];
 
-  const { text: title } = await generateText({
-    model: myProvider.languageModel('title-model'),
-    system: `\n
-    You are a title generator. Read the user's message and create a short title (2-12 words) that summarizes their question or topic. Respond with ONLY the title text - no JSON, no formatting, no explanations, no quotes.`,
-    prompt: JSON.stringify(message),
-  });
+    const stream = await transport.sendMessages({
+      trigger: 'submit-message',
+      chatId: 'title-generation',
+      messageId: uuidv4(),
+      messages: titleMessages,
+      abortSignal: undefined,
+    });
 
-  // Fallback to "Untitled" if no title is generated from the title model
-  return title || "Untitled";
+    const reader = stream.getReader();
+    let title = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      if (value.type === 'text-delta') {
+        title += (value as any).textDelta || '';
+      }
+    }
+
+    // Clean up the title and fallback to "Untitled" if empty
+    const cleanTitle = title.trim().replace(/^["']|["']$/g, ''); // Remove quotes
+    return cleanTitle || "Untitled";
+  } catch (error) {
+    return "Untitled";
+  }
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {

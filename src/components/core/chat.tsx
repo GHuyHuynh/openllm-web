@@ -11,7 +11,7 @@ import { useSearchParams } from 'react-router';
 import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
-import { BASE_URL } from '@/constants/constants';
+import { BASE_URL, VLLM_BASE_URL, DEFAULT_VLLM_MODEL } from '@/constants/constants';
 import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
 import { generateTitleFromUserMessage } from '@/actions/commons';
@@ -40,8 +40,8 @@ export function Chat({
   // Create transport with callbacks
   const vllmTransport = useMemo(() => {
     return new VLLMChatTransport({
-      baseUrl: 'http://129.173.22.43:30001',
-      model: 'gemma3:270m',
+      baseUrl: VLLM_BASE_URL,
+      model: DEFAULT_VLLM_MODEL,
       onStreamingUpdate: (messageId: string, content: string) => {
         globalStreamingState.messageId = messageId;
         globalStreamingState.content = content;
@@ -58,8 +58,6 @@ export function Chat({
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   
   const sendMessage = useCallback(async (message: ChatMessage) => {
-    console.log('sendMessage called with message role:', message.role, 'chat ID:', id);
-    
     let currentMessages: ChatMessage[] = [];
     setMessages(prevMessages => {
       currentMessages = [...prevMessages, message];

@@ -6,7 +6,6 @@ import {
 import {
   DEFAULT_CHAT_MODEL,
   DEFAULT_REASONING_MODEL,
-  DEFAULT_TITLE_MODEL,
   vllm,
 } from '@/gen-ai/models';
 
@@ -17,6 +16,5 @@ export const myProvider = customProvider({
       model: vllm(DEFAULT_REASONING_MODEL),
       middleware: extractReasoningMiddleware({ tagName: 'think' }),
     }),
-    'title-model': vllm(DEFAULT_TITLE_MODEL),
   },
 });
