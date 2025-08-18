@@ -1,7 +1,5 @@
 import { type ChatMessage } from '@/lib/types';
-import { useDataStream } from '@/components/core/data-stream-provider';
-import { useChat } from '@ai-sdk/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/core/chat-header';
 import { MultimodalInput } from '@/components/core/multimodal-input';
@@ -17,10 +15,11 @@ import { BASE_URL } from '@/constants/constants';
 import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
 import { saveMessages } from '@/lib/db/queries';
 
-const vllmTransport = new VLLMChatTransport({
-  baseUrl: 'http://129.173.22.43:30001',
-  model: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B',
-});
+export const globalStreamingState = {
+  messageId: '',
+  content: '',
+  isStreaming: false
+};
 
 export function Chat({
   id,
@@ -35,32 +34,33 @@ export function Chat({
 }) {
   const { mutate } = useSWRConfig();
   const userId = useUserId();
-  const { setDataStream } = useDataStream();
-
   const [input, setInput] = useState<string>('');
 
-  const {
-    messages,
-    setMessages,
-    sendMessage,
-    status,
-    stop,
-    regenerate
-  } = useChat({
-    id,
-    messages: initialMessages,
-    //experimental_throttle: 100,
-    generateId: () => uuidv4(),
-    // NOTE: This is a workaround to use the vllm transport with the ai sdk because of the beta
-    // Nothing major because of the tool type mismatch but we dont use tools in this app
-    // @ts-expect-error - tool type mismatch
-    transport: vllmTransport,
-    onData: (dataPart) => {
-      setDataStream((ds) => (ds ? [...ds, dataPart] : []));
-    },
-    onFinish: async ({ message }) => {
-      mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
-      
+  // Create transport with callbacks
+  const vllmTransport = useMemo(() => {
+    return new VLLMChatTransport({
+      baseUrl: 'http://localhost:11434',
+      model: 'gemma3:270m',
+      onStreamingUpdate: (messageId: string, content: string) => {
+        globalStreamingState.messageId = messageId;
+        globalStreamingState.content = content;
+        globalStreamingState.isStreaming = true;
+      },
+      onStreamingEnd: () => {
+        globalStreamingState.isStreaming = false;
+      }
+    });
+  }, []);
+
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>('ready');
+  
+  const sendMessage = async (message: ChatMessage) => {
+    const newMessages = [...messages, message];
+    setMessages(newMessages);
+    setStatus('submitted');
+    
+    try {
       await saveMessages({
         messages: [{
           id: message.id,
@@ -70,17 +70,120 @@ export function Chat({
           chatId: id,
         }],
       });
-    },
-    onError: (error) => {
+    } catch (error) {
+      toast({
+        type: 'error',
+        description: 'Error saving message',
+      });
+    }
+    
+    const assistantMessageId = uuidv4();
+    const assistantMessage: ChatMessage = {
+      id: assistantMessageId,
+      role: 'assistant',
+      parts: [{ type: 'text', text: '' }],
+    };
+    
+    setMessages([...newMessages, assistantMessage]);
+    setStatus('streaming');
+    
+    // Initialize streaming state
+    globalStreamingState.messageId = assistantMessageId;
+    globalStreamingState.content = '';
+    globalStreamingState.isStreaming = true;
+    
+    try {
+      const stream = await vllmTransport.sendMessages({
+        trigger: 'submit-message',
+        chatId: id,
+        messageId: assistantMessageId,
+        messages: newMessages,
+        abortSignal: undefined,
+      });
+      
+      const reader = stream.getReader();
+      let accumulatedContent = '';
+      let lastUpdateTime = 0;
+      const UPDATE_THROTTLE = 1; // Adjust this value to control the update frequency
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        if (value.type === 'text-delta') {
+          // @ts-ignore
+          accumulatedContent += value.textDelta || '';
+          globalStreamingState.content = accumulatedContent;
+          
+          // Throttle UI updates for smoother streaming
+          const now = Date.now();
+          if (now - lastUpdateTime > UPDATE_THROTTLE) {
+            setMessages(current => 
+              current.map(msg => 
+                msg.id === assistantMessageId 
+                  ? { ...msg, parts: [{ type: 'text', text: accumulatedContent }] }
+                  : msg
+              )
+            );
+            lastUpdateTime = now;
+          }
+        }
+      }
+      
+      // Final update to ensure all content is displayed
+      setMessages(current => 
+        current.map(msg => 
+          msg.id === assistantMessageId 
+            ? { ...msg, parts: [{ type: 'text', text: accumulatedContent }] }
+            : msg
+        )
+      );
+      
+      globalStreamingState.isStreaming = false;
+      setStatus('ready');
+      
+      await saveMessages({
+        messages: [
+          {
+            id: assistantMessageId,
+            role: 'assistant',
+            parts: [{ type: 'text', text: accumulatedContent }],
+            createdAt: new Date(),
+            chatId: id,
+          }
+        ],
+      });
+      
+      mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
+      
+    } catch (error) {
+      setStatus('ready');
+      globalStreamingState.isStreaming = false;
+      
       if (error instanceof ChatSDKError) {
         toast({
           type: 'error',
           description: error.message,
         });
       }
-    },
-  });
-
+    }
+  };
+  
+  const stop = () => {
+    setStatus('ready');
+    globalStreamingState.isStreaming = false;
+  };
+  
+  const regenerate = () => {
+    if (messages.length >= 2) {
+      const lastUserMessage = messages[messages.length - 2];
+      if (lastUserMessage.role === 'user') {
+        setMessages(messages.slice(0, -1));
+        sendMessage(lastUserMessage);
+      }
+    }
+  };
+  
   const [searchParams] = useSearchParams();
   const query = searchParams.get('query');
 
@@ -89,12 +192,12 @@ export function Chat({
   useEffect(() => {
     if (query && !hasAppendedQuery) {
       sendMessage({
+        id: uuidv4(),
         role: 'user' as const,
         parts: [{ type: 'text', text: query }],
       });
 
       setHasAppendedQuery(true);
-      // Remove query parameter after processing
       window.history.replaceState({}, '', `${BASE_URL}/chat/${id}`);
     }
   }, [query, sendMessage, hasAppendedQuery, id]);
@@ -112,6 +215,7 @@ export function Chat({
           status={status}
           messages={messages}
           setMessages={setMessages}
+          // @ts-ignore
           regenerate={regenerate}
           isReadonly={isReadonly}
           isArtifactVisible={false}
@@ -127,6 +231,7 @@ export function Chat({
               stop={stop}
               messages={messages}
               setMessages={setMessages}
+              // @ts-ignore
               sendMessage={sendMessage}
             />
           )}

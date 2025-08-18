@@ -79,7 +79,7 @@ export async function POST(request: Request) {
       ],
     });
 
-    const streamId = uuidv4();
+    //const streamId = uuidv4();
     //await createStreamId({ streamId, chatId: id });
 
     const stream = createUIMessageStream({

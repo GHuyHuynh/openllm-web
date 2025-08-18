@@ -15,6 +15,8 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
     model: string;
     apiKey?: string;
     headers?: Record<string, string>;
+    onStreamingUpdate?: (messageId: string, content: string) => void;
+    onStreamingEnd?: () => void;
   }) {
     this.baseUrl = options.baseUrl.replace(/\/+$/, ''); // Remove trailing slashes
     this.model = options.model;
@@ -113,6 +115,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
   ): ReadableStream<UIMessageChunk> {
     const messageId = this.generateId();
     let hasStarted = false;
+    let accumulatedContent = '';
 
     return new ReadableStream<UIMessageChunk>({
       async start(controller) {
@@ -138,10 +141,15 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
 
                 if (data === '[DONE]') {
                   // End the text stream
+                  // @ts-ignore
+                  if (this.onStreamingEnd) {
+                    // @ts-ignore
+                    this.onStreamingEnd();
+                  }
                   controller.enqueue({
                     type: 'text-end',
                     id: messageId,
-                  });
+                  } as UIMessageChunk);
                   controller.close();
                   return;
                 }
@@ -156,16 +164,25 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
                       controller.enqueue({
                         type: 'text-start',
                         id: messageId,
-                      });
+                      } as UIMessageChunk);
                       hasStarted = true;
                     }
 
+                    // Accumulate content and call callback
+                    accumulatedContent += delta.content;
+                    // @ts-ignore
+                    if (this.onStreamingUpdate) {
+                      // @ts-ignore
+                      this.onStreamingUpdate(messageId, accumulatedContent);
+                    }
+
                     // Send text delta
+                    // @ts-ignore
                     controller.enqueue({
                       type: 'text-delta',
                       id: messageId,
-                      delta: delta.content,
-                    });
+                      textDelta: delta.content,
+                    } as UIMessageChunk);
                   }
                 } catch (parseError) {
                   // Skip invalid JSON lines
@@ -183,10 +200,15 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
 
           // If we reach here without seeing [DONE], close gracefully
           if (hasStarted) {
+            // @ts-ignore
+            if (this.onStreamingEnd) {
+              // @ts-ignore
+              this.onStreamingEnd();
+            }
             controller.enqueue({
               type: 'text-end',
               id: messageId,
-            });
+            } as UIMessageChunk);
           }
           controller.close();
 

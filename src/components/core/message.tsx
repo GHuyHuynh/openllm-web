@@ -12,7 +12,6 @@ import { MessageEditor } from '@/components/core/message-editor';
 import { MessageReasoning } from '@/components/core/message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import type { ChatMessage } from '@/lib/types';
-import { useDataStream } from '@/components/core/data-stream-provider';
 
 const PurePreviewMessage = ({
   message,
@@ -30,20 +29,6 @@ const PurePreviewMessage = ({
   requiresScrollPadding: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-
-  const { dataStream } = useDataStream();
-  
-  // Get streaming content for this message if it's the latest assistant message and is loading
-  const getStreamingContent = () => {
-    if (!isLoading || message.role !== 'assistant') return '';
-    
-    return dataStream
-      .filter(chunk => chunk.type === 'text-delta')
-      .map(chunk => (chunk as any).delta)
-      .join('');
-  };
-  
-  const streamingContent = getStreamingContent();
 
   return (
     <AnimatePresence>
@@ -92,10 +77,8 @@ const PurePreviewMessage = ({
 
               if (type === 'text') {
                 if (mode === 'view') {
-                  // For assistant messages that are loading, combine the existing text with streaming content
-                  const displayText = message.role === 'assistant' && isLoading 
-                    ? part.text + streamingContent 
-                    : part.text;
+                  // Just use the text from the message part directly
+                  const displayText = part.text;
                     
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
