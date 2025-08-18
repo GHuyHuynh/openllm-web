@@ -40,7 +40,7 @@ export function Chat({
   // Create transport with callbacks
   const vllmTransport = useMemo(() => {
     return new VLLMChatTransport({
-      baseUrl: 'http://localhost:11434',
+      baseUrl: 'http://129.173.22.43:30001',
       model: 'gemma3:270m',
       onStreamingUpdate: (messageId: string, content: string) => {
         globalStreamingState.messageId = messageId;
