@@ -20,12 +20,13 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import type { Chat } from '@/lib/db/schema';
-import { fetcher } from '@/lib/utils';
 import { ChatItem } from '@/components/core/sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from '@/components/ui/icons';
-import { type GetChatHistoryWithPaginationParams } from '@/actions/history';
+import { type GetChatHistoryWithPaginationParams } from '@/actions/fetch-history';
 import { useUserId } from '@/hooks/use-user-id';
+import { deleteChatAction } from '@/actions/commons';
+import { fetchChatHistory } from '@/actions/fetch-history';
 
 type GroupedChats = {
   today: Chat[];
@@ -78,10 +79,10 @@ const groupChatsByDate = (chats: Chat[]): GroupedChats => {
 function getChatHistoryPaginationKey(
   userId: string,
   pageIndex: number,
-  previousPageData: ChatHistory,
-) {
+  previousPageData: ChatHistory | null,
+): GetChatHistoryWithPaginationParams | null {
   let defaultGetChatHistoryParams: GetChatHistoryWithPaginationParams = {
-    id: userId,
+    userId,
     limit: PAGE_SIZE,
     startingAfter: null,
     endingBefore: null,
@@ -92,6 +93,8 @@ function getChatHistoryPaginationKey(
   }
 
   if (pageIndex === 0) return defaultGetChatHistoryParams;
+
+  if (!previousPageData) return null;
 
   const firstChatFromPage = previousPageData.chats.at(-1);
 
@@ -104,7 +107,7 @@ function getChatHistoryPaginationKey(
 }
 
 export function createChatHistoryPaginationKeyGetter(userId: string) {
-  return (pageIndex: number, previousPageData: ChatHistory) =>
+  return (pageIndex: number, previousPageData: ChatHistory | null) =>
     getChatHistoryPaginationKey(userId, pageIndex, previousPageData);
 }
 
@@ -120,8 +123,8 @@ export function SidebarHistory() {
     isLoading,
     mutate,
   } = useSWRInfinite<ChatHistory>(
-    createChatHistoryPaginationKeyGetter(userId),
-    fetcher,
+    userId ? createChatHistoryPaginationKeyGetter(userId) : () => null,
+    fetchChatHistory,
     {
       fallbackData: [],
     }
@@ -139,11 +142,10 @@ export function SidebarHistory() {
     ? paginatedChatHistories.every((page) => page.chats.length === 0)
     : false;
 
-  // TODO: implement delete chat
   const handleDelete = async () => {
-    const deletePromise = fetch(`/api/chat?id=${deleteId}`, {
-      method: 'DELETE',
-    });
+    if (!deleteId) return;
+
+    const deletePromise = deleteChatAction({ id: deleteId });
 
     toast.promise(deletePromise, {
       loading: 'Deleting chat...',

@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/icons';
 import { memo } from 'react';
 import { type Chat } from '@/lib/db/schema';
-import { BASE_URL } from '@/constants/constants';
 
 const PureChatItem = ({
   chat,
@@ -33,7 +32,7 @@ const PureChatItem = ({
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
-        <Link to={`${BASE_URL}/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
+        <Link to={`/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
           <span>{chat.title}</span>
         </Link>
       </SidebarMenuButton>

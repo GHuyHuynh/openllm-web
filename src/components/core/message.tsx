@@ -12,7 +12,6 @@ import { MessageEditor } from '@/components/core/message-editor';
 import { MessageReasoning } from '@/components/core/message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import type { ChatMessage } from '@/lib/types';
-import { useDataStream } from '@/components/core/data-stream-provider';
 
 const PurePreviewMessage = ({
   message,
@@ -30,8 +29,6 @@ const PurePreviewMessage = ({
   requiresScrollPadding: boolean;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
-
-  useDataStream();
 
   return (
     <AnimatePresence>
@@ -80,6 +77,9 @@ const PurePreviewMessage = ({
 
               if (type === 'text') {
                 if (mode === 'view') {
+                  // Just use the text from the message part directly
+                  const displayText = part.text;
+                    
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
                       {message.role === 'user' && !isReadonly && (
@@ -107,7 +107,7 @@ const PurePreviewMessage = ({
                             message.role === 'user',
                         })}
                       >
-                        <Markdown>{sanitizeText(part.text)}</Markdown>
+                        <Markdown>{sanitizeText(displayText)}</Markdown>
                       </div>
                     </div>
                   );
@@ -154,7 +154,10 @@ export const PreviewMessage = memo(
       return false;
     if (!equal(prevProps.message.parts, nextProps.message.parts)) return false;
 
-    return false;
+    // Always re-render when loading (for streaming updates)
+    if (nextProps.isLoading) return false;
+
+    return true;
   },
 );
 
