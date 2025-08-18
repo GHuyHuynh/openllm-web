@@ -1,5 +1,5 @@
 import { type ChatMessage } from '@/lib/types';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/core/chat-header';
 import { MultimodalInput } from '@/components/core/multimodal-input';
@@ -57,9 +57,14 @@ export function Chat({
   const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>('ready');
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   
-  const sendMessage = async (message: ChatMessage) => {
-    const newMessages = [...messages, message];
-    setMessages(newMessages);
+  const sendMessage = useCallback(async (message: ChatMessage) => {
+    console.log('sendMessage called with message role:', message.role, 'chat ID:', id);
+    
+    let currentMessages: ChatMessage[] = [];
+    setMessages(prevMessages => {
+      currentMessages = [...prevMessages, message];
+      return currentMessages;
+    });
     setStatus('submitted');
     
     try {
@@ -107,7 +112,7 @@ export function Chat({
       parts: [{ type: 'text', text: '' }],
     };
     
-    setMessages([...newMessages, assistantMessage]);
+    setMessages(prev => [...prev, assistantMessage]);
     setStatus('streaming');
     
     // Initialize streaming state
@@ -120,7 +125,7 @@ export function Chat({
         trigger: 'submit-message',
         chatId: id,
         messageId: assistantMessageId,
-        messages: newMessages,
+        messages: currentMessages,
         abortSignal: undefined,
       });
       
@@ -190,7 +195,7 @@ export function Chat({
         });
       }
     }
-  };
+  }, [id, userId, isCreatingChat, vllmTransport, mutate]);
   
   const stop = () => {
     setStatus('ready');

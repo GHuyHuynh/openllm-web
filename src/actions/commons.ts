@@ -6,13 +6,42 @@ import {
 } from '@/lib/db/queries';
 import { myProvider } from '@/gen-ai/providers';
 
+// Promise cache to prevent duplicate concurrent title generation for the same message
+const titlePromiseCache = new Map<string, Promise<string>>();
+
 export async function generateTitleFromUserMessage({
   message,
 }: {
   message: UIMessage;
 }) {
+  console.log("generateTitleFromUserMessage called for message ID:", message.id);
+  
+  // Check if we already have a promise for this message ID
+  if (titlePromiseCache.has(message.id)) {
+    console.log("Returning existing promise for message ID:", message.id);
+    return await titlePromiseCache.get(message.id)!;
+  }
+  
+  // Create and cache the promise
+  const titlePromise = generateTitleInternal(message);
+  titlePromiseCache.set(message.id, titlePromise);
+  
+  try {
+    const result = await titlePromise;
+    console.log("Generated title:", result, "for message ID:", message.id);
+    
+    // Clean up the promise cache after successful completion
+    setTimeout(() => titlePromiseCache.delete(message.id), 5000);
+    
+    return result;
+  } catch (error) {
+    // Remove failed promise from cache immediately
+    titlePromiseCache.delete(message.id);
+    throw error;
+  }
+}
 
-  console.log("This called");
+async function generateTitleInternal(message: UIMessage): Promise<string> {
 
   const { text: title } = await generateText({
     model: myProvider.languageModel('title-model'),
@@ -22,11 +51,7 @@ export async function generateTitleFromUserMessage({
   });
 
   // Fallback to "Untitled" if no title is generated from the title model
-  if (!title) {
-    return "Untitled";
-  }
-
-  return title;
+  return title || "Untitled";
 }
 
 export async function deleteTrailingMessages({ id }: { id: string }) {
