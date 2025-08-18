@@ -34,7 +34,12 @@ export async function saveChat({
       title,
     });
   } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to save chat');
+    // If the chat already exists, that's okay - just return success
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'ConstraintError') {
+      return; // Chat already exists, which is fine
+    }
+    console.error('Database error in saveChat:', error);
+    throw new ChatSDKError('bad_request:database', `Failed to save chat: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

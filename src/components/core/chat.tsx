@@ -13,7 +13,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
 import { BASE_URL } from '@/constants/constants';
 import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
-import { saveMessages } from '@/lib/db/queries';
+import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
+import { generateTitleFromUserMessage } from '@/actions/commons';
 
 export const globalStreamingState = {
   messageId: '',
@@ -54,6 +55,7 @@ export function Chat({
 
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>('ready');
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
   
   const sendMessage = async (message: ChatMessage) => {
     const newMessages = [...messages, message];
@@ -61,6 +63,27 @@ export function Chat({
     setStatus('submitted');
     
     try {
+      // Check if this is the first message by checking if chat exists
+      const existingChat = await getChatById({ id });
+      
+      if (!existingChat && message.role === 'user' && !isCreatingChat) {
+        setIsCreatingChat(true);
+        
+        try {
+          const title = await generateTitleFromUserMessage({
+            message,
+          });
+          
+          await saveChat({
+            id,
+            userId,
+            title,
+          });
+        } finally {
+          setIsCreatingChat(false);
+        }
+      }
+      
       await saveMessages({
         messages: [{
           id: message.id,

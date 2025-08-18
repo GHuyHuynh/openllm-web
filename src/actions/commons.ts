@@ -11,6 +11,9 @@ export async function generateTitleFromUserMessage({
 }: {
   message: UIMessage;
 }) {
+
+  console.log("This called");
+
   const { text: title } = await generateText({
     model: myProvider.languageModel('title-model'),
     system: `\n

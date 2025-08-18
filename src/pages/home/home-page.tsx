@@ -8,12 +8,14 @@ import { useLocation } from 'react-router';
 export function HomePage() {
   const location = useLocation();
   const [chatKey, setChatKey] = useState(() => uuidv4());
-  const [chatId] = useState(() => uuidv4());
+  const [chatId, setChatId] = useState(() => uuidv4());
 
-  // Reset chat when URL changes back to root (New Chat button clicked)
+  // Reset chat when URL changes back to root
   useEffect(() => {
     if (location.pathname === '/') {
-      setChatKey(uuidv4());
+      const newId = uuidv4();
+      setChatKey(newId);
+      setChatId(newId);
     }
   }, [location.pathname, location.key]); // location.key changes on navigation
 
