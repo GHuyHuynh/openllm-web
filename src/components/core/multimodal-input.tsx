@@ -61,7 +61,8 @@ function PureMultimodalInput({
   const adjustHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight + 2}px`;
+      const newHeight = Math.max(textareaRef.current.scrollHeight + 2, 98);
+      textareaRef.current.style.height = `${newHeight}px`;
     }
   };
 
