@@ -1,11 +1,8 @@
 /**
  * Main Layout Component
  */
-
 import { Toaster } from 'sonner';
 import { HomePage } from '@/pages/home/home-page'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { ChatPage } from '@/pages/chat/chat-page'
 import { ThemeProvider } from '@/components/ui/theme-provider'
@@ -17,8 +14,6 @@ import { AppSidebar } from '@/components/core/app-sidebar';
 import { BASE_URL } from '@/constants/constants';
 import { DataStreamProvider } from '@/components/core/data-stream-provider';
 
-const queryClient = new QueryClient();
-
 interface ProvidersProps {
   children: ReactNode;
 }
@@ -26,21 +21,19 @@ interface ProvidersProps {
 function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <ErrorBoundary fallback={<div>Error</div>}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <UserProvider>
-              <SidebarProvider defaultOpen={false}>
-                <BrowserRouter basename={BASE_URL}>
-                  <DataStreamProvider>
-                    {children}
-                  </DataStreamProvider>
-                </BrowserRouter>
-              </SidebarProvider>
-            </UserProvider>
-          </Suspense>
-        </ErrorBoundary>
-      </QueryClientProvider>
+      <ErrorBoundary fallback={<div>Error</div>}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <UserProvider>
+            <SidebarProvider defaultOpen={false}>
+              <BrowserRouter basename={BASE_URL}>
+                <DataStreamProvider>
+                  {children}
+                </DataStreamProvider>
+              </BrowserRouter>
+            </SidebarProvider>
+          </UserProvider>
+        </Suspense>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 }
@@ -56,9 +49,6 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/chat/:id" element={<ChatPage />} />
       </Routes>
-
-      {/* React Query Devtools */}
-      {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
     </>
   )
 }
