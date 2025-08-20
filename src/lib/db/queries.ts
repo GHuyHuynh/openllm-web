@@ -38,7 +38,6 @@ export async function saveChat({
     if (error && typeof error === 'object' && 'name' in error && error.name === 'ConstraintError') {
       return; // Chat already exists, which is fine
     }
-    console.error('Database error in saveChat:', error);
     throw new ChatSDKError('bad_request:database', `Failed to save chat: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
@@ -246,31 +245,3 @@ export async function getMessageCountByUserId({
     throw new ChatSDKError('bad_request:database', 'Failed to get message count by user id');
   }
 }
-
-// export async function createStreamId({
-//   streamId,
-//   chatId,
-// }: {
-//   streamId: string;
-//   chatId: string;
-// }) {
-//   try {
-//     return await db.stream.add({
-//       id: streamId,
-//       chatId,
-//       createdAt: new Date(),
-//     });
-//   } catch (error) {
-//     throw new ChatSDKError('bad_request:database', 'Failed to create stream id');
-//   }
-// }
-
-// export async function getStreamIdsByChatId({ chatId }: { chatId: string }) {
-//   try {
-//     const streamIds = await db.stream.where('chatId').equals(chatId).toArray();
-//     const returnStreamIds = streamIds.map(stream => stream.id);
-//     return returnStreamIds;
-//   } catch (error) {
-//     throw new ChatSDKError('bad_request:database', 'Failed to get stream ids by chat id');
-//   }
-// }

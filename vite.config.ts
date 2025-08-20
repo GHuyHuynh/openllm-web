@@ -6,8 +6,8 @@ import { defineConfig } from "vite"
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  // Set base for Dal Server
-  base: "/~huyh/dalchat",
+  // Base URL is now handled dynamically in the app
+  // Keep build output directory for Dal Server deployment
   build: {
     outDir: 'dalchat' // Set build output directory name
   },

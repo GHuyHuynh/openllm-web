@@ -1,0 +1,15 @@
+import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
+import { VLLM_BASE_URL, DEFAULT_TITLE_MODEL } from '@/constants/constants';
+
+// Shared transport instance for title generation
+let titleTransport: VLLMChatTransport | null = null;
+
+export function getTitleTransport(): VLLMChatTransport {
+  if (!titleTransport) {
+    titleTransport = new VLLMChatTransport({
+      baseUrl: VLLM_BASE_URL,
+      model: DEFAULT_TITLE_MODEL,
+    });
+  }
+  return titleTransport;
+}
