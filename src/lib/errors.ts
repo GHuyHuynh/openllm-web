@@ -15,7 +15,8 @@ export type Surface =
   | 'history'
   | 'vote'
   | 'document'
-  | 'suggestions';
+  | 'suggestions'
+  | 'model';
 
 export type ErrorCode = `${ErrorType}:${Surface}`;
 
@@ -31,6 +32,7 @@ export const visibilityBySurface: Record<Surface, ErrorVisibility> = {
   vote: 'response',
   document: 'response',
   suggestions: 'response',
+  model: 'response',
 };
 
 export class ChatSDKError extends Error {
@@ -106,6 +108,11 @@ export function getMessageByErrorCode(errorCode: ErrorCode): string {
       return 'You need to sign in to view this document. Please sign in and try again.';
     case 'bad_request:document':
       return 'The request to create or update the document was invalid. Please check your input and try again.';
+
+    case 'not_found:model':
+      return 'The AI model you are trying to use does not exist. Please try selecting a different model.';
+    case 'not_found:api':
+      return 'The requested API endpoint was not found. Please check your configuration.';
 
     default:
       return 'Something went wrong. Please try again later.';

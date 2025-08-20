@@ -1,7 +1,7 @@
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'motion/react';
 import { memo, useState } from 'react';
-import { PencilEditIcon, SparklesIcon } from '@/components/ui/icons';
+import { PencilEditIcon, SparklesIcon, WarningIcon } from '@/components/ui/icons';
 import { Markdown } from '@/components/core/markdown';
 import { MessageActions } from '@/components/core/message-actions';
 import equal from 'fast-deep-equal';
@@ -49,9 +49,19 @@ const PurePreviewMessage = ({
           )}
         >
           {message.role === 'assistant' && (
-            <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background">
+            <div className={cn(
+              "size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background",
+              {
+                'bg-red-100 dark:bg-red-900/30 ring-red-300 dark:ring-red-700 text-red-600 dark:text-red-400': 
+                  message.parts?.some(part => part.type === 'text' && part.text.startsWith('[ERROR_MESSAGE]'))
+              }
+            )}>
               <div className="translate-y-px">
-                <SparklesIcon size={14} />
+                {message.parts?.some(part => part.type === 'text' && part.text.startsWith('[ERROR_MESSAGE]')) ? (
+                  <WarningIcon size={14} />
+                ) : (
+                  <SparklesIcon size={14} />
+                )}
               </div>
             </div>
           )}
@@ -105,9 +115,17 @@ const PurePreviewMessage = ({
                         className={cn('flex flex-col gap-4', {
                           'bg-primary text-primary-foreground px-3 py-2 rounded-xl':
                             message.role === 'user',
+                          'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-red-500 dark:border-l-red-400 border border-red-200 dark:border-red-800 px-4 py-3 rounded-lg shadow-sm':
+                            message.role === 'assistant' && displayText.startsWith('[ERROR_MESSAGE]'),
                         })}
                       >
-                        <Markdown>{sanitizeText(displayText)}</Markdown>
+                        <Markdown>
+                          {sanitizeText(
+                            displayText.startsWith('[ERROR_MESSAGE]') 
+                              ? displayText.replace('[ERROR_MESSAGE] ', '') 
+                              : displayText
+                          )}
+                        </Markdown>
                       </div>
                     </div>
                   );

@@ -9,21 +9,21 @@ const components: Partial<Components> = {
   pre: ({ children }) => <>{children}</>,
   ol: ({ node, children, ...props }) => {
     return (
-      <ol className="list-decimal list-outside ml-4" {...props}>
+      <ol className="list-decimal list-outside ml-4 space-y-1" {...props}>
         {children}
       </ol>
     );
   },
   li: ({ node, children, ...props }) => {
     return (
-      <li className="py-1" {...props}>
+      <li className="py-0.5" {...props}>
         {children}
       </li>
     );
   },
   ul: ({ node, children, ...props }) => {
     return (
-      <ul className="list-decimal list-outside ml-4" {...props}>
+      <ul className="list-disc list-outside ml-4 space-y-1" {...props}>
         {children}
       </ul>
     );
