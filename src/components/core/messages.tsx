@@ -1,5 +1,5 @@
-import { PreviewMessage, ThinkingMessage } from './message';
-import { Greeting } from './greeting';
+import { PreviewMessage, ThinkingMessage } from '@/components/core/message';
+import { Greeting } from '@/components/core/greeting';
 import { memo } from 'react';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';

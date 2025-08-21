@@ -64,3 +64,10 @@ export function WaveLoader({
   )
 }
 
+export function WaveLoaderScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <WaveLoader bars={5} message="Loading application..." />
+    </div>
+  )
+}

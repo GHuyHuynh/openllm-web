@@ -16,7 +16,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { AppSidebar } from '@/components/core/app-sidebar';
 import { BASE_URL } from '@/constants/constants';
 import { DataStreamProvider } from '@/components/core/data-stream-provider';
-import { WaveLoader } from './components/ui/wave-loader';
+import { WaveLoaderScreen } from '@/components/ui/wave-loader';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -30,13 +30,9 @@ function Providers({ children }: ProvidersProps) {
           <ErrorPage error={error} resetError={resetErrorBoundary} />
         )}
       >
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <WaveLoader bars={5} message="Loading application..." />
-          </div>
-        }>
+        <Suspense fallback={<WaveLoaderScreen />}>
           <UserProvider>
-            <SidebarProvider defaultOpen={true}>
+            <SidebarProvider defaultOpen={false}>
               <BrowserRouter basename={BASE_URL}>
                 <DataStreamProvider>
                   {children}
