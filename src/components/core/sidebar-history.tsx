@@ -1,6 +1,6 @@
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { useParams, useNavigate } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import {
@@ -111,7 +111,7 @@ export function createChatHistoryPaginationKeyGetter(userId: string) {
     getChatHistoryPaginationKey(userId, pageIndex, previousPageData);
 }
 
-export function SidebarHistory() {
+export function SidebarHistory({ onRefreshNeeded }: { onRefreshNeeded?: (refreshFn: () => void) => void }) {
   const { setOpenMobile } = useSidebar();
   const { id } = useParams();
   const userId = useUserId();
@@ -129,6 +129,15 @@ export function SidebarHistory() {
       fallbackData: [],
     }
   );
+
+  // Expose the mutate function for external refresh
+  useEffect(() => {
+    if (onRefreshNeeded) {
+      onRefreshNeeded(() => {
+        mutate();
+      });
+    }
+  }, [mutate, onRefreshNeeded]);
 
   const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
