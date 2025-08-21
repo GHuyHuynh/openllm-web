@@ -4,6 +4,9 @@ import { DataStreamHandler } from '@/components/core/data-stream-handler';
 import { useChatMessages } from '@/hooks/use-chat-messages';
 import { DEFAULT_CHAT_MODEL } from '@/gen-ai/models';
 import { validate as uuidValidate } from 'uuid';
+import { ChatNotFoundPage } from '@/pages/error/chat-not-found-page';
+import { ErrorPage } from '@/pages/error/error-page';
+import { WaveLoader } from '@/components/ui/wave-loader';
 
 export function ChatPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,17 +25,13 @@ export function ChatPage() {
   if (isLoading) {
     return (
       <div className="flex flex-col min-w-0 h-dvh bg-background items-center justify-center">
-        <div className="text-muted-foreground">Loading chat...</div>
+        <WaveLoader bars={5} message="Loading chat..." />
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="flex flex-col min-w-0 h-dvh bg-background items-center justify-center">
-        <div className="text-destructive">Error loading chat</div>
-      </div>
-    );
+    return <ErrorPage error={error} />;
   }
 
   // Check if this is a valid UUID format (indicating a new chat that may not be saved yet)
@@ -40,22 +39,12 @@ export function ChatPage() {
   
   if (!chatExists && !isLoading) {
     // If it's a valid UUID, it might be a new chat - allow it to proceed
-    // If it's not a valid UUID, redirect to home
+    // If it's not a valid UUID, show chat not found page
     if (!isValidUUID) {
-      window.location.href = '/';
-      return null;
+      return <ChatNotFoundPage />;
     }
     // For valid UUIDs that don't exist in DB yet, proceed with empty messages
     // The chat will be created when the first message is sent
-  }
-
-  if (!chatExists) {
-    // TODO: Handle the UI
-    return (
-      <div className="flex flex-col min-w-0 h-dvh bg-background items-center justify-center">
-        <div className="text-destructive">Chat not found</div>
-      </div>
-    );
   }
 
   return (
