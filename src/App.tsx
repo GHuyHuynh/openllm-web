@@ -38,16 +38,29 @@ function Providers({ children }: ProvidersProps) {
   );
 }
 
+// Layout component that includes sidebar and main content
+function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <AppSidebar />
+      <SidebarInset>
+        {children}
+      </SidebarInset>
+    </>
+  );
+}
+
 function AppContent() {
   return (
     <>
       {/* Toaster */}
       <Toaster position="top-center" />
-
-      {/* Main Content */}
+      
+      {/* Routes with Layout */}
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/chat/:id" element={<ChatPage />} />
+        <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
+        <Route path="/chat/:id" element={<AppLayout><ChatPage /></AppLayout>} />
+        <Route path="*" element={<AppLayout><HomePage /></AppLayout>} />
       </Routes>
     </>
   )
@@ -56,10 +69,7 @@ function AppContent() {
 function App() {
   return (
     <Providers>
-      <AppSidebar />
-      <SidebarInset>
-        <AppContent />
-      </SidebarInset>
+      <AppContent />
     </Providers>
   )
 }
