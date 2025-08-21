@@ -62,6 +62,7 @@ function AppContent() {
         <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
         <Route path="/chat/:id" element={<AppLayout><ChatPage /></AppLayout>} />
         <Route path="*" element={<AppLayout><HomePage /></AppLayout>} />
+        <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
       </Routes>
     </>
   )
