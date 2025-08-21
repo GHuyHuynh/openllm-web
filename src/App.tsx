@@ -17,6 +17,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { AppSidebar } from '@/components/core/app-sidebar';
 import { BASE_URL } from '@/constants/constants';
 import { DataStreamProvider } from '@/components/core/data-stream-provider';
+import { WaveLoader } from './components/ui/wave-loader';
 
 const queryClient = new QueryClient();
 
@@ -29,7 +30,11 @@ function Providers({ children }: ProvidersProps) {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <ErrorBoundary fallback={<div>Error</div>}>
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <WaveLoader bars={5} message="Loading application..." />
+            </div>
+          }>
             <UserProvider>
               <SidebarProvider defaultOpen={false}>
                 <BrowserRouter basename={BASE_URL}>
