@@ -19,9 +19,6 @@ import { AnimatePresence, motion } from 'motion/react';
 import { ArrowDown } from 'lucide-react';
 import { useScrollToBottom } from '@/hooks/use-scroll-to-bottom';
 import type { ChatMessage } from '@/lib/types';
-import { saveChat, getChatById } from '@/lib/db/queries';
-import { generateTitleFromUserMessage } from '@/actions/commons';
-import { useUserId } from '@/hooks/use-user-id';
 import { v4 as uuidv4 } from 'uuid';
 import { useLocation } from 'react-router';
 import { BASE_URL } from '@/constants/constants';
@@ -49,7 +46,6 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-  const userId = useUserId();
   const location = useLocation();
 
   useEffect(() => {
@@ -119,37 +115,12 @@ function PureMultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-
-    // Chat saving is now handled by the chat component
-    // Just handle chat creation if needed
-    async function createChatIfNeeded() {
-      try {
-        const existingChat = await getChatById({ id: chatId });
-        if (!existingChat) {
-          const title = await generateTitleFromUserMessage({
-            message: userMessage,
-          });
-
-          await saveChat({
-            id: chatId,
-            userId,
-            title,
-          });
-        }
-      } catch (error) {
-        toast.error('Error creating chat');
-      }
-    };
-
-    createChatIfNeeded();
   }, [
     sendMessage,
     setInput,
     setLocalStorageInput,
     width,
-    chatId,
     input,
-    userId,
   ]);
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();

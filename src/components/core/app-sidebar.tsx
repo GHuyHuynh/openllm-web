@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router';
-
 import { PlusIcon } from '@/components/ui/icons';
 import { SidebarHistory } from '@/components/core/sidebar-history';
 import { Button } from '@/components/ui/button';
@@ -12,10 +11,12 @@ import {
 } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Link } from 'react-router';
+import { useUserId } from '@/hooks/use-user-id';
 
 export function AppSidebar() {
   const navigate = useNavigate();
   const { setOpenMobile } = useSidebar();
+  const userId = useUserId();
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -53,7 +54,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarHistory />
+        <SidebarHistory userId={userId} />
       </SidebarContent>
     </Sidebar>
   );

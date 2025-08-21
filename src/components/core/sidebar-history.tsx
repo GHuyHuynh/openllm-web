@@ -1,6 +1,6 @@
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
-import { useParams, useNavigate } from 'react-router';
-import { useState } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import {
@@ -24,7 +24,6 @@ import { ChatItem } from '@/components/core/sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from '@/components/ui/icons';
 import { type GetChatHistoryWithPaginationParams } from '@/actions/fetch-history';
-import { useUserId } from '@/hooks/use-user-id';
 import { deleteChatAction } from '@/actions/commons';
 import { fetchChatHistory } from '@/actions/fetch-history';
 
@@ -111,10 +110,53 @@ export function createChatHistoryPaginationKeyGetter(userId: string) {
     getChatHistoryPaginationKey(userId, pageIndex, previousPageData);
 }
 
-export function SidebarHistory() {
+export function SidebarHistory({ userId }: { userId: string }) {
   const { setOpenMobile } = useSidebar();
   const { id } = useParams();
-  const userId = useUserId();
+  const location = useLocation();
+  const [currentActiveId, setCurrentActiveId] = useState<string | null>(null);
+
+  // Handle all URL changes
+  useEffect(() => {
+    const updateActiveId = () => {
+      const currentPath = window.location.pathname;
+      const isOnChatRoute = currentPath.includes('/chat/');
+      
+      if (isOnChatRoute) {
+        const urlParts = currentPath.split('/chat/');
+        const chatIdFromWindow = urlParts[1]?.split('?')[0];
+        const activeId = id || chatIdFromWindow;
+        setCurrentActiveId(activeId || null);
+      } else {
+        setCurrentActiveId(null);
+      }
+    };
+
+    updateActiveId();
+
+    // Override history methods to detect URL changes
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+    
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+      updateActiveId();
+    };
+    
+    window.history.replaceState = function(...args) {
+      originalReplaceState.apply(window.history, args);
+      updateActiveId();
+    };
+    
+    // Handle browser back/forward
+    window.addEventListener('popstate', updateActiveId);
+    
+    return () => {
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+      window.removeEventListener('popstate', updateActiveId);
+    };
+  }, [id, location.pathname]);
 
   const {
     data: paginatedChatHistories,
@@ -145,6 +187,7 @@ export function SidebarHistory() {
   const handleDelete = async () => {
     if (!deleteId) return;
 
+    const shouldNavigate = deleteId === currentActiveId;
     const deletePromise = deleteChatAction({ id: deleteId });
 
     toast.promise(deletePromise, {
@@ -159,16 +202,16 @@ export function SidebarHistory() {
           }
         });
 
+        if (shouldNavigate) {
+          navigate('/');
+        }
+
         return 'Chat deleted successfully';
       },
       error: 'Failed to delete chat',
     });
 
     setShowDeleteDialog(false);
-
-    if (deleteId === id) {
-      navigate('/');
-    }
   };
 
   if (isLoading) {
@@ -236,7 +279,7 @@ export function SidebarHistory() {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === id}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -256,7 +299,7 @@ export function SidebarHistory() {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === id}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -276,7 +319,7 @@ export function SidebarHistory() {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === id}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -296,7 +339,7 @@ export function SidebarHistory() {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === id}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -316,7 +359,7 @@ export function SidebarHistory() {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === id}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
