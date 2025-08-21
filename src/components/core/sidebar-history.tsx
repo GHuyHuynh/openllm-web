@@ -1,6 +1,6 @@
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { useParams, useNavigate, useLocation } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import {
@@ -114,8 +114,53 @@ export function SidebarHistory({ userId }: { userId: string }) {
   const { setOpenMobile } = useSidebar();
   const { id } = useParams();
   const location = useLocation();
-  const isOnChatRoute = location.pathname.includes('/chat/');
-  const activeId = isOnChatRoute ? id : null;
+  const [currentActiveId, setCurrentActiveId] = useState<string | null>(null);
+
+  const updateActiveIdFromURL = useCallback(() => {
+    const currentPath = window.location.pathname;
+    
+    const isOnChatRoute = currentPath.includes('/chat/');
+    
+    if (isOnChatRoute) {
+      const urlParts = currentPath.split('/chat/');
+      const chatIdFromWindow = urlParts[1]?.split('?')[0];
+      const activeId = id || chatIdFromWindow;
+      setCurrentActiveId(activeId || null);
+    } else {
+      setCurrentActiveId(null);
+    }
+  }, [id, location.pathname]);
+
+  useEffect(() => {
+    updateActiveIdFromURL();
+  }, [updateActiveIdFromURL]);
+
+  useEffect(() => {
+    const originalPushState = window.history.pushState;
+    const originalReplaceState = window.history.replaceState;
+    
+    const handleURLChange = () => {
+      setTimeout(updateActiveIdFromURL, 0);
+    };
+    
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+      handleURLChange();
+    };
+    
+    window.history.replaceState = function(...args) {
+      originalReplaceState.apply(window.history, args);
+      handleURLChange();
+    };
+    
+    window.addEventListener('popstate', handleURLChange);
+    
+    return () => {
+      window.history.pushState = originalPushState;
+      window.history.replaceState = originalReplaceState;
+      window.removeEventListener('popstate', handleURLChange);
+    };
+  }, [updateActiveIdFromURL]);
 
   const {
     data: paginatedChatHistories,
@@ -146,7 +191,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
   const handleDelete = async () => {
     if (!deleteId) return;
 
-    const shouldNavigate = deleteId === activeId;
+    const shouldNavigate = deleteId === currentActiveId;
     const deletePromise = deleteChatAction({ id: deleteId });
 
     toast.promise(deletePromise, {
@@ -238,7 +283,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === activeId}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -258,7 +303,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === activeId}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -278,7 +323,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === activeId}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -298,7 +343,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === activeId}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);
@@ -318,7 +363,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
                           <ChatItem
                             key={chat.id}
                             chat={chat}
-                            isActive={chat.id === activeId}
+                            isActive={chat.id === currentActiveId}
                             onDelete={(chatId) => {
                               setDeleteId(chatId);
                               setShowDeleteDialog(true);

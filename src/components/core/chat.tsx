@@ -82,6 +82,9 @@ export function Chat({
             userId,
             title,
           });
+          
+          // Refresh sidebar after title generation and chat creation
+          mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
         } finally {
           setIsCreatingChat(false);
         }
@@ -110,7 +113,6 @@ export function Chat({
     try {
       // First, try to make the API call - don't create assistant message until we know it will work
       const assistantMessageId = uuidv4();
-      console.log('About to call vllmTransport.sendMessages...');
       const stream = await vllmTransport.sendMessages({
         trigger: 'submit-message',
         chatId: id,
@@ -118,7 +120,6 @@ export function Chat({
         messages: currentMessages,
         abortSignal: undefined,
       });
-      console.log('vllmTransport.sendMessages succeeded, got stream');
       
       // Only create the assistant message after successful API call
       const assistantMessage: ChatMessage = {

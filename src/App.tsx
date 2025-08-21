@@ -25,7 +25,7 @@ function Providers({ children }: ProvidersProps) {
       <ErrorBoundary fallback={<div>Error</div>}>
         <Suspense fallback={<div>Loading...</div>}>
           <UserProvider>
-            <SidebarProvider defaultOpen={false}>
+            <SidebarProvider defaultOpen={true}>
               <BrowserRouter basename={BASE_URL}>
                 <DataStreamProvider>
                   {children}
