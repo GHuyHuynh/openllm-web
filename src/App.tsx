@@ -9,6 +9,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { ChatPage } from '@/pages/chat/chat-page'
 import { ContactPage } from '@/pages/contact/contact-page'
+import { NotFoundPage } from '@/pages/error/not-found-page'
+import { ErrorPage } from '@/pages/error/error-page'
 import { ThemeProvider } from '@/components/ui/theme-provider'
 import { UserProvider } from '@/components/core/user-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -29,7 +31,11 @@ function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
-        <ErrorBoundary fallback={<div>Error</div>}>
+        <ErrorBoundary 
+          fallbackRender={({ error, resetErrorBoundary }) => (
+            <ErrorPage error={error} resetError={resetErrorBoundary} />
+          )} 
+        >
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center">
               <WaveLoader bars={5} message="Loading application..." />
@@ -62,6 +68,7 @@ function AppContent() {
         <Route path="/" element={<HomePage />} />
         <Route path="/chat/:id" element={<ChatPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
 
       {/* React Query Devtools */}
