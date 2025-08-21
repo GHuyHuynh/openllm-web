@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 import { HomePage } from '@/pages/home/home-page'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { ChatPage } from '@/pages/chat/chat-page'
+import { ContactPage } from '@/pages/contact/contact-page'
 import { ThemeProvider } from '@/components/ui/theme-provider'
 import { UserProvider } from '@/components/core/user-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -55,7 +56,7 @@ function AppContent() {
     <>
       {/* Toaster */}
       <Toaster position="top-center" />
-      
+
       {/* Routes with Layout */}
       <Routes>
         <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />

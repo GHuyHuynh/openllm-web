@@ -1,5 +1,47 @@
 import type { UIMessage } from '@ai-sdk/react';
 import type { UIMessageChunk, ChatRequestOptions, ChatTransport } from 'ai-latest';
+import { ChatSDKError } from '@/lib/errors';
+
+/**
+ * Handle 404 errors from VLLM backend
+ */
+function handle404Error(errorText: string, modelName: string): ChatSDKError {
+  try {
+    const errorData = JSON.parse(errorText);
+    
+    // Check for VLLM error format: {"object":"error","message":"The model `ABJFSKJHJS` does not exist.","type":"NotFoundError","param":null,"code":404}
+    if (errorData.object === 'error' && errorData.message) {
+      // Check for model not found error
+      if (errorData.message.includes('does not exist')) {
+        const modelMatch = errorData.message.match(/The model `([^`]+)` does not exist/);
+        const extractedModel = modelMatch ? modelMatch[1] : modelName;
+        return new ChatSDKError('not_found:model', `Model "${extractedModel}" does not exist`);
+      }
+      
+      // Check for other 404 scenarios  
+      if (errorData.message.includes('not found')) {
+        return new ChatSDKError('not_found:api', errorData.message);
+      }
+      
+      // Generic 404 error with VLLM format
+      return new ChatSDKError('not_found:api', errorData.message);
+    }
+    
+    // Fallback for other JSON formats
+    if (errorData.message && errorData.message.includes('does not exist')) {
+      const modelMatch = errorData.message.match(/The model `([^`]+)` does not exist/);
+      const extractedModel = modelMatch ? modelMatch[1] : modelName;
+      return new ChatSDKError('not_found:model', `Model "${extractedModel}" does not exist`);
+    }
+    
+    // Generic 404 error
+    return new ChatSDKError('not_found:api', errorData.message || 'Resource not found');
+    
+  } catch (parseError) {
+    // If JSON parsing fails, return generic 404 error
+    return new ChatSDKError('not_found:api', 'Unable to parse error response');
+  }
+}
 
 /**
  * Custom chat transport for vllm backend that implements the ChatTransport interface.
@@ -63,6 +105,16 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
 
       if (!response.ok) {
         const errorText = await response.text();
+        
+        // Handle 404 errors with dedicated handler
+        if (response.status === 404) {
+          console.log('404 error detected, errorText:', errorText);
+          const error = handle404Error(errorText, this.model);
+          console.log('404 handler returned error:', error.message);
+          console.log('404 handler returned error:', error.type);
+          throw error;
+        }
+        
         throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
       }
 
@@ -74,7 +126,13 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
       return this.convertSSEToUIMessageStream(response.body, options.abortSignal);
 
     } catch (error) {
-      // Return an error stream
+      // Re-throw ChatSDKError so it can be handled by the chat component
+      if (error instanceof ChatSDKError) {
+        console.log('Re-throwing ChatSDKError to chat component:', error.type, error.surface);
+        throw error;
+      }
+      
+      // Return an error stream for other errors
       return this.createErrorStream(error as Error);
     }
   }

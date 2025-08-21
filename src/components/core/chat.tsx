@@ -101,24 +101,16 @@ export function Chat({
         type: 'error',
         description: 'Error saving message',
       });
+      setStatus('ready');
+      return; // Early return if we can't save the message
     }
     
-    const assistantMessageId = uuidv4();
-    const assistantMessage: ChatMessage = {
-      id: assistantMessageId,
-      role: 'assistant',
-      parts: [{ type: 'text', text: '' }],
-    };
-    
-    setMessages(prev => [...prev, assistantMessage]);
     setStatus('streaming');
     
-    // Initialize streaming state
-    globalStreamingState.messageId = assistantMessageId;
-    globalStreamingState.content = '';
-    globalStreamingState.isStreaming = true;
-    
     try {
+      // First, try to make the API call - don't create assistant message until we know it will work
+      const assistantMessageId = uuidv4();
+      console.log('About to call vllmTransport.sendMessages...');
       const stream = await vllmTransport.sendMessages({
         trigger: 'submit-message',
         chatId: id,
@@ -126,6 +118,21 @@ export function Chat({
         messages: currentMessages,
         abortSignal: undefined,
       });
+      console.log('vllmTransport.sendMessages succeeded, got stream');
+      
+      // Only create the assistant message after successful API call
+      const assistantMessage: ChatMessage = {
+        id: assistantMessageId,
+        role: 'assistant',
+        parts: [{ type: 'text', text: '' }],
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+      
+      // Initialize streaming state
+      globalStreamingState.messageId = assistantMessageId;
+      globalStreamingState.content = '';
+      globalStreamingState.isStreaming = true;
       
       const reader = stream.getReader();
       let accumulatedContent = '';
@@ -186,10 +193,66 @@ export function Chat({
       setStatus('ready');
       globalStreamingState.isStreaming = false;
       
+      console.log('Error caught in chat component:', error);
+      
       if (error instanceof ChatSDKError) {
+        console.log('ChatSDKError detected:', error.type, error.surface, error.message);
+        
+        // Create an assistant message with the error (marked as error with special prefix)
+        const errorMessageId = uuidv4();
+        const errorMessage: ChatMessage = {
+          id: errorMessageId,
+          role: 'assistant',
+          parts: [{ 
+            type: 'text', 
+            text: `[ERROR_MESSAGE] **Service Error**\n\n${error.message}\n\n**What you can do:**\n\n- Check your model configuration\n- Try again in a few moments\n- [Contact us](/contact) if the issue persists\n\nWe apologize for the inconvenience and are here to help resolve this issue.`
+          }],
+        };
+        
+        // Add the error message to the chat
+        setMessages(prev => [...prev, errorMessage]);
+        
+        // Save the error message to the database
+        try {
+          await saveMessages({
+            messages: [{
+              id: errorMessageId,
+              role: 'assistant',
+              parts: errorMessage.parts,
+              createdAt: new Date(),
+              chatId: id,
+            }],
+          });
+        } catch (saveError) {
+          console.error('Failed to save error message:', saveError);
+        }
+        
+        // Also show toast for immediate feedback
         toast({
           type: 'error',
           description: error.message,
+        });
+      } else {
+        // Handle other errors
+        console.log('Generic error:', error);
+        
+        // Create a generic error message
+        const errorMessageId = uuidv4();
+        const errorMessage: ChatMessage = {
+          id: errorMessageId,
+          role: 'assistant',
+          parts: [{ 
+            type: 'text', 
+            text: `[ERROR_MESSAGE] **Connection Error**\n\nFailed to send your message. This may be due to a temporary connectivity issue.\n\n**What you can do:**\n\n- Check your internet connection\n- Verify your model configuration\n- Try sending your message again\n- [Contact us](/contact) if the issue persists\n\nWe apologize for the inconvenience and are here to help resolve this issue.`
+          }],
+        };
+        
+        // Add the error message to the chat
+        setMessages(prev => [...prev, errorMessage]);
+        
+        toast({
+          type: 'error',
+          description: 'Failed to send message. Please try again.',
         });
       }
     }
