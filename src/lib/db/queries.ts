@@ -245,3 +245,33 @@ export async function getMessageCountByUserId({
     throw new ChatSDKError('bad_request:database', 'Failed to get message count by user id');
   }
 }
+
+export async function deleteAllUserData({ userId }: { userId: string }) {
+  try {
+    // Delete all messages for chats belonging to this user
+    const userChats = await db.chat
+      .where('userId')
+      .equals(userId)
+      .toArray();
+    
+    const userChatIds = userChats.map(chat => chat.id);
+
+    if (userChatIds.length > 0) {
+      await db.message
+        .where('chatId')
+        .anyOf(userChatIds)
+        .delete();
+    }
+
+    // Delete all chats for this user
+    await db.chat
+      .where('userId')
+      .equals(userId)
+      .delete();
+
+    // Delete the user
+    await db.user.delete(userId);
+  } catch (error) {
+    throw new ChatSDKError('bad_request:database', 'Failed to delete all user data');
+  }
+}

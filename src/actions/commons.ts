@@ -102,6 +102,11 @@ export async function deleteChatAction({ id }: { id: string }) {
   await deleteChatById({ id });
 }
 
+export async function deleteAllUserDataAction({ userId }: { userId: string }) {
+  const { deleteAllUserData } = await import('@/lib/db/queries');
+  await deleteAllUserData({ userId });
+}
+
 export async function saveChatModelAsCookie(model: string) {
   // max-age=31536000 is 365 days (1 year)
   document.cookie = `chat-model=${model}; path=/; max-age=31536000;`;
