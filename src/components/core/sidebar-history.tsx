@@ -146,6 +146,7 @@ export function SidebarHistory({ userId }: { userId: string }) {
   const handleDelete = async () => {
     if (!deleteId) return;
 
+    const shouldNavigate = deleteId === activeId;
     const deletePromise = deleteChatAction({ id: deleteId });
 
     toast.promise(deletePromise, {
@@ -160,16 +161,16 @@ export function SidebarHistory({ userId }: { userId: string }) {
           }
         });
 
+        if (shouldNavigate) {
+          navigate('/');
+        }
+
         return 'Chat deleted successfully';
       },
       error: 'Failed to delete chat',
     });
 
     setShowDeleteDialog(false);
-
-    if (deleteId === activeId) {
-      navigate('/');
-    }
   };
 
   if (isLoading) {
