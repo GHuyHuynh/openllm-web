@@ -1,6 +1,6 @@
 import { isToday, isYesterday, subMonths, subWeeks } from 'date-fns';
 import { useParams, useNavigate, useLocation } from 'react-router';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import {
@@ -116,51 +116,47 @@ export function SidebarHistory({ userId }: { userId: string }) {
   const location = useLocation();
   const [currentActiveId, setCurrentActiveId] = useState<string | null>(null);
 
-  const updateActiveIdFromURL = useCallback(() => {
-    const currentPath = window.location.pathname;
-    
-    const isOnChatRoute = currentPath.includes('/chat/');
-    
-    if (isOnChatRoute) {
-      const urlParts = currentPath.split('/chat/');
-      const chatIdFromWindow = urlParts[1]?.split('?')[0];
-      const activeId = id || chatIdFromWindow;
-      setCurrentActiveId(activeId || null);
-    } else {
-      setCurrentActiveId(null);
-    }
-  }, [id, location.pathname]);
-
+  // Handle all URL changes
   useEffect(() => {
-    updateActiveIdFromURL();
-  }, [updateActiveIdFromURL]);
+    const updateActiveId = () => {
+      const currentPath = window.location.pathname;
+      const isOnChatRoute = currentPath.includes('/chat/');
+      
+      if (isOnChatRoute) {
+        const urlParts = currentPath.split('/chat/');
+        const chatIdFromWindow = urlParts[1]?.split('?')[0];
+        const activeId = id || chatIdFromWindow;
+        setCurrentActiveId(activeId || null);
+      } else {
+        setCurrentActiveId(null);
+      }
+    };
 
-  useEffect(() => {
+    updateActiveId();
+
+    // Override history methods to detect URL changes
     const originalPushState = window.history.pushState;
     const originalReplaceState = window.history.replaceState;
     
-    const handleURLChange = () => {
-      setTimeout(updateActiveIdFromURL, 0);
-    };
-    
     window.history.pushState = function(...args) {
       originalPushState.apply(window.history, args);
-      handleURLChange();
+      updateActiveId();
     };
     
     window.history.replaceState = function(...args) {
       originalReplaceState.apply(window.history, args);
-      handleURLChange();
+      updateActiveId();
     };
     
-    window.addEventListener('popstate', handleURLChange);
+    // Handle browser back/forward
+    window.addEventListener('popstate', updateActiveId);
     
     return () => {
       window.history.pushState = originalPushState;
       window.history.replaceState = originalReplaceState;
-      window.removeEventListener('popstate', handleURLChange);
+      window.removeEventListener('popstate', updateActiveId);
     };
-  }, [updateActiveIdFromURL]);
+  }, [id, location.pathname]);
 
   const {
     data: paginatedChatHistories,
