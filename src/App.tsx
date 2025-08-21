@@ -25,8 +25,16 @@ interface ProvidersProps {
 function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
-      <ErrorBoundary fallback={<div>Error</div>}>
-        <Suspense fallback={<div>Loading...</div>}>
+      <ErrorBoundary
+        fallbackRender={({ error, resetErrorBoundary }) => (
+          <ErrorPage error={error} resetError={resetErrorBoundary} />
+        )}
+      >
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center">
+            <WaveLoader bars={5} message="Loading application..." />
+          </div>
+        }>
           <UserProvider>
             <SidebarProvider defaultOpen={true}>
               <BrowserRouter basename={BASE_URL}>
@@ -38,29 +46,6 @@ function Providers({ children }: ProvidersProps) {
           </UserProvider>
         </Suspense>
       </ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <ErrorBoundary
-          fallbackRender={({ error, resetErrorBoundary }) => (
-            <ErrorPage error={error} resetError={resetErrorBoundary} />
-          )}
-        >
-          <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-              <WaveLoader bars={5} message="Loading application..." />
-            </div>
-          }>
-            <UserProvider>
-              <SidebarProvider defaultOpen={false}>
-                <BrowserRouter basename={BASE_URL}>
-                  <DataStreamProvider>
-                    {children}
-                  </DataStreamProvider>
-                </BrowserRouter>
-              </SidebarProvider>
-            </UserProvider>
-          </Suspense>
-        </ErrorBoundary>
-      </QueryClientProvider>
     </ThemeProvider>
   );
 }
@@ -87,12 +72,8 @@ function AppContent() {
       <Routes>
         <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
         <Route path="/chat/:id" element={<AppLayout><ChatPage /></AppLayout>} />
-        <Route path="*" element={<AppLayout><HomePage /></AppLayout>} />
         <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/chat/:id" element={<ChatPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="*" element={<NotFoundPage />} />
+        <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
       </Routes>
     </>
   )
