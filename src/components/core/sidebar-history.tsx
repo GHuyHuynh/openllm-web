@@ -172,14 +172,6 @@ export function SidebarHistory({ userId }: { userId: string }) {
     }
   );
 
-  // Expose the mutate function for external refresh
-  useEffect(() => {
-    if (onRefreshNeeded) {
-      onRefreshNeeded(() => {
-        mutate();
-      });
-    }
-  }, [mutate, onRefreshNeeded]);
 
   const navigate = useNavigate();
   const [deleteId, setDeleteId] = useState<string | null>(null);
