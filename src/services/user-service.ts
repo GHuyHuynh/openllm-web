@@ -1,7 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { db, type User } from '@/lib/db/schema';
 
-//TODO: implement delete user function
+export async function deleteUserAndReinitialize(): Promise<string> {
+  // Clear all existing data
+  await db.user.clear();
+  await db.chat.clear();
+  await db.message.clear();
+  
+  // Create new user
+  return await initializeUser();
+}
 
 export async function initializeUser(): Promise<string> {
   // Should only be one user in the database (1 row)
