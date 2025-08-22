@@ -6,6 +6,7 @@ import {
 } from '@/lib/db/queries';
 import { getTitleTransport } from '@/lib/vllm-transport-singleton';
 import { v4 as uuidv4 } from 'uuid';
+import { deleteAllUserData } from '@/lib/db/queries';
 
 // Promise cache to prevent duplicate concurrent title generation for the same message
 const titlePromiseCache = new Map<string, Promise<string>>();
@@ -103,7 +104,6 @@ export async function deleteChatAction({ id }: { id: string }) {
 }
 
 export async function deleteAllUserDataAction({ userId }: { userId: string }) {
-  const { deleteAllUserData } = await import('@/lib/db/queries');
   await deleteAllUserData({ userId });
 }
 
