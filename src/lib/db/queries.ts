@@ -98,9 +98,12 @@ export async function getChatsByUserId({
         .where('userId')
         .equals(id)
         .and(chat => chat.createdAt > selectedChat.createdAt)
-        .reverse() // For descending order by createdAt
-        .limit(extendedLimit)
-        .toArray();
+        .sortBy('createdAt');
+      
+      // Sort in descending order and limit
+      filteredChats = filteredChats
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, extendedLimit);
     } else if (endingBefore) {
       // Find the reference chat for cursor
       const selectedChat = await db.chat.get(endingBefore);
@@ -117,17 +120,23 @@ export async function getChatsByUserId({
         .where('userId')
         .equals(id)
         .and(chat => chat.createdAt < selectedChat.createdAt)
-        .reverse() // For descending order by createdAt
-        .limit(extendedLimit)
-        .toArray();
+        .sortBy('createdAt');
+      
+      // Sort in descending order and limit
+      filteredChats = filteredChats
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, extendedLimit);
     } else {
       // Get all chats for the user
       filteredChats = await db.chat
         .where('userId')
         .equals(id)
-        .reverse() // For descending order by createdAt
-        .limit(extendedLimit)
-        .toArray();
+        .sortBy('createdAt');
+      
+      // Sort in descending order and limit
+      filteredChats = filteredChats
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, extendedLimit);
     }
 
     const hasMore = filteredChats.length > limit;

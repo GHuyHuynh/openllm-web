@@ -2,7 +2,7 @@ import {
   getMessageById,
   deleteMessagesByChatIdAfterTimestamp
 } from "@/lib/db/queries";
-import { ChatSDKError } from "../errors";
+import { ChatSDKError } from "@/lib/errors";
 
 export async function deleteTrailingMessages({ id }: { id: string }) {
   const [message] = await getMessageById({ id });

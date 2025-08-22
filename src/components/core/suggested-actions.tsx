@@ -4,6 +4,7 @@ import { memo } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import { BASE_URL } from '@/constants/constants';
 import type { ChatMessage } from '@/lib/types';
+import { v4 as uuidv4 } from 'uuid';
 
 interface SuggestedActionsProps {
   chatId: string;
@@ -57,6 +58,7 @@ function PureSuggestedActions({
               window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
 
               sendMessage({
+                id: uuidv4(), 
                 role: 'user',
                 parts: [
                   {

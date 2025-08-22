@@ -1,14 +1,13 @@
 /**
  * Main Layout Component
  */
-
 import { Toaster } from 'sonner';
 import { HomePage } from '@/pages/home/home-page'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { BrowserRouter, Routes, Route } from 'react-router'
 import { ChatPage } from '@/pages/chat/chat-page'
 import { ContactPage } from '@/pages/contact/contact-page'
+import { NotFoundPage } from '@/pages/error/not-found-page'
+import { ErrorPage } from '@/pages/error/error-page'
 import { ThemeProvider } from '@/components/ui/theme-provider'
 import { UserProvider } from '@/components/core/user-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
@@ -17,8 +16,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { AppSidebar } from '@/components/core/app-sidebar';
 import { BASE_URL } from '@/constants/constants';
 import { DataStreamProvider } from '@/components/core/data-stream-provider';
-
-const queryClient = new QueryClient();
+import { WaveLoaderScreen } from '@/components/ui/wave-loader';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -27,22 +25,36 @@ interface ProvidersProps {
 function Providers({ children }: ProvidersProps) {
   return (
     <ThemeProvider>
-      <QueryClientProvider client={queryClient}>
-        <ErrorBoundary fallback={<div>Error</div>}>
-          <Suspense fallback={<div>Loading...</div>}>
-            <UserProvider>
-              <SidebarProvider defaultOpen={false}>
-                <BrowserRouter basename={BASE_URL}>
-                  <DataStreamProvider>
-                    {children}
-                  </DataStreamProvider>
-                </BrowserRouter>
-              </SidebarProvider>
-            </UserProvider>
-          </Suspense>
-        </ErrorBoundary>
-      </QueryClientProvider>
+      <ErrorBoundary
+        fallbackRender={({ error, resetErrorBoundary }) => (
+          <ErrorPage error={error} resetError={resetErrorBoundary} />
+        )}
+      >
+        <Suspense fallback={<WaveLoaderScreen />}>
+          <UserProvider>
+            <SidebarProvider defaultOpen={false}>
+              <BrowserRouter basename={BASE_URL}>
+                <DataStreamProvider>
+                  {children}
+                </DataStreamProvider>
+              </BrowserRouter>
+            </SidebarProvider>
+          </UserProvider>
+        </Suspense>
+      </ErrorBoundary>
     </ThemeProvider>
+  );
+}
+
+// Layout component that includes sidebar and main content
+function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <AppSidebar />
+      <SidebarInset>
+        {children}
+      </SidebarInset>
+    </>
   );
 }
 
@@ -52,15 +64,13 @@ function AppContent() {
       {/* Toaster */}
       <Toaster position="top-center" />
 
-      {/* Main Content */}
+      {/* Routes with Layout */}
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/chat/:id" element={<ChatPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
+        <Route path="/chat/:id" element={<AppLayout><ChatPage /></AppLayout>} />
+        <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
+        <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
       </Routes>
-
-      {/* React Query Devtools */}
-      {/* {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />} */}
     </>
   )
 }
@@ -68,10 +78,7 @@ function AppContent() {
 function App() {
   return (
     <Providers>
-      <AppSidebar />
-      <SidebarInset>
-        <AppContent />
-      </SidebarInset>
+      <AppContent />
     </Providers>
   )
 }
