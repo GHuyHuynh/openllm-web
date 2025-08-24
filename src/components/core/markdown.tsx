@@ -11,7 +11,7 @@ const components: Partial<Components> = {
     if (isInlineCode) {
       return (
         <code
-          className={`text-sm bg-zinc-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md ${className || ''}`}
+          className={`text-sm bg-black/10 dark:bg-white/10 py-0.5 px-1 rounded-md ${className || ''}`}
           {...props}
         >
           {children}
