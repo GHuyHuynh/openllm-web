@@ -1,4 +1,4 @@
-import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
+import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { VLLM_BASE_URL, DEFAULT_TITLE_MODEL } from '@/constants/constants';
 
 // Shared transport instance for title generation

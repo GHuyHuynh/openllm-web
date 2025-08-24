@@ -2,7 +2,7 @@ import { useParams } from 'react-router';
 import { Chat } from '@/components/core/chat';
 import { DataStreamHandler } from '@/components/core/data-stream-handler';
 import { useChatMessages } from '@/hooks/use-chat-messages';
-import { DEFAULT_CHAT_MODEL } from '@/gen-ai/models';
+import { DEFAULT_CHAT_MODEL } from '@/ai-module/models';
 import { validate as uuidValidate } from 'uuid';
 import { ChatNotFoundPage } from '@/pages/error/chat-not-found-page';
 import { ErrorPage } from '@/pages/error/error-page';

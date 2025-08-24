@@ -1,5 +1,5 @@
 import { Chat } from '@/components/core/chat';
-import { DEFAULT_CHAT_MODEL } from '@/gen-ai/models';
+import { DEFAULT_CHAT_MODEL } from '@/ai-module/models';
 import { v4 as uuidv4 } from 'uuid';
 import { DataStreamHandler } from '@/components/core/data-stream-handler';
 import { useEffect, useState } from 'react';

@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { CheckCircleFillIcon, ChevronDownIcon } from '@/components/ui/icons';
-import { chatModels } from '@/gen-ai/models';
+import { chatModels } from '@/ai-module/models';
 
 export function ModelSelector({
   selectedModelId,

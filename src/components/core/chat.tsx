@@ -12,7 +12,7 @@ import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
 import { BASE_URL, VLLM_BASE_URL, DEFAULT_VLLM_MODEL } from '@/constants/constants';
-import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
+import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
 import { generateTitleFromUserMessage } from '@/actions/commons';
 
