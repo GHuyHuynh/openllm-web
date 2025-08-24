@@ -1,3 +1,7 @@
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useTheme } from '@/components/ui/theme-provider';
+
 interface CodeBlockProps {
   node: any;
   inline: boolean;
@@ -12,15 +16,43 @@ export function CodeBlock({
   children,
   ...props
 }: CodeBlockProps) {
+  const { theme } = useTheme();
+  
   if (!inline) {
+    const match = /language-(\w+)/.exec(className || '');
+    const language = match ? match[1] : '';
+    
+    const resolvedTheme = theme === 'system' 
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+      : theme;
+    
     return (
-      <div className="not-prose flex flex-col">
-        <pre
-          {...props}
-          className={`text-sm w-full overflow-x-auto dark:bg-zinc-900 p-4 border border-zinc-200 dark:border-zinc-700 rounded-xl dark:text-zinc-50 text-zinc-900`}
-        >
-          <code className="whitespace-pre-wrap break-words">{children}</code>
-        </pre>
+      <div className="not-prose flex flex-col min-w-0">
+        <div className="text-sm min-w-0 overflow-x-auto border border-zinc-200 dark:border-zinc-700 rounded-xl">
+          <SyntaxHighlighter
+            style={resolvedTheme === 'dark' ? oneDark : oneLight}
+            language={language}
+            PreTag="div"
+            customStyle={{
+              margin: 0,
+              padding: '1rem',
+              background: 'transparent',
+              fontSize: '0.875rem',
+              width: '100%',
+              minWidth: 0,
+            }}
+            codeTagProps={{
+              style: { 
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+              }
+            }}
+            {...props}
+          >
+            {String(children).replace(/\n$/, '')}
+          </SyntaxHighlighter>
+        </div>
       </div>
     );
   } else {
