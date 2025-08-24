@@ -7,6 +7,15 @@ const components: Partial<Components> = {
   // @ts-expect-error
   code: CodeBlock,
   pre: ({ children }) => <>{children}</>,
+  p: ({ node, children, ...props }) => {
+    const hasCodeBlock = node?.children?.some((child: any) => 
+      child.type === 'element' && child.tagName === 'code'
+    );
+    if (hasCodeBlock) {
+      return <>{children}</>;
+    }
+    return <p {...props}>{children}</p>;
+  },
   ol: ({ node, children, ...props }) => {
     return (
       <ol className="list-decimal list-outside ml-4" {...props}>
