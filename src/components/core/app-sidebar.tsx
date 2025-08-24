@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Link } from 'react-router';
 import { useUserId } from '@/hooks/use-user-id';
-import { deleteAllUserDataAction } from '@/actions/commons';
+import { deleteAllUserDataAction } from '@/actions/actions';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';

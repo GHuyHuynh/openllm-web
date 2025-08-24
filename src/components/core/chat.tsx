@@ -14,7 +14,7 @@ import { useUserId } from '@/hooks/use-user-id';
 import { BASE_URL, VLLM_BASE_URL, DEFAULT_VLLM_MODEL } from '@/constants/constants';
 import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
-import { generateTitleFromUserMessage } from '@/actions/commons';
+import { generateTitleFromUserMessage } from '@/actions/actions';
 
 export const globalStreamingState = {
   messageId: '',

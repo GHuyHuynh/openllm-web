@@ -24,7 +24,7 @@ import { ChatItem } from '@/components/core/sidebar-history-item';
 import useSWRInfinite from 'swr/infinite';
 import { LoaderIcon } from '@/components/ui/icons';
 import { type GetChatHistoryWithPaginationParams } from '@/actions/fetch-history';
-import { deleteChatAction } from '@/actions/commons';
+import { deleteChatAction } from '@/actions/actions';
 import { fetchChatHistory } from '@/actions/fetch-history';
 
 type GroupedChats = {
