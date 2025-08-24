@@ -4,12 +4,26 @@ import remarkGfm from 'remark-gfm';
 import { CodeBlock } from '@/components/core/code-block';
 
 const components: Partial<Components> = { 
-  // @ts-expect-error
-  code: CodeBlock,
+  code: ({ node, inline, className, children, ...props }: any) => {
+    // Check if this is inline code (no className with language- prefix and inline is true)
+    const isInlineCode = inline || (!className || !className.includes('language-'));
+    
+    if (isInlineCode) {
+      return (
+        <code
+          className={`text-sm bg-zinc-100 dark:bg-zinc-800 py-0.5 px-1 rounded-md ${className || ''}`}
+          {...props}
+        >
+          {children}
+        </code>
+      );
+    }
+    return <CodeBlock node={node} inline={false} className={className} children={children} {...props} />;
+  },
   pre: ({ children }) => <>{children}</>,
   p: ({ node, children, ...props }) => {
     const hasCodeBlock = node?.children?.some((child: any) => 
-      child.type === 'element' && child.tagName === 'code'
+      child.type === 'element' && child.tagName === 'code' && child.properties?.className?.includes('language-')
     );
     if (hasCodeBlock) {
       return <>{children}</>;
