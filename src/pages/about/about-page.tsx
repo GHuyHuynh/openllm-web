@@ -11,13 +11,11 @@ const data = {
     text: "Contact Us",
     url: "/contact",
   },
-  imageSrc: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg",
-  imageAlt: "placeholder",
 }
 
 export function AboutPage() {
   return (
-    <section className="overflow-hidden py-32">
+    <section className="min-h-screen flex items-center justify-center overflow-hidden py-32">
       <div className="container">
         <div className="flex flex-col gap-5">
           <div className="relative flex flex-col gap-5">
@@ -51,11 +49,6 @@ export function AboutPage() {
               </Button>
             </div>
           </div>
-          <img
-            src={data.imageSrc}
-            alt={data.imageAlt}
-            className="mx-auto h-full max-h-[524px] w-full max-w-5xl rounded-2xl object-cover"
-          />
         </div>
       </div>
     </section>
