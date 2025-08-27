@@ -2,6 +2,7 @@ import { SparklesIcon } from "@/components/ui/icons";
 import { useNavigate } from 'react-router';
 import { Button } from "@/components/ui/button";
 import { HoverEffect } from "@/components/ui/hover-effect";
+import { ArrowLeft } from "lucide-react";
 import tobiImg from "@/assets/tobi.jpeg";
 import huyImg from "@/assets/huy.jpeg";
 import hassanImg from "@/assets/hassan.jpeg";
@@ -56,7 +57,16 @@ export function AboutPage() {
   const navigate = useNavigate();
 
   return (
-    <section className="min-h-screen flex items-center justify-center overflow-hidden py-32">
+    <section className="min-h-screen flex items-center justify-center overflow-hidden py-32 relative max-w-7xl mx-auto">
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={() => navigate('/')}
+        className="absolute top-8 left-8 flex items-center gap-2 z-10"
+      >
+        <ArrowLeft size={16} />
+        Chat
+      </Button>
       <div className="container">
         <div className="flex flex-col gap-5">
           <div className="relative flex flex-col gap-5">
