@@ -1,19 +1,60 @@
 import { SparklesIcon } from "@/components/ui/icons";
-
+import { useNavigate } from 'react-router';
 import { Button } from "@/components/ui/button";
+import { HoverEffect } from "@/components/ui/hover-effect";
+import tobiImg from "@/assets/tobi.jpeg";
+import huyImg from "@/assets/huy.jpeg";
+import hassanImg from "@/assets/hassan.jpeg";
+import vanshImg from "@/assets/vansh.jpeg";
+import eduardImg from "@/assets/eduard.jpeg";
 
 const data = {
   icon: <SparklesIcon size={24} />,
   preheading: "OpenLLM",
   heading: "Make access to AI Free and Open",
-  description: "We created OpenLLM to make access to AI Free and Open for everyone.",
+  description: "We created OpenLLM to make access to AI Free and Open for everyone. By hosting open source models at Dalhousie University, Halifax, Nova Scotia, Canada, we are able to provide a free and open access to AI for everyone.",
   button: {
     text: "Contact Us",
     url: "/contact",
   },
 }
 
+export const contributors = [
+  {
+    imageSrc: tobiImg,
+    name: "Tobi Onibudo",
+    github: "https://github.com/TobiOnibudo",
+    linkedin: "https://www.linkedin.com/in/tobi-onibudo/",
+  },
+  {
+    imageSrc: huyImg,
+    name: "Huy Huynh",
+    github: "https://github.com/ghuyhuynh",
+    linkedin: "https://www.linkedin.com/in/huyghuynh/",
+  },
+  {
+    imageSrc: hassanImg,
+    name: "Hassan Chowdhry",
+    github: "https://github.com/HassanChowdhry",
+    linkedin: "https://www.linkedin.com/in/hassanchowdhry/",
+  },
+  {
+    imageSrc: vanshImg,
+    name: "Vansh Sood",
+    github: "https://github.com/Vansh983",
+    linkedin: "https://www.linkedin.com/in/vanshsood/",
+  },
+  {
+    imageSrc: eduardImg,
+    name: "Eduard Kakosyan",
+    github: "https://github.com/EduardKakosyan",
+    linkedin: "https://www.linkedin.com/in/eduard-kakosyan/",
+  },
+]
+
 export function AboutPage() {
+  const navigate = useNavigate();
+
   return (
     <section className="min-h-screen flex items-center justify-center overflow-hidden py-32">
       <div className="container">
@@ -43,12 +84,14 @@ export function AboutPage() {
             </p>
             <div className="flex flex-col items-center justify-center gap-3 pt-3 pb-12">
               <Button size="lg" asChild>
-                <a href={data.button.url}>
+                <a onClick={() => navigate(data.button.url)}>
                   {data.button.text}
                 </a>
               </Button>
             </div>
           </div>
+          <h2 className="mx-auto max-w-5xl text-center text-xl font-medium text-balance md:text-3xl">Contributors</h2>
+          <HoverEffect items={contributors} />
         </div>
       </div>
     </section>
