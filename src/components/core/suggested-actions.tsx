@@ -22,11 +22,6 @@ function PureSuggestedActions({
       action: 'What is the Capital of Nova Scotia?',
     },
     {
-      title: 'Give me the importance',
-      label: `of Open Source AI`,
-      action: `Give me the importance of Open Source AI`,
-    },
-    {
       title: 'Help me write an essay',
       label: `about Nova Scotia`,
       action: `Help me write an essay about Nova Scotia`,
@@ -35,6 +30,11 @@ function PureSuggestedActions({
       title: 'Why is Open Source AI',
       label: 'important to Society ?',
       action: 'Why is Open Source AI important to Society?',
+    },
+    {
+      title: 'Give me the importance',
+      label: `of Self-hosted AI`,
+      action: `Give me the importance of Self-hosted AI`,
     },
   ];
 
