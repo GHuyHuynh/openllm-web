@@ -30,7 +30,7 @@ dist-ssr
 .env.production
 
 # Build output
-dalchat
+openllm
 
 # Claude Code
 CLAUDE.md

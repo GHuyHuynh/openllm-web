@@ -6,9 +6,9 @@ import { defineConfig } from "vite"
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: '/~huyh/dalchat/',
+  base: '/~huyh/openllm/',
   build: {
-    outDir: 'dalchat'
+    outDir: 'openllm'
   },
   resolve: {
     alias: {

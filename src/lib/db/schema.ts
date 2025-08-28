@@ -27,13 +27,13 @@ export type User = z.infer<typeof UserSchema>;
 export type Chat = z.infer<typeof ChatSchema>;
 export type DBMessage = z.infer<typeof MessageSchema>;
 
-export interface DalAIDatabase extends Dexie {
+export interface OpenLLMDatabase extends Dexie {
   chat: EntityTable<Chat, 'id'>;
   message: EntityTable<DBMessage, 'id'>;
   user: EntityTable<User, 'id'>;
 }
 
-export const db = new Dexie('dal-ai-db') as DalAIDatabase;
+export const db = new Dexie('openllm-db') as OpenLLMDatabase;
 
 db.version(1).stores({
   chat: '&id, title, createdAt, userId',

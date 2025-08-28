@@ -17,7 +17,7 @@ function calculateBaseUrl(): string {
     }
   }
   
-  return '/~huyh/dalchat';
+  return '/~huyh/openllm';
 }
 
 export const BASE_URL = calculateBaseUrl();
