@@ -65,7 +65,7 @@ export function AboutPage() {
         className="absolute top-8 left-8 flex items-center gap-2 z-10"
       >
         <ArrowLeft size={16} />
-        Chat
+        Back to Chat
       </Button>
       <div className="container">
         <div className="flex flex-col gap-5">
