@@ -1,4 +1,5 @@
-export const VLLM_BASE_URL = 'http://129.173.22.43:30001';
+// Intentionally expose API URL on the client side. For full transparency and open source.
+export const VLLM_BASE_URL = 'https://api.openllm-platform.com/';
 export const DEFAULT_VLLM_MODEL = 'meta-llama/Llama-3.2-1B-Instruct';
 export const DEFAULT_TITLE_MODEL = 'meta-llama/Llama-3.2-1B-Instruct';
 
@@ -16,7 +17,7 @@ function calculateBaseUrl(): string {
     }
   }
   
-  return '/~huyh/dalchat';
+  return '/~huyh/openllm';
 }
 
 export const BASE_URL = calculateBaseUrl();

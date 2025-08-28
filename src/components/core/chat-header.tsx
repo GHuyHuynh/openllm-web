@@ -9,16 +9,13 @@ import { memo } from 'react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useNavigate } from 'react-router';
+import { NavigationMenu } from '@/components/core/navigation-menu';
 
 interface ChatHeaderProps {
-  selectedModelId: string;
-  onModelChange?: (modelId: string) => void;
   isReadonly: boolean;
 }
 
 function PureChatHeader({
-  selectedModelId,
-  onModelChange,
   isReadonly,
 }: ChatHeaderProps) {
   const { open } = useSidebar();
@@ -40,7 +37,7 @@ function PureChatHeader({
               }}
             >
               <PlusIcon />
-              <span className="md:sr-only">New Chat</span>
+              <span className="md:sr-only">New</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>New Chat</TooltipContent>
@@ -49,14 +46,14 @@ function PureChatHeader({
 
       {!isReadonly && (
         <ModelSelector
-          selectedModelId={selectedModelId}
-          onModelChange={onModelChange}
           className="order-1 md:order-2"
         />
       )}
 
+      <NavigationMenu />
+
       <ThemeToggle
-        className="dark:bg-zinc-900 bg-zinc-100 dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4 md:ml-auto"
+        className="dark:bg-zinc-900 bg-zinc-100 dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4"
       />
     </header>
   );
@@ -66,8 +63,6 @@ export const ChatHeader = memo(
   PureChatHeader,
   (prevProps: ChatHeaderProps, nextProps: ChatHeaderProps) => {
     return (
-      prevProps.selectedModelId === nextProps.selectedModelId &&
-      prevProps.onModelChange === nextProps.onModelChange &&
       prevProps.isReadonly === nextProps.isReadonly
     );
   }

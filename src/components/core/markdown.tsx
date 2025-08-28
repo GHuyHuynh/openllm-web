@@ -4,9 +4,32 @@ import remarkGfm from 'remark-gfm';
 import { CodeBlock } from '@/components/core/code-block';
 
 const components: Partial<Components> = { 
-  // @ts-expect-error
-  code: CodeBlock,
+  code: ({ node, inline, className, children, ...props }: any) => {
+    // Check if this is inline code (no className with language- prefix and inline is true)
+    const isInlineCode = inline || (!className || !className.includes('language-'));
+    
+    if (isInlineCode) {
+      return (
+        <code
+          className={`text-sm bg-black/10 dark:bg-white/10 py-0.5 px-1 rounded-md ${className || ''}`}
+          {...props}
+        >
+          {children}
+        </code>
+      );
+    }
+    return <CodeBlock node={node} inline={false} className={className} children={children} {...props} />;
+  },
   pre: ({ children }) => <>{children}</>,
+  p: ({ node, children, ...props }) => {
+    const hasCodeBlock = node?.children?.some((child: any) => 
+      child.type === 'element' && child.tagName === 'code' && child.properties?.className?.includes('language-')
+    );
+    if (hasCodeBlock) {
+      return <>{children}</>;
+    }
+    return <p {...props}>{children}</p>;
+  },
   ol: ({ node, children, ...props }) => {
     return (
       <ol className="list-decimal list-outside ml-4" {...props}>

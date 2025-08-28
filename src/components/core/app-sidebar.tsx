@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Link } from 'react-router';
 import { useUserId } from '@/hooks/use-user-id';
-import { deleteAllUserDataAction } from '@/actions/commons';
+import { deleteAllUserDataAction } from '@/actions/actions';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -65,7 +65,7 @@ export function AppSidebar() {
               className="flex flex-row gap-3 items-center"
             >
               <span className="text-lg font-semibold px-2 hover:bg-muted rounded-md cursor-pointer">
-                Chatbot
+                OpenLLM
               </span>
             </Link>
             <Tooltip>
@@ -90,21 +90,21 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarHistory userId={userId} />
       </SidebarContent>
-      <SidebarFooter className="pb-safe-area-inset-bottom md:pb-0 mb-4 md:mb-0">
+      <SidebarFooter className="pb-safe-area-inset-bottom md:pb-0 mb-4 md:mb-6">
         <SidebarMenu>
           <div className="flex flex-row justify-center items-center">
-                          <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className={cn("w-full justify-start cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive dark:text-red-500 hover:bg-destructive/15 hover:text-destructive h-8 px-2 text-sm font-normal bg-transparent border-0 rounded-sm gap-2")}
-                    onClick={() => setShowDeleteAllDialog(true)}
-                  >
-                    <TrashIcon />
-                    <span>Delete All</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent align="center">Delete All Chats</TooltipContent>
-              </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className={cn("w-full justify-start cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive dark:text-red-500 hover:bg-destructive/15 hover:text-destructive h-8 px-2 text-sm font-normal bg-transparent border-0 rounded-sm gap-2")}
+                  onClick={() => setShowDeleteAllDialog(true)}
+                >
+                  <TrashIcon />
+                  <span>Delete All</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent align="center">Delete All Chats</TooltipContent>
+            </Tooltip>
           </div>
         </SidebarMenu>
       </SidebarFooter>
@@ -120,7 +120,7 @@ export function AppSidebar() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={handleDeleteAll}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

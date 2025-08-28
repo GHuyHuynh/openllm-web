@@ -7,7 +7,7 @@ import {
   DEFAULT_CHAT_MODEL,
   DEFAULT_REASONING_MODEL,
   vllm,
-} from '@/gen-ai/models';
+} from '@/ai-module/models';
 
 export const myProvider = customProvider({
   languageModels: {

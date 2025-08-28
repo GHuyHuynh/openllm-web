@@ -4,7 +4,7 @@ import {
   getMessageById,
   deleteChatById,
 } from '@/lib/db/queries';
-import { getTitleTransport } from '@/lib/vllm-transport-singleton';
+import { getTitleTransport } from '@/ai-module/vllm-transport-singleton';
 import { v4 as uuidv4 } from 'uuid';
 import { deleteAllUserData } from '@/lib/db/queries';
 

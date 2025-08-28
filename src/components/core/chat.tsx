@@ -7,14 +7,15 @@ import { Messages } from '@/components/core/messages';
 import { unstable_serialize } from 'swr/infinite';
 import { createChatHistoryPaginationKeyGetter } from '@/components/core/sidebar-history';
 import { toast } from '@/components/core/toast';
+import { toast as sonnerToast } from 'sonner';
 import { useSearchParams } from 'react-router';
 import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
 import { BASE_URL, VLLM_BASE_URL, DEFAULT_VLLM_MODEL } from '@/constants/constants';
-import { VLLMChatTransport } from '@/gen-ai/vllm-transport';
+import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
-import { generateTitleFromUserMessage } from '@/actions/commons';
+import { generateTitleFromUserMessage } from '@/actions/actions';
 
 export const globalStreamingState = {
   messageId: '',
@@ -25,12 +26,10 @@ export const globalStreamingState = {
 export function Chat({
   id,
   initialMessages,
-  initialChatModel,
   isReadonly,
 }: {
   id: string;
   initialMessages: ChatMessage[];
-  initialChatModel: string;
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
@@ -56,6 +55,7 @@ export function Chat({
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>('ready');
   const [isCreatingChat, setIsCreatingChat] = useState(false);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
   
   const sendMessage = useCallback(async (message: ChatMessage) => {
     let currentMessages: ChatMessage[] = [];
@@ -111,6 +111,10 @@ export function Chat({
     setStatus('streaming');
     
     try {
+      // Create abort controller for this request
+      const controller = new AbortController();
+      setAbortController(controller);
+      
       // First, try to make the API call - don't create assistant message until we know it will work
       const assistantMessageId = uuidv4();
       const stream = await vllmTransport.sendMessages({
@@ -118,7 +122,7 @@ export function Chat({
         chatId: id,
         messageId: assistantMessageId,
         messages: currentMessages,
-        abortSignal: undefined,
+        abortSignal: controller.signal,
       });
       
       // Only create the assistant message after successful API call
@@ -141,6 +145,12 @@ export function Chat({
       const UPDATE_THROTTLE = 1; // Adjust this value to control the update frequency
       
       while (true) {
+        // Check if request was aborted
+        if (controller.signal.aborted) {
+          sonnerToast.info('Response was stopped by user');
+          break;
+        }
+        
         const { done, value } = await reader.read();
         if (done) break;
         
@@ -175,6 +185,7 @@ export function Chat({
       
       globalStreamingState.isStreaming = false;
       setStatus('ready');
+      setAbortController(null);
       
       await saveMessages({
         messages: [
@@ -193,6 +204,12 @@ export function Chat({
     } catch (error) {
       setStatus('ready');
       globalStreamingState.isStreaming = false;
+      setAbortController(null);
+      
+      // Handle aborted requests gracefully
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
       
       console.log('Error caught in chat component:', error);
       
@@ -259,10 +276,16 @@ export function Chat({
     }
   }, [id, userId, isCreatingChat, vllmTransport, mutate]);
   
-  const stop = () => {
+  const stop = useCallback(() => {
+    // Abort the ongoing request if there's one
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+    }
+    
     setStatus('ready');
     globalStreamingState.isStreaming = false;
-  };
+  }, [abortController]);
   
   const regenerate = () => {
     if (messages.length >= 2) {
@@ -296,7 +319,6 @@ export function Chat({
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
-          selectedModelId={initialChatModel}
           isReadonly={isReadonly}
         />
 

@@ -113,7 +113,7 @@ const PurePreviewMessage = ({
                       <div
                         data-testid="message-content"
                         className={cn('flex flex-col gap-4', {
-                          'bg-primary text-primary-foreground px-3 py-2 rounded-xl':
+                          'bg-muted text-foreground px-3 py-2 rounded-xl':
                             message.role === 'user',
                           'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-red-500 dark:border-l-red-400 border border-red-200 dark:border-red-800 px-4 py-3 rounded-lg shadow-sm':
                             message.role === 'assistant' && displayText.startsWith('[ERROR_MESSAGE]'),

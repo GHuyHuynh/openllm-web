@@ -17,6 +17,7 @@ import { AppSidebar } from '@/components/core/app-sidebar';
 import { BASE_URL } from '@/constants/constants';
 import { DataStreamProvider } from '@/components/core/data-stream-provider';
 import { WaveLoaderScreen } from '@/components/ui/wave-loader';
+import { AboutPage } from '@/pages/about/about-page';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -24,25 +25,27 @@ interface ProvidersProps {
 
 function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider>
-      <ErrorBoundary
-        fallbackRender={({ error, resetErrorBoundary }) => (
-          <ErrorPage error={error} resetError={resetErrorBoundary} />
-        )}
-      >
-        <Suspense fallback={<WaveLoaderScreen />}>
-          <UserProvider>
-            <SidebarProvider defaultOpen={false}>
-              <BrowserRouter basename={BASE_URL}>
-                <DataStreamProvider>
-                  {children}
-                </DataStreamProvider>
-              </BrowserRouter>
-            </SidebarProvider>
-          </UserProvider>
-        </Suspense>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <div className="font-inter">
+      <ThemeProvider>
+        <ErrorBoundary
+          fallbackRender={({ error, resetErrorBoundary }) => (
+            <ErrorPage error={error} resetError={resetErrorBoundary} />
+          )}
+        >
+          <Suspense fallback={<WaveLoaderScreen />}>
+            <UserProvider>
+              <SidebarProvider defaultOpen={false}>
+                <BrowserRouter basename={BASE_URL}>
+                  <DataStreamProvider>
+                    {children}
+                  </DataStreamProvider>
+                </BrowserRouter>
+              </SidebarProvider>
+            </UserProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </div>
   );
 }
 
@@ -69,6 +72,7 @@ function AppContent() {
         <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
         <Route path="/chat/:id" element={<AppLayout><ChatPage /></AppLayout>} />
         <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
+        <Route path="/about" element={<AppLayout><AboutPage /></AppLayout>} />
         <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
       </Routes>
     </>
