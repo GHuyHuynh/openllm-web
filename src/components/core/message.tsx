@@ -1,13 +1,14 @@
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'motion/react';
 import { memo, useState } from 'react';
-import { PencilEditIcon, SparklesIcon, WarningIcon } from '@/components/ui/icons';
+//import { PencilEditIcon, SparklesIcon, WarningIcon } from '@/components/ui/icons';
+import { SparklesIcon, WarningIcon } from '@/components/ui/icons';
 import { Markdown } from '@/components/core/markdown';
 import { MessageActions } from '@/components/core/message-actions';
 import equal from 'fast-deep-equal';
 import { cn, sanitizeText } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+//import { Button } from '@/components/ui/button';
+//import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { MessageEditor } from '@/components/core/message-editor';
 import { MessageReasoning } from '@/components/core/message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
@@ -92,7 +93,8 @@ const PurePreviewMessage = ({
                     
                   return (
                     <div key={key} className="flex flex-row gap-2 items-start">
-                      {message.role === 'user' && !isReadonly && (
+                      {/* TODO: Add edit functionality */}
+                      {/* {message.role === 'user' && !isReadonly && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
@@ -108,7 +110,7 @@ const PurePreviewMessage = ({
                           </TooltipTrigger>
                           <TooltipContent>Edit message</TooltipContent>
                         </Tooltip>
-                      )}
+                      )} */}
 
                       <div
                         data-testid="message-content"
