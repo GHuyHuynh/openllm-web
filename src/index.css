@@ -120,4 +120,28 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Scrollbar styling with theme colors */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: calc(var(--radius) / 2);
+    border: 2px solid transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+  
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 }
