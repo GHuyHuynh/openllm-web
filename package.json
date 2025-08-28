@@ -10,8 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ai-sdk/openai-compatible": "^1.0.5",
-    "@ai-sdk/provider": "2.0.0-beta.1",
     "@ai-sdk/react": "2.0.0-beta.6",
     "@radix-ui/react-alert-dialog": "^1.1.14",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -39,7 +37,6 @@
     "react-router": "^7.7.1",
     "react-syntax-highlighter": "^15.6.3",
     "remark-gfm": "^4.0.1",
-    "resumable-stream": "^2.2.3",
     "sonner": "^2.0.7",
     "swr": "^2.3.4",
     "tailwind-merge": "^3.3.1",
