@@ -25,25 +25,27 @@ interface ProvidersProps {
 
 function Providers({ children }: ProvidersProps) {
   return (
-    <ThemeProvider>
-      <ErrorBoundary
-        fallbackRender={({ error, resetErrorBoundary }) => (
-          <ErrorPage error={error} resetError={resetErrorBoundary} />
-        )}
-      >
-        <Suspense fallback={<WaveLoaderScreen />}>
-          <UserProvider>
-            <SidebarProvider defaultOpen={false}>
-              <BrowserRouter basename={BASE_URL}>
-                <DataStreamProvider>
-                  {children}
-                </DataStreamProvider>
-              </BrowserRouter>
-            </SidebarProvider>
-          </UserProvider>
-        </Suspense>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <div className="font-inter">
+      <ThemeProvider>
+        <ErrorBoundary
+          fallbackRender={({ error, resetErrorBoundary }) => (
+            <ErrorPage error={error} resetError={resetErrorBoundary} />
+          )}
+        >
+          <Suspense fallback={<WaveLoaderScreen />}>
+            <UserProvider>
+              <SidebarProvider defaultOpen={false}>
+                <BrowserRouter basename={BASE_URL}>
+                  <DataStreamProvider>
+                    {children}
+                  </DataStreamProvider>
+                </BrowserRouter>
+              </SidebarProvider>
+            </UserProvider>
+          </Suspense>
+        </ErrorBoundary>
+      </ThemeProvider>
+    </div>
   );
 }
 
