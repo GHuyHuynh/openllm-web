@@ -2,7 +2,6 @@ import { useParams } from 'react-router';
 import { Chat } from '@/components/core/chat';
 import { DataStreamHandler } from '@/components/core/data-stream-handler';
 import { useChatMessages } from '@/hooks/use-chat-messages';
-import { DEFAULT_CHAT_MODEL } from '@/ai-module/models';
 import { validate as uuidValidate } from 'uuid';
 import { ChatNotFoundPage } from '@/pages/error/chat-not-found-page';
 import { ErrorPage } from '@/pages/error/error-page';
@@ -18,9 +17,6 @@ export function ChatPage() {
   }
 
   const { messages, isLoading, error, chatExists } = useChatMessages(id);
-
-  const chatModelFromCookie = document.cookie.split('; ').find(row => row.startsWith('chat-model='));
-  const chatModel = chatModelFromCookie ? chatModelFromCookie.split('=')[1] : DEFAULT_CHAT_MODEL;
 
   if (isLoading) {
     return (
@@ -53,7 +49,6 @@ export function ChatPage() {
         key={id}
         id={id}
         initialMessages={messages}
-        initialChatModel={chatModel}
         isReadonly={false}
       />
       <DataStreamHandler />

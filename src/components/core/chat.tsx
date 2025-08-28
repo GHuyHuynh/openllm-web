@@ -26,12 +26,10 @@ export const globalStreamingState = {
 export function Chat({
   id,
   initialMessages,
-  initialChatModel,
   isReadonly,
 }: {
   id: string;
   initialMessages: ChatMessage[];
-  initialChatModel: string;
   isReadonly: boolean;
 }) {
   const { mutate } = useSWRConfig();
@@ -321,7 +319,6 @@ export function Chat({
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
-          selectedModelId={initialChatModel}
           isReadonly={isReadonly}
         />
 

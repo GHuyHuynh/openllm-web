@@ -11,14 +11,10 @@ import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useNavigate } from 'react-router';
 
 interface ChatHeaderProps {
-  selectedModelId: string;
-  onModelChange?: (modelId: string) => void;
   isReadonly: boolean;
 }
 
 function PureChatHeader({
-  selectedModelId,
-  onModelChange,
   isReadonly,
 }: ChatHeaderProps) {
   const { open } = useSidebar();
@@ -49,8 +45,6 @@ function PureChatHeader({
 
       {!isReadonly && (
         <ModelSelector
-          selectedModelId={selectedModelId}
-          onModelChange={onModelChange}
           className="order-1 md:order-2"
         />
       )}
@@ -66,8 +60,6 @@ export const ChatHeader = memo(
   PureChatHeader,
   (prevProps: ChatHeaderProps, nextProps: ChatHeaderProps) => {
     return (
-      prevProps.selectedModelId === nextProps.selectedModelId &&
-      prevProps.onModelChange === nextProps.onModelChange &&
       prevProps.isReadonly === nextProps.isReadonly
     );
   }
