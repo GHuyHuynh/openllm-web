@@ -17,24 +17,24 @@ function PureSuggestedActions({
 }: SuggestedActionsProps) {
   const suggestedActions = [
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
+      title: 'What is the Capital',
+      label: 'of Nova Scotia?',
+      action: 'What is the Capital of Nova Scotia?',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'Give me the importance',
+      label: `of Open Source AI`,
+      action: `Give me the importance of Open Source AI`,
     },
     {
       title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      label: `about Nova Scotia`,
+      action: `Help me write an essay about Nova Scotia`,
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'Why is Open Source AI',
+      label: 'important to Society ?',
+      action: 'Why is Open Source AI important to Society?',
     },
   ];
 
@@ -56,7 +56,7 @@ function PureSuggestedActions({
             variant="ghost"
             onClick={async () => {
               window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
-
+              
               sendMessage({
                 id: uuidv4(), 
                 role: 'user',
