@@ -3,13 +3,12 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import { ExternalLink, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 export function ModelSelector({
   className,
