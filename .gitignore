@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# pnpm lock only
+package-lock.json
+yarn.lock
+bun.lockb
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
