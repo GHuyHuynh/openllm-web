@@ -54,15 +54,15 @@ export const HoverEffect = ({
           <Card>
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
-                <img src={item.imageSrc} alt={item.name} className="w-16 h-16 rounded-full object-cover border-2 border-zinc-700" />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent"></div>
+                <img src={item.imageSrc} alt={item.name} className="w-16 h-16 rounded-full object-cover border-2 border-zinc-700 dark:border-zinc-300" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-t from-black/20 to-transparent dark:from-white/10"></div>
               </div>
               <CardTitle className="mb-6">{item.name}</CardTitle>
               <div className="flex gap-6 justify-center">
-                <a href={item.github} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white hover:scale-110 transition-all duration-200 p-2 rounded-lg hover:bg-zinc-800/50">
+                <a href={item.github} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:scale-110 transition-all duration-200 p-2 rounded-lg hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
                   <GithubIcon size={20} />
                 </a>
-                <a href={item.linkedin} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-white hover:scale-110 transition-all duration-200 p-2 rounded-lg hover:bg-zinc-800/50">
+                <a href={item.linkedin} target="_blank" rel="noopener noreferrer" className="text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white hover:scale-110 transition-all duration-200 p-2 rounded-lg hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50">
                   <LinkedinIcon size={20} />
                 </a>
               </div>
@@ -84,7 +84,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-        "rounded-2xl h-full w-full p-4 overflow-hidden bg-black border border-transparent dark:border-white/[0.2] group-hover:border-slate-700 relative z-20",
+        "rounded-2xl h-full w-full p-4 overflow-hidden bg-white dark:bg-black border border-zinc-200 dark:border-white/[0.2] group-hover:border-slate-400 dark:group-hover:border-slate-700 relative z-20",
         className
       )}
     >
@@ -102,7 +102,7 @@ export const CardTitle = ({
   children: React.ReactNode;
 }) => {
   return (
-    <h4 className={cn("text-zinc-100 font-semibold tracking-wide text-lg", className)}>
+    <h4 className={cn("text-zinc-900 dark:text-zinc-100 font-semibold tracking-wide text-lg", className)}>
       {children}
     </h4>
   );
@@ -117,7 +117,7 @@ export const CardDescription = ({
   return (
     <p
       className={cn(
-        "mt-8 text-zinc-400 tracking-wide leading-relaxed text-sm",
+        "mt-8 text-zinc-400 dark:text-zinc-600 tracking-wide leading-relaxed text-sm",
         className
       )}
     >
