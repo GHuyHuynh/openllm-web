@@ -42,6 +42,13 @@ export function ModelSelector({
           </div>
           <div className="space-y-1">
             <div className="flex justify-between text-xs">
+              <span className="text-muted-foreground">Maker:</span>
+              <span className="flex items-center gap-1">
+                <img src={meta} alt="Meta" className="w-4 h-4" />
+                Meta Platforms
+              </span>
+            </div>
+            <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">Size:</span>
               <span>1B parameters</span>
             </div>
@@ -55,18 +62,6 @@ export function ModelSelector({
             </div>
           </div>
         </div>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <a
-            href="https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View on Hugging Face
-          </a>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

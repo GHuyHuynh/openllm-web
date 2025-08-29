@@ -1,5 +1,4 @@
 import { useWindowSize } from 'usehooks-ts';
-
 import { ModelSelector } from '@/components/core/model-selector';
 import { SidebarToggle } from '@/components/core/sidebar-toggle';
 import { Button } from '@/components/ui/button';
