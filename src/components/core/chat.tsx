@@ -348,9 +348,9 @@ export function Chat({
             />
           )}
         </form>
-        <p className="mx-auto px-4 pb-1 md:pb-2 bg-background w-full md:max-w-3xl text-xs text-muted-foreground text-center">
-          All chat history is stored in your browser
-        </p>
+        <div className="mx-auto px-4 pb-1 md:pb-2 bg-background w-full md:max-w-3xl text-xs text-muted-foreground text-center space-y-1">
+          <p>AI model and website are hosted locally at Dalhousie University • All chat history is stored in your browser</p>
+        </div>
       </div>
     </>
   );
