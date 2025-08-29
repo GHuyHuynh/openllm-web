@@ -31,7 +31,7 @@ export function PureMessageActions({
           <TooltipTrigger asChild>
             <Button
               className="py-1 px-2 h-fit text-muted-foreground"
-              variant="outline"
+              variant="ghost"
               onClick={async () => {
                 const textFromParts = message.parts
                   ?.filter((part) => part.type === 'text')
