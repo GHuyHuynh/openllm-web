@@ -57,7 +57,7 @@ export function AboutPage() {
   const navigate = useNavigate();
 
   return (
-    <section className="min-h-screen flex items-center justify-center overflow-hidden py-32 relative max-w-7xl mx-auto">
+    <section className="min-h-screen flex items-center justify-center overflow-hidden py-32 px-4 relative max-w-7xl mx-auto">
       <Button 
         variant="ghost" 
         size="sm" 
