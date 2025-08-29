@@ -53,7 +53,7 @@ function PureChatHeader({
       <NavigationMenu />
 
       <ThemeToggle
-        className="dark:bg-zinc-900 bg-zinc-100 dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4"
+        className="dark:bg-zinc-900 bg-white dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4"
       />
     </header>
   );
