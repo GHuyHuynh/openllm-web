@@ -5,6 +5,7 @@ import { HoverEffect } from "@/components/ui/hover-effect";
 import { ArrowLeft } from "lucide-react";
 import tobiImg from "@/assets/tobi.jpeg";
 import huyImg from "@/assets/huy.jpeg";
+import hoangImg from "@/assets/hoang.jpeg";
 import hassanImg from "@/assets/hassan.jpeg";
 import vanshImg from "@/assets/vansh.jpeg";
 import eduardImg from "@/assets/eduard.jpeg";
@@ -38,6 +39,12 @@ export const contributors = [
     name: "Hassan Chowdhry",
     github: "https://github.com/HassanChowdhry",
     linkedin: "https://www.linkedin.com/in/hassanchowdhry/",
+  },
+  {
+    imageSrc: hoangImg,
+    name: "Hoang Le",
+    github: "https://github.com/hoangls03",
+    linkedin: "https://www.linkedin.com/in/hoang-harold-le/",
   },
   {
     imageSrc: vanshImg,
