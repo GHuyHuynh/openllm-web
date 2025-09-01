@@ -1,4 +1,4 @@
-import { SparklesIcon } from "@/components/ui/icons";
+import { SparklesIcon, GitIcon } from "@/components/ui/icons";
 import { useNavigate } from 'react-router';
 import { Button } from "@/components/ui/button";
 import { HoverEffect } from "@/components/ui/hover-effect";
@@ -99,10 +99,21 @@ export function AboutPage() {
             <p className="mx-auto max-w-3xl text-center text-muted-foreground md:text-lg">
               {data.description}
             </p>
-            <div className="flex flex-col items-center justify-center gap-3 pt-3 pb-12">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3 pb-12">
               <Button size="lg" asChild>
                 <a onClick={() => navigate(data.button.url)}>
                   {data.button.text}
+                </a>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <a 
+                  href="https://github.com/GHuyHuynh/openllm-web" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  <GitIcon />
+                  View on GitHub
                 </a>
               </Button>
             </div>
