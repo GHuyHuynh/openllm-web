@@ -1,6 +1,6 @@
 # OpenLLM Web Chat
 
-A React-based LLM chat application, featuring local-first (browser storage) data storage and real-time streaming responses.
+An open-source, self-hosted, open access LLM chat application, featuring local-first (browser storage) data storage and real-time streaming responses.
 
 ## Features
 
