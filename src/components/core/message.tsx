@@ -1,14 +1,21 @@
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'motion/react';
 import { memo, useState } from 'react';
-//import { PencilEditIcon, SparklesIcon, WarningIcon } from '@/components/ui/icons';
-import { SparklesIcon, WarningIcon } from '@/components/ui/icons';
+import {
+  PencilEditIcon,
+  SparklesIcon,
+  WarningIcon,
+} from '@/components/ui/icons';
 import { Markdown } from '@/components/core/markdown';
 import { MessageActions } from '@/components/core/message-actions';
 import equal from 'fast-deep-equal';
 import { cn, sanitizeText } from '@/lib/utils';
-//import { Button } from '@/components/ui/button';
-//import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { MessageEditor } from '@/components/core/message-editor';
 import { MessageReasoning } from '@/components/core/message-reasoning';
 import type { UseChatHelpers } from '@ai-sdk/react';
@@ -21,6 +28,10 @@ const PurePreviewMessage = ({
   regenerate,
   isReadonly,
   requiresScrollPadding,
+  sendMessage,
+  triggerAIResponse,
+  replaceAIResponse,
+  chatId,
 }: {
   message: ChatMessage;
   isLoading: boolean;
@@ -28,6 +39,13 @@ const PurePreviewMessage = ({
   regenerate: UseChatHelpers<ChatMessage>['regenerate'];
   isReadonly: boolean;
   requiresScrollPadding: boolean;
+  sendMessage?: (message: ChatMessage) => void;
+  triggerAIResponse?: (messages: ChatMessage[]) => Promise<void>;
+  replaceAIResponse?: (
+    messages: ChatMessage[],
+    targetIndex: number,
+  ) => Promise<void>;
+  chatId: string;
 }) => {
   const [mode, setMode] = useState<'view' | 'edit'>('view');
 
@@ -35,7 +53,7 @@ const PurePreviewMessage = ({
     <AnimatePresence>
       <motion.div
         data-testid={`message-${message.role}`}
-        className="w-full mx-auto max-w-3xl px-4 group/message"
+        className='w-full mx-auto max-w-3xl px-4 group/message'
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         data-role={message.role}
@@ -50,15 +68,25 @@ const PurePreviewMessage = ({
           )}
         >
           {message.role === 'assistant' && (
-            <div className={cn(
-              "size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background",
-              {
-                'bg-red-100 dark:bg-red-900/30 ring-red-300 dark:ring-red-700 text-red-600 dark:text-red-400': 
-                  message.parts?.some(part => part.type === 'text' && part.text.startsWith('[ERROR_MESSAGE]'))
-              }
-            )}>
-              <div className="translate-y-px">
-                {message.parts?.some(part => part.type === 'text' && part.text.startsWith('[ERROR_MESSAGE]')) ? (
+            <div
+              className={cn(
+                'size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border bg-background',
+                {
+                  'bg-red-100 dark:bg-red-900/30 ring-red-300 dark:ring-red-700 text-red-600 dark:text-red-400':
+                    message.parts?.some(
+                      (part) =>
+                        part.type === 'text' &&
+                        part.text.startsWith('[ERROR_MESSAGE]'),
+                    ),
+                },
+              )}
+            >
+              <div className='translate-y-px'>
+                {message.parts?.some(
+                  (part) =>
+                    part.type === 'text' &&
+                    part.text.startsWith('[ERROR_MESSAGE]'),
+                ) ? (
                   <WarningIcon size={14} />
                 ) : (
                   <SparklesIcon size={14} />
@@ -90,17 +118,16 @@ const PurePreviewMessage = ({
                 if (mode === 'view') {
                   // Just use the text from the message part directly
                   const displayText = part.text;
-                    
+
                   return (
-                    <div key={key} className="flex flex-row gap-2 items-start">
-                      {/* TODO: Add edit functionality */}
-                      {/* {message.role === 'user' && !isReadonly && (
+                    <div key={key} className='flex flex-row gap-2 items-start'>
+                      {message.role === 'user' && !isReadonly && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button
-                              data-testid="message-edit-button"
-                              variant="ghost"
-                              className="px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100"
+                              data-testid='message-edit-button'
+                              variant='ghost'
+                              className='px-2 h-fit rounded-full text-muted-foreground opacity-0 group-hover/message:opacity-100'
                               onClick={() => {
                                 setMode('edit');
                               }}
@@ -110,22 +137,23 @@ const PurePreviewMessage = ({
                           </TooltipTrigger>
                           <TooltipContent>Edit message</TooltipContent>
                         </Tooltip>
-                      )} */}
+                      )}
 
                       <div
-                        data-testid="message-content"
+                        data-testid='message-content'
                         className={cn('flex flex-col gap-4', {
                           'bg-muted text-foreground px-3 py-2 rounded-xl':
                             message.role === 'user',
                           'bg-red-50 dark:bg-red-950/20 border-l-4 border-l-red-500 dark:border-l-red-400 border border-red-200 dark:border-red-800 px-4 py-3 rounded-lg shadow-sm':
-                            message.role === 'assistant' && displayText.startsWith('[ERROR_MESSAGE]'),
+                            message.role === 'assistant' &&
+                            displayText.startsWith('[ERROR_MESSAGE]'),
                         })}
                       >
                         <Markdown>
                           {sanitizeText(
-                            displayText.startsWith('[ERROR_MESSAGE]') 
-                              ? displayText.replace('[ERROR_MESSAGE] ', '') 
-                              : displayText
+                            displayText.startsWith('[ERROR_MESSAGE]')
+                              ? displayText.replace('[ERROR_MESSAGE] ', '')
+                              : displayText,
                           )}
                         </Markdown>
                       </div>
@@ -135,8 +163,8 @@ const PurePreviewMessage = ({
 
                 if (mode === 'edit') {
                   return (
-                    <div key={key} className="flex flex-row gap-2 items-start">
-                      <div className="size-8" />
+                    <div key={key} className='flex flex-row gap-2 items-start'>
+                      <div className='size-8' />
 
                       <MessageEditor
                         key={message.id}
@@ -144,6 +172,10 @@ const PurePreviewMessage = ({
                         setMode={setMode}
                         setMessages={setMessages}
                         regenerate={regenerate}
+                        sendMessage={sendMessage}
+                        triggerAIResponse={triggerAIResponse}
+                        replaceAIResponse={replaceAIResponse}
+                        chatId={chatId}
                       />
                     </div>
                   );
@@ -186,8 +218,8 @@ export const ThinkingMessage = () => {
 
   return (
     <motion.div
-      data-testid="message-assistant-loading"
-      className="w-full mx-auto max-w-3xl px-4 group/message min-h-96"
+      data-testid='message-assistant-loading'
+      className='w-full mx-auto max-w-3xl px-4 group/message min-h-96'
       initial={{ y: 5, opacity: 0 }}
       animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
       data-role={role}
@@ -200,12 +232,12 @@ export const ThinkingMessage = () => {
           },
         )}
       >
-        <div className="size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border">
+        <div className='size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border'>
           <SparklesIcon size={14} />
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
-          <div className="flex flex-col gap-4 text-muted-foreground">
+        <div className='flex flex-col gap-2 w-full'>
+          <div className='flex flex-col gap-4 text-muted-foreground'>
             Hmm...
           </div>
         </div>
