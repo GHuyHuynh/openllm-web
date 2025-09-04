@@ -35,10 +35,20 @@ export async function saveChat({
     });
   } catch (error) {
     // If the chat already exists, that's okay - just return success
-    if (error && typeof error === 'object' && 'name' in error && error.name === 'ConstraintError') {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'name' in error &&
+      error.name === 'ConstraintError'
+    ) {
       return; // Chat already exists, which is fine
     }
-    throw new ChatSDKError('bad_request:database', `Failed to save chat: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new ChatSDKError(
+      'bad_request:database',
+      `Failed to save chat: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`
+    );
   }
 }
 
@@ -61,7 +71,7 @@ export async function getMessageById({ id }: { id: string }) {
   } catch (error) {
     throw new ChatSDKError(
       'bad_request:database',
-      'Failed to get message by id',
+      'Failed to get message by id'
     );
   }
 }
@@ -89,7 +99,7 @@ export async function getChatsByUserId({
       if (!selectedChat) {
         throw new ChatSDKError(
           'not_found:database',
-          `Chat with id ${startingAfter} not found`,
+          `Chat with id ${startingAfter} not found`
         );
       }
 
@@ -99,10 +109,13 @@ export async function getChatsByUserId({
         .equals(id)
         .and(chat => chat.createdAt > selectedChat.createdAt)
         .sortBy('createdAt');
-      
+
       // Sort in descending order and limit
       filteredChats = filteredChats
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
         .slice(0, extendedLimit);
     } else if (endingBefore) {
       // Find the reference chat for cursor
@@ -111,7 +124,7 @@ export async function getChatsByUserId({
       if (!selectedChat) {
         throw new ChatSDKError(
           'not_found:database',
-          `Chat with id ${endingBefore} not found`,
+          `Chat with id ${endingBefore} not found`
         );
       }
 
@@ -121,10 +134,13 @@ export async function getChatsByUserId({
         .equals(id)
         .and(chat => chat.createdAt < selectedChat.createdAt)
         .sortBy('createdAt');
-      
+
       // Sort in descending order and limit
       filteredChats = filteredChats
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
         .slice(0, extendedLimit);
     } else {
       // Get all chats for the user
@@ -132,10 +148,13 @@ export async function getChatsByUserId({
         .where('userId')
         .equals(id)
         .sortBy('createdAt');
-      
+
       // Sort in descending order and limit
       filteredChats = filteredChats
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
         .slice(0, extendedLimit);
     }
 
@@ -151,7 +170,7 @@ export async function getChatsByUserId({
     }
     throw new ChatSDKError(
       'bad_request:database',
-      'Failed to get chats by user id',
+      'Failed to get chats by user id'
     );
   }
 }
@@ -168,16 +187,18 @@ export async function saveMessages({
   }
 }
 
-export async function getMessagesByChatId({
-  id,
-}: {
-  id: string;
-}) {
+export async function getMessagesByChatId({ id }: { id: string }) {
   try {
-    const messages = await db.message.orderBy('createdAt').filter(msg => msg.chatId === id).toArray();
+    const messages = await db.message
+      .orderBy('createdAt')
+      .filter(msg => msg.chatId === id)
+      .toArray();
     return messages;
   } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to get messages by chat id');
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get messages by chat id'
+    );
   }
 }
 
@@ -186,7 +207,27 @@ export async function deleteChatById({ id }: { id: string }) {
     await db.chat.delete(id);
     await db.message.where('chatId').equals(id).delete();
   } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to delete chat by id');
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to delete chat by id'
+    );
+  }
+}
+
+export async function updateChatById({
+  id,
+  title,
+}: {
+  id: string;
+  title: string;
+}) {
+  try {
+    await db.chat.update(id, { title });
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to update chat by id'
+    );
   }
 }
 
@@ -214,26 +255,27 @@ export async function deleteMessagesByChatIdAfterTimestamp({
         .delete();
     }
   } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to delete messages by chat id after timestamp');
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to delete messages by chat id after timestamp'
+    );
   }
 }
 
 export async function getMessageCountByUserId({
   id,
   differenceInHours,
-}: { 
-  id: string; differenceInHours: number 
+}: {
+  id: string;
+  differenceInHours: number;
 }) {
   try {
     const twentyFourHoursAgo = new Date(
-      Date.now() - differenceInHours * 60 * 60 * 1000,
+      Date.now() - differenceInHours * 60 * 60 * 1000
     );
 
-    const userChats = await db.chat
-      .where('userId')
-      .equals(id)
-      .toArray();
-    
+    const userChats = await db.chat.where('userId').equals(id).toArray();
+
     const userChatIds = userChats.map(chat => chat.id);
 
     if (userChatIds.length === 0) {
@@ -243,44 +285,42 @@ export async function getMessageCountByUserId({
     const messageCount = await db.message
       .where('role')
       .equals('user')
-      .and(message => 
-        message.createdAt >= twentyFourHoursAgo && 
-        userChatIds.includes(message.chatId)
+      .and(
+        message =>
+          message.createdAt >= twentyFourHoursAgo &&
+          userChatIds.includes(message.chatId)
       )
       .count();
 
     return messageCount;
   } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to get message count by user id');
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to get message count by user id'
+    );
   }
 }
 
 export async function deleteAllUserData({ userId }: { userId: string }) {
   try {
     // Delete all messages for chats belonging to this user
-    const userChats = await db.chat
-      .where('userId')
-      .equals(userId)
-      .toArray();
-    
+    const userChats = await db.chat.where('userId').equals(userId).toArray();
+
     const userChatIds = userChats.map(chat => chat.id);
 
     if (userChatIds.length > 0) {
-      await db.message
-        .where('chatId')
-        .anyOf(userChatIds)
-        .delete();
+      await db.message.where('chatId').anyOf(userChatIds).delete();
     }
 
     // Delete all chats for this user
-    await db.chat
-      .where('userId')
-      .equals(userId)
-      .delete();
+    await db.chat.where('userId').equals(userId).delete();
 
     // Delete the user
     await db.user.delete(userId);
   } catch (error) {
-    throw new ChatSDKError('bad_request:database', 'Failed to delete all user data');
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to delete all user data'
+    );
   }
 }
