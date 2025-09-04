@@ -16,7 +16,7 @@ export const HoverEffect = ({
   }[];
   className?: string;
 }) => {
-  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
     <div
@@ -30,7 +30,7 @@ export const HoverEffect = ({
           to={item.linkedin}
           key={item.linkedin}
           target="_blank"
-          className="relative group  block p-2 h-full w-full"
+          className="relative group block p-2 h-full w-full"
           onMouseEnter={() => setHoveredIndex(idx)}
           onMouseLeave={() => setHoveredIndex(null)}
         >

@@ -9,6 +9,7 @@ import hoangImg from '@/assets/hoang.jpeg';
 import hassanImg from '@/assets/hassan.jpeg';
 import vanshImg from '@/assets/vansh.jpeg';
 import eduardImg from '@/assets/eduard.jpeg';
+import theoImg from '@/assets/theo.png';
 
 const data = {
   icon: <SparklesIcon size={24} />,
@@ -58,6 +59,12 @@ export const contributors = [
     name: 'Eduard Kakosyan',
     github: 'https://github.com/EduardKakosyan',
     linkedin: 'https://www.linkedin.com/in/eduard-kakosyan/',
+  },
+  {
+    imageSrc: theoImg,
+    name: 'Théo Bourgeois',
+    github: 'https://github.com/theobourgeois',
+    linkedin: 'https://www.linkedin.com/in/theobourgeois/',
   },
 ];
 
