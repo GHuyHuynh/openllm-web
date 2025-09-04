@@ -11,10 +11,7 @@ interface SuggestedActionsProps {
   sendMessage: UseChatHelpers<ChatMessage>['sendMessage'];
 }
 
-function PureSuggestedActions({
-  chatId,
-  sendMessage,
-}: SuggestedActionsProps) {
+function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
   const suggestedActions = [
     {
       title: 'What is the Capital',
@@ -56,9 +53,9 @@ function PureSuggestedActions({
             variant="ghost"
             onClick={async () => {
               window.history.replaceState({}, '', `${BASE_URL}/chat/${chatId}`);
-              
+
               sendMessage({
-                id: uuidv4(), 
+                id: uuidv4(),
                 role: 'user',
                 parts: [
                   {
@@ -86,5 +83,5 @@ export const SuggestedActions = memo(
   (prevProps, nextProps) => {
     if (prevProps.chatId !== nextProps.chatId) return false;
     return true;
-  },
+  }
 );

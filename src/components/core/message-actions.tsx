@@ -34,8 +34,8 @@ export function PureMessageActions({
               variant="ghost"
               onClick={async () => {
                 const textFromParts = message.parts
-                  ?.filter((part) => part.type === 'text')
-                  .map((part) => part.text)
+                  ?.filter(part => part.type === 'text')
+                  .map(part => part.text)
                   .join('\n')
                   .trim();
 
@@ -64,5 +64,5 @@ export const MessageActions = memo(
     if (prevProps.isLoading !== nextProps.isLoading) return false;
 
     return true;
-  },
+  }
 );

@@ -89,6 +89,7 @@ Configured for Dal Server deployment with base URL `/~huyh/openllm` and build ou
 ```
 
 **Flow Explanation:**
+
 1. User types message in chat UI
 2. Message sent via custom vLLM transport to API server
 3. Server streams response as Server-Sent Events (SSE)

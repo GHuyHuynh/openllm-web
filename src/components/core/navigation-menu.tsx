@@ -37,5 +37,5 @@ export function NavigationMenu() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

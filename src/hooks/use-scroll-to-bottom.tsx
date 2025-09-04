@@ -10,7 +10,7 @@ export function useScrollToBottom() {
   const { data: isAtBottom = false, mutate: setIsAtBottom } = useSWR(
     'messages:is-at-bottom',
     null,
-    { fallbackData: false },
+    { fallbackData: false }
   );
 
   const { data: scrollBehavior = false, mutate: setScrollBehavior } =
@@ -27,7 +27,7 @@ export function useScrollToBottom() {
     (scrollBehavior: ScrollBehavior = 'smooth') => {
       setScrollBehavior(scrollBehavior);
     },
-    [setScrollBehavior],
+    [setScrollBehavior]
   );
 
   function onViewportEnter() {

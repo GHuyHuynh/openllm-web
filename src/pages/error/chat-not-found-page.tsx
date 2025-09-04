@@ -21,11 +21,14 @@ export function ChatNotFoundPage() {
           <div className="relative">
             <MessageCircleX className="h-24 w-24 text-muted-foreground/50" />
           </div>
-          
+
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold text-foreground">Chat Not Found</h1>
+            <h1 className="text-4xl font-bold text-foreground">
+              Chat Not Found
+            </h1>
             <p className="text-xl text-muted-foreground max-w-md">
-              The chat you're looking for doesn't exist or may have been deleted.
+              The chat you're looking for doesn't exist or may have been
+              deleted.
             </p>
           </div>
 
@@ -38,9 +41,10 @@ export function ChatNotFoundPage() {
                 </Button>
               </Link>
             </div>
-            
+
             <p className="text-sm text-muted-foreground">
-              Or check your chat history in the sidebar to find your previous conversations.
+              Or check your chat history in the sidebar to find your previous
+              conversations.
             </p>
           </div>
         </div>
@@ -53,10 +57,16 @@ export function ChatNotFoundPage() {
             <p>• The chat may have been deleted</p>
             <p>• You may not have permission to access this chat</p>
           </div>
-          
+
           <div className="mt-4 pt-4 border-t">
             <p className="text-sm text-muted-foreground">
-              Need help? <Link to="/contact" className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium">Contact support</Link>
+              Need help?{' '}
+              <Link
+                to="/contact"
+                className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+              >
+                Contact support
+              </Link>
             </p>
           </div>
         </div>
