@@ -5,6 +5,7 @@ export async function createUser({ id }: { id: string }) {
   try {
     return await db.user.add({ id });
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError('bad_request:database', 'Failed to create user');
   }
 }
@@ -13,6 +14,7 @@ export async function getUserById({ id }: { id: string }) {
   try {
     return await db.user.get(id);
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError('bad_request:database', 'Failed to get user by id');
   }
 }
@@ -60,6 +62,7 @@ export async function getChatById({ id }: { id: string }) {
     }
     return selectedChat;
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError('bad_request:database', 'Failed to get chat by id');
   }
 }
@@ -69,6 +72,7 @@ export async function getMessageById({ id }: { id: string }) {
     const returnMessage = await db.message.where('id').equals(id).toArray();
     return returnMessage;
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get message by id'
@@ -183,6 +187,7 @@ export async function saveMessages({
   try {
     return await db.message.bulkAdd(messages);
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError('bad_request:database', 'Failed to save messages');
   }
 }
@@ -195,6 +200,7 @@ export async function getMessagesByChatId({ id }: { id: string }) {
       .toArray();
     return messages;
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get messages by chat id'
@@ -207,6 +213,7 @@ export async function deleteChatById({ id }: { id: string }) {
     await db.chat.delete(id);
     await db.message.where('chatId').equals(id).delete();
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to delete chat by id'
@@ -224,6 +231,7 @@ export async function updateChatById({
   try {
     await db.chat.update(id, { title });
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to update chat by id'
@@ -255,6 +263,7 @@ export async function deleteMessagesByChatIdAfterTimestamp({
         .delete();
     }
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to delete messages by chat id after timestamp'
@@ -294,6 +303,7 @@ export async function getMessageCountByUserId({
 
     return messageCount;
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to get message count by user id'
@@ -318,6 +328,7 @@ export async function deleteAllUserData({ userId }: { userId: string }) {
     // Delete the user
     await db.user.delete(userId);
   } catch (error) {
+    console.error(error);
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to delete all user data'

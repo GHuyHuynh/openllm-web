@@ -5,7 +5,11 @@ import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/ui/icons';
 import { useSidebar } from '@/components/ui/sidebar';
 import { memo } from 'react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useNavigate } from 'react-router';
 import { NavigationMenu } from '@/components/core/navigation-menu';
@@ -14,9 +18,7 @@ interface ChatHeaderProps {
   isReadonly: boolean;
 }
 
-function PureChatHeader({
-  isReadonly,
-}: ChatHeaderProps) {
+function PureChatHeader({ isReadonly }: ChatHeaderProps) {
   const { open } = useSidebar();
   const navigate = useNavigate();
   const { width: windowWidth } = useWindowSize();
@@ -43,17 +45,11 @@ function PureChatHeader({
         </Tooltip>
       )}
 
-      {!isReadonly && (
-        <ModelSelector
-          className="order-1 md:order-2"
-        />
-      )}
+      {!isReadonly && <ModelSelector className="order-1 md:order-2" />}
 
       <NavigationMenu />
 
-      <ThemeToggle
-        className="dark:bg-zinc-900 bg-white dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4"
-      />
+      <ThemeToggle className="dark:bg-zinc-900 bg-white dark:hover:bg-zinc-800 hover:bg-zinc-200 dark:text-zinc-50 text-zinc-900 hidden md:flex py-1.5 px-2 h-fit md:h-[34px] order-4" />
     </header>
   );
 }
@@ -61,8 +57,6 @@ function PureChatHeader({
 export const ChatHeader = memo(
   PureChatHeader,
   (prevProps: ChatHeaderProps, nextProps: ChatHeaderProps) => {
-    return (
-      prevProps.isReadonly === nextProps.isReadonly
-    );
+    return prevProps.isReadonly === nextProps.isReadonly;
   }
 );

@@ -27,7 +27,9 @@ export function MessageEditor({
 }: MessageEditorProps) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [draftContent, setDraftContent] = useState<string>(getTextFromMessage(message));
+  const [draftContent, setDraftContent] = useState<string>(
+    getTextFromMessage(message)
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -80,8 +82,8 @@ export function MessageEditor({
               id: message.id,
             });
 
-            setMessages((messages) => {
-              const index = messages.findIndex((m) => m.id === message.id);
+            setMessages(messages => {
+              const index = messages.findIndex(m => m.id === message.id);
 
               if (index !== -1) {
                 const updatedMessage: ChatMessage = {

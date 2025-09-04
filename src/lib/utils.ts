@@ -13,11 +13,11 @@ import { type DBMessage } from '@/lib/db/schema';
 import { formatISO } from 'date-fns';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function pingOllama(): Promise<boolean> {
-  return fetch(VLLM_BASE_URL).then((res) => res.ok);
+  return fetch(VLLM_BASE_URL).then(res => res.ok);
 }
 
 export const fetcher = async (url: string) => {
@@ -33,7 +33,7 @@ export const fetcher = async (url: string) => {
 
 export async function fetchWithErrorHandlers(
   input: RequestInfo | URL,
-  init?: RequestInit,
+  init?: RequestInit
 ) {
   try {
     const response = await fetch(input, init);
@@ -73,7 +73,7 @@ type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;
 type ResponseMessage = ResponseMessageWithoutId & { id: string };
 
 export function getMostRecentUserMessage(messages: Array<UIMessage>) {
-  const userMessages = messages.filter((message) => message.role === 'user');
+  const userMessages = messages.filter(message => message.role === 'user');
   return userMessages.at(-1);
 }
 
@@ -94,7 +94,7 @@ export function sanitizeText(text: string) {
 }
 
 export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
-  return messages.map((message) => ({
+  return messages.map(message => ({
     id: message.id,
     role: message.role as 'user' | 'assistant' | 'system',
     parts: message.parts as UIMessagePart<CustomUIDataTypes, ChatTools>[],
@@ -106,7 +106,7 @@ export function convertToUIMessages(messages: DBMessage[]): ChatMessage[] {
 
 export function getTextFromMessage(message: ChatMessage): string {
   return message.parts
-    .filter((part) => part.type === 'text')
-    .map((part) => part.text)
+    .filter(part => part.type === 'text')
+    .map(part => part.text)
     .join('');
 }

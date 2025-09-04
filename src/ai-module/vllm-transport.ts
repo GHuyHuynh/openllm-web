@@ -1,5 +1,9 @@
 import type { UIMessage } from '@ai-sdk/react';
-import type { UIMessageChunk, ChatRequestOptions, ChatTransport } from 'ai-latest';
+import type {
+  UIMessageChunk,
+  ChatRequestOptions,
+  ChatTransport,
+} from 'ai-latest';
 import { ChatSDKError } from '@/lib/errors';
 
 /**
@@ -8,35 +12,47 @@ import { ChatSDKError } from '@/lib/errors';
 function handle404Error(errorText: string, modelName: string): ChatSDKError {
   try {
     const errorData = JSON.parse(errorText);
-    
+
     // Check for VLLM error format: {"object":"error","message":"The model `ABJFSKJHJS` does not exist.","type":"NotFoundError","param":null,"code":404}
     if (errorData.object === 'error' && errorData.message) {
       // Check for model not found error
       if (errorData.message.includes('does not exist')) {
-        const modelMatch = errorData.message.match(/The model `([^`]+)` does not exist/);
+        const modelMatch = errorData.message.match(
+          /The model `([^`]+)` does not exist/
+        );
         const extractedModel = modelMatch ? modelMatch[1] : modelName;
-        return new ChatSDKError('not_found:model', `Model "${extractedModel}" does not exist`);
+        return new ChatSDKError(
+          'not_found:model',
+          `Model "${extractedModel}" does not exist`
+        );
       }
-      
-      // Check for other 404 scenarios  
+
+      // Check for other 404 scenarios
       if (errorData.message.includes('not found')) {
         return new ChatSDKError('not_found:api', errorData.message);
       }
-      
+
       // Generic 404 error with VLLM format
       return new ChatSDKError('not_found:api', errorData.message);
     }
-    
+
     // Fallback for other JSON formats
     if (errorData.message && errorData.message.includes('does not exist')) {
-      const modelMatch = errorData.message.match(/The model `([^`]+)` does not exist/);
+      const modelMatch = errorData.message.match(
+        /The model `([^`]+)` does not exist/
+      );
       const extractedModel = modelMatch ? modelMatch[1] : modelName;
-      return new ChatSDKError('not_found:model', `Model "${extractedModel}" does not exist`);
+      return new ChatSDKError(
+        'not_found:model',
+        `Model "${extractedModel}" does not exist`
+      );
     }
-    
+
     // Generic 404 error
-    return new ChatSDKError('not_found:api', errorData.message || 'Resource not found');
-    
+    return new ChatSDKError(
+      'not_found:api',
+      errorData.message || 'Resource not found'
+    );
   } catch (parseError) {
     // If JSON parsing fails, return generic 404 error
     return new ChatSDKError('not_found:api', 'Unable to parse error response');
@@ -64,19 +80,20 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
     this.model = options.model;
     this.defaultHeaders = {
       'Content-Type': 'application/json',
-      ...(options.apiKey && { 'Authorization': `Bearer ${options.apiKey}` }),
+      ...(options.apiKey && { Authorization: `Bearer ${options.apiKey}` }),
       ...options.headers,
     };
   }
 
-  async sendMessages(options: {
-    trigger: 'submit-message' | 'regenerate-message';
-    chatId: string;
-    messageId: string | undefined;
-    messages: UIMessage[];
-    abortSignal: AbortSignal | undefined;
-  } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk>> {
-
+  async sendMessages(
+    options: {
+      trigger: 'submit-message' | 'regenerate-message';
+      chatId: string;
+      messageId: string | undefined;
+      messages: UIMessage[];
+      abortSignal: AbortSignal | undefined;
+    } & ChatRequestOptions
+  ): Promise<ReadableStream<UIMessageChunk>> {
     // Convert UI messages to OpenAI format
     const openAIMessages = this.convertToOpenAIMessages(options.messages);
 
@@ -105,7 +122,7 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
 
       if (!response.ok) {
         const errorText = await response.text();
-        
+
         // Handle 404 errors with dedicated handler
         if (response.status === 404) {
           console.log('404 error detected, errorText:', errorText);
@@ -114,8 +131,10 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
           console.log('404 handler returned error:', error.type);
           throw error;
         }
-        
-        throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+
+        throw new Error(
+          `HTTP ${response.status}: ${response.statusText} - ${errorText}`
+        );
       }
 
       if (!response.body) {
@@ -123,15 +142,21 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
       }
 
       // Convert the SSE stream to UIMessageChunk stream
-      return this.convertSSEToUIMessageStream(response.body, options.abortSignal);
-
+      return this.convertSSEToUIMessageStream(
+        response.body,
+        options.abortSignal
+      );
     } catch (error) {
       // Re-throw ChatSDKError so it can be handled by the chat component
       if (error instanceof ChatSDKError) {
-        console.log('Re-throwing ChatSDKError to chat component:', error.type, error.surface);
+        console.log(
+          'Re-throwing ChatSDKError to chat component:',
+          error.type,
+          error.surface
+        );
         throw error;
       }
-      
+
       // Return an error stream for other errors
       return this.createErrorStream(error as Error);
     }
@@ -140,7 +165,8 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
   async reconnectToStream(
     _options: {
       chatId: string;
-    } & ChatRequestOptions): Promise<ReadableStream<UIMessageChunk> | null> {
+    } & ChatRequestOptions
+  ): Promise<ReadableStream<UIMessageChunk> | null> {
     // vllm doesn't typically support reconnecting to streams
     // Return null to indicate no active stream to reconnect to
     return null;
@@ -269,7 +295,6 @@ export class VLLMChatTransport implements ChatTransport<UIMessage> {
             } as UIMessageChunk);
           }
           controller.close();
-
         } catch (error) {
           controller.enqueue({
             type: 'error',

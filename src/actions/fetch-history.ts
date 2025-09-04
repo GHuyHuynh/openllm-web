@@ -1,5 +1,5 @@
-import type { ChatHistory } from "@/components/core/sidebar-history";
-import { getChatsByUserId } from "@/lib/db/queries";
+import type { ChatHistory } from '@/components/core/sidebar-history';
+import { getChatsByUserId } from '@/lib/db/queries';
 import { ChatSDKError } from '@/lib/errors';
 
 export interface GetChatHistoryWithPaginationParams {
@@ -31,13 +31,14 @@ async function getChatHistoryWithPagination({
   return chats;
 }
 
-export const fetchChatHistory = async (params: GetChatHistoryWithPaginationParams): Promise<ChatHistory> => {
+export const fetchChatHistory = async (
+  params: GetChatHistoryWithPaginationParams
+): Promise<ChatHistory> => {
   const result = await getChatHistoryWithPagination(params);
-  
+
   if (result instanceof Error) {
     throw new ChatSDKError('bad_request:history', 'Failed to get chat history');
   }
-  
+
   return result;
 };
-

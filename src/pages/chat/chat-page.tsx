@@ -9,7 +9,7 @@ import { WaveLoader } from '@/components/ui/wave-loader';
 
 export function ChatPage() {
   const { id } = useParams<{ id: string }>();
-  
+
   if (!id) {
     // Redirect to home if no ID is provided
     window.location.href = '/';
@@ -32,7 +32,7 @@ export function ChatPage() {
 
   // Check if this is a valid UUID format (indicating a new chat that may not be saved yet)
   const isValidUUID = uuidValidate(id);
-  
+
   if (!chatExists && !isLoading) {
     // If it's a valid UUID, it might be a new chat - allow it to proceed
     // If it's not a valid UUID, show chat not found page
@@ -45,12 +45,7 @@ export function ChatPage() {
 
   return (
     <>
-      <Chat
-        key={id}
-        id={id}
-        initialMessages={messages}
-        isReadonly={false}
-      />
+      <Chat key={id} id={id} initialMessages={messages} isReadonly={false} />
       <DataStreamHandler />
     </>
   );

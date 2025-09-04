@@ -17,7 +17,7 @@ export function DataStreamProvider({
   children: React.ReactNode;
 }) {
   const [dataStream, setDataStream] = useState<DataUIPart<CustomUIDataTypes>[]>(
-    [],
+    []
   );
 
   const value = useMemo(() => ({ dataStream, setDataStream }), [dataStream]);

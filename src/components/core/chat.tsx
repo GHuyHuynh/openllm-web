@@ -12,7 +12,11 @@ import { useSearchParams } from 'react-router';
 import { ChatSDKError } from '@/lib/errors';
 import { v4 as uuidv4 } from 'uuid';
 import { useUserId } from '@/hooks/use-user-id';
-import { BASE_URL, VLLM_BASE_URL, DEFAULT_VLLM_MODEL } from '@/constants/constants';
+import {
+  BASE_URL,
+  VLLM_BASE_URL,
+  DEFAULT_VLLM_MODEL,
+} from '@/constants/constants';
 import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
 import { generateTitleFromUserMessage } from '@/actions/actions';
@@ -20,7 +24,7 @@ import { generateTitleFromUserMessage } from '@/actions/actions';
 export const globalStreamingState = {
   messageId: '',
   content: '',
-  isStreaming: false
+  isStreaming: false,
 };
 
 export function Chat({
@@ -48,233 +52,258 @@ export function Chat({
       },
       onStreamingEnd: () => {
         globalStreamingState.isStreaming = false;
-      }
+      },
     });
   }, []);
 
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>('ready');
+  const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>(
+    'ready'
+  );
   const [isCreatingChat, setIsCreatingChat] = useState(false);
-  const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
 
-  const sendMessage = useCallback(async (message: ChatMessage) => {
-    let currentMessages: ChatMessage[] = [];
-    setMessages(prevMessages => {
-      currentMessages = [...prevMessages, message];
-      return currentMessages;
-    });
-    setStatus('submitted');
-
-    try {
-      // Check if this is the first message by checking if chat exists
-      const existingChat = await getChatById({ id });
-
-      if (!existingChat && message.role === 'user' && !isCreatingChat) {
-        setIsCreatingChat(true);
-
-        try {
-          const title = await generateTitleFromUserMessage({
-            message,
-          });
-
-          await saveChat({
-            id,
-            userId,
-            title,
-          });
-
-          // Refresh sidebar after title generation and chat creation
-          mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
-        } finally {
-          setIsCreatingChat(false);
-        }
-      }
-
-      await saveMessages({
-        messages: [{
-          id: message.id,
-          role: message.role,
-          parts: message.parts,
-          createdAt: new Date(),
-          chatId: id,
-        }],
+  const sendMessage = useCallback(
+    async (message: ChatMessage) => {
+      let currentMessages: ChatMessage[] = [];
+      setMessages(prevMessages => {
+        currentMessages = [...prevMessages, message];
+        return currentMessages;
       });
-    } catch (error) {
-      toast({
-        type: 'error',
-        description: 'Error saving message',
-      });
-      setStatus('ready');
-      return; // Early return if we can't save the message
-    }
+      setStatus('submitted');
 
-    setStatus('streaming');
+      try {
+        // Check if this is the first message by checking if chat exists
+        const existingChat = await getChatById({ id });
 
-    try {
-      // Create abort controller for this request
-      const controller = new AbortController();
-      setAbortController(controller);
+        if (!existingChat && message.role === 'user' && !isCreatingChat) {
+          setIsCreatingChat(true);
 
-      // First, try to make the API call - don't create assistant message until we know it will work
-      const assistantMessageId = uuidv4();
-      const stream = await vllmTransport.sendMessages({
-        trigger: 'submit-message',
-        chatId: id,
-        messageId: assistantMessageId,
-        messages: currentMessages,
-        abortSignal: controller.signal,
-      });
+          try {
+            const title = await generateTitleFromUserMessage({
+              message,
+            });
 
-      // Only create the assistant message after successful API call
-      const assistantMessage: ChatMessage = {
-        id: assistantMessageId,
-        role: 'assistant',
-        parts: [{ type: 'text', text: '' }],
-      };
+            await saveChat({
+              id,
+              userId,
+              title,
+            });
 
-      setMessages(prev => [...prev, assistantMessage]);
-
-      // Initialize streaming state
-      globalStreamingState.messageId = assistantMessageId;
-      globalStreamingState.content = '';
-      globalStreamingState.isStreaming = true;
-
-      const reader = stream.getReader();
-      let accumulatedContent = '';
-      let lastUpdateTime = 0;
-      const UPDATE_THROTTLE = 1; // Adjust this value to control the update frequency
-
-      while (true) {
-        // Check if request was aborted
-        if (controller.signal.aborted) {
-          sonnerToast.info('Response was stopped by user');
-          break;
-        }
-
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        if (value.type === 'text-delta') {
-          // @ts-ignore
-          accumulatedContent += value.textDelta || '';
-          globalStreamingState.content = accumulatedContent;
-
-          // Throttle UI updates for smoother streaming
-          const now = Date.now();
-          if (now - lastUpdateTime > UPDATE_THROTTLE) {
-            setMessages(current =>
-              current.map(msg =>
-                msg.id === assistantMessageId
-                  ? { ...msg, parts: [{ type: 'text', text: accumulatedContent }] }
-                  : msg
-              )
+            // Refresh sidebar after title generation and chat creation
+            mutate(
+              unstable_serialize(createChatHistoryPaginationKeyGetter(userId))
             );
-            lastUpdateTime = now;
+          } finally {
+            setIsCreatingChat(false);
           }
         }
-      }
 
-      // Final update to ensure all content is displayed
-      setMessages(current =>
-        current.map(msg =>
-          msg.id === assistantMessageId
-            ? { ...msg, parts: [{ type: 'text', text: accumulatedContent }] }
-            : msg
-        )
-      );
-
-      globalStreamingState.isStreaming = false;
-      setStatus('ready');
-      setAbortController(null);
-
-      await saveMessages({
-        messages: [
-          {
-            id: assistantMessageId,
-            role: 'assistant',
-            parts: [{ type: 'text', text: accumulatedContent }],
-            createdAt: new Date(),
-            chatId: id,
-          }
-        ],
-      });
-
-      mutate(unstable_serialize(createChatHistoryPaginationKeyGetter(userId)));
-
-    } catch (error) {
-      setStatus('ready');
-      globalStreamingState.isStreaming = false;
-      setAbortController(null);
-
-      // Handle aborted requests gracefully
-      if (error instanceof Error && error.name === 'AbortError') {
-        return;
-      }
-
-      console.log('Error caught in chat component:', error);
-
-      if (error instanceof ChatSDKError) {
-        console.log('ChatSDKError detected:', error.type, error.surface, error.message);
-
-        // Create an assistant message with the error (marked as error with special prefix)
-        const errorMessageId = uuidv4();
-        const errorMessage: ChatMessage = {
-          id: errorMessageId,
-          role: 'assistant',
-          parts: [{
-            type: 'text',
-            text: `[ERROR_MESSAGE] **Service Error**\n\n${error.message}\n\n**What you can do:**\n\n- Check your model configuration\n- Try again in a few moments\n- [Contact us](/contact) if the issue persists\n\nWe apologize for the inconvenience and are here to help resolve this issue.`
-          }],
-        };
-
-        // Add the error message to the chat
-        setMessages(prev => [...prev, errorMessage]);
-
-        // Save the error message to the database
-        try {
-          await saveMessages({
-            messages: [{
-              id: errorMessageId,
-              role: 'assistant',
-              parts: errorMessage.parts,
+        await saveMessages({
+          messages: [
+            {
+              id: message.id,
+              role: message.role,
+              parts: message.parts,
               createdAt: new Date(),
               chatId: id,
-            }],
-          });
-        } catch (saveError) {
-          console.error('Failed to save error message:', saveError);
-        }
-
-        // Also show toast for immediate feedback
+            },
+          ],
+        });
+      } catch (error) {
         toast({
           type: 'error',
-          description: error.message,
+          description: 'Error saving message',
         });
-      } else {
-        // Handle other errors
-        console.log('Generic error:', error);
+        setStatus('ready');
+        return; // Early return if we can't save the message
+      }
 
-        // Create a generic error message
-        const errorMessageId = uuidv4();
-        const errorMessage: ChatMessage = {
-          id: errorMessageId,
+      setStatus('streaming');
+
+      try {
+        // Create abort controller for this request
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        // First, try to make the API call - don't create assistant message until we know it will work
+        const assistantMessageId = uuidv4();
+        const stream = await vllmTransport.sendMessages({
+          trigger: 'submit-message',
+          chatId: id,
+          messageId: assistantMessageId,
+          messages: currentMessages,
+          abortSignal: controller.signal,
+        });
+
+        // Only create the assistant message after successful API call
+        const assistantMessage: ChatMessage = {
+          id: assistantMessageId,
           role: 'assistant',
-          parts: [{
-            type: 'text',
-            text: `[ERROR_MESSAGE] **Connection Error**\n\nFailed to send your message. This may be due to a temporary connectivity issue.\n\n**What you can do:**\n\n- Check your internet connection\n- Verify your model configuration\n- Try sending your message again\n- [Contact us](/contact) if the issue persists\n\nWe apologize for the inconvenience and are here to help resolve this issue.`
-          }],
+          parts: [{ type: 'text', text: '' }],
         };
 
-        // Add the error message to the chat
-        setMessages(prev => [...prev, errorMessage]);
+        setMessages(prev => [...prev, assistantMessage]);
 
-        toast({
-          type: 'error',
-          description: 'Failed to send message. Please try again.',
+        // Initialize streaming state
+        globalStreamingState.messageId = assistantMessageId;
+        globalStreamingState.content = '';
+        globalStreamingState.isStreaming = true;
+
+        const reader = stream.getReader();
+        let accumulatedContent = '';
+        let lastUpdateTime = 0;
+        const UPDATE_THROTTLE = 1; // Adjust this value to control the update frequency
+
+        while (true) {
+          // Check if request was aborted
+          if (controller.signal.aborted) {
+            sonnerToast.info('Response was stopped by user');
+            break;
+          }
+
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          if (value.type === 'text-delta') {
+            // @ts-ignore
+            accumulatedContent += value.textDelta || '';
+            globalStreamingState.content = accumulatedContent;
+
+            // Throttle UI updates for smoother streaming
+            const now = Date.now();
+            if (now - lastUpdateTime > UPDATE_THROTTLE) {
+              setMessages(current =>
+                current.map(msg =>
+                  msg.id === assistantMessageId
+                    ? {
+                        ...msg,
+                        parts: [{ type: 'text', text: accumulatedContent }],
+                      }
+                    : msg
+                )
+              );
+              lastUpdateTime = now;
+            }
+          }
+        }
+
+        // Final update to ensure all content is displayed
+        setMessages(current =>
+          current.map(msg =>
+            msg.id === assistantMessageId
+              ? { ...msg, parts: [{ type: 'text', text: accumulatedContent }] }
+              : msg
+          )
+        );
+
+        globalStreamingState.isStreaming = false;
+        setStatus('ready');
+        setAbortController(null);
+
+        await saveMessages({
+          messages: [
+            {
+              id: assistantMessageId,
+              role: 'assistant',
+              parts: [{ type: 'text', text: accumulatedContent }],
+              createdAt: new Date(),
+              chatId: id,
+            },
+          ],
         });
+
+        mutate(
+          unstable_serialize(createChatHistoryPaginationKeyGetter(userId))
+        );
+      } catch (error) {
+        setStatus('ready');
+        globalStreamingState.isStreaming = false;
+        setAbortController(null);
+
+        // Handle aborted requests gracefully
+        if (error instanceof Error && error.name === 'AbortError') {
+          return;
+        }
+
+        console.log('Error caught in chat component:', error);
+
+        if (error instanceof ChatSDKError) {
+          console.log(
+            'ChatSDKError detected:',
+            error.type,
+            error.surface,
+            error.message
+          );
+
+          // Create an assistant message with the error (marked as error with special prefix)
+          const errorMessageId = uuidv4();
+          const errorMessage: ChatMessage = {
+            id: errorMessageId,
+            role: 'assistant',
+            parts: [
+              {
+                type: 'text',
+                text: `[ERROR_MESSAGE] **Service Error**\n\n${error.message}\n\n**What you can do:**\n\n- Check your model configuration\n- Try again in a few moments\n- [Contact us](/contact) if the issue persists\n\nWe apologize for the inconvenience and are here to help resolve this issue.`,
+              },
+            ],
+          };
+
+          // Add the error message to the chat
+          setMessages(prev => [...prev, errorMessage]);
+
+          // Save the error message to the database
+          try {
+            await saveMessages({
+              messages: [
+                {
+                  id: errorMessageId,
+                  role: 'assistant',
+                  parts: errorMessage.parts,
+                  createdAt: new Date(),
+                  chatId: id,
+                },
+              ],
+            });
+          } catch (saveError) {
+            console.error('Failed to save error message:', saveError);
+          }
+
+          // Also show toast for immediate feedback
+          toast({
+            type: 'error',
+            description: error.message,
+          });
+        } else {
+          // Handle other errors
+          console.log('Generic error:', error);
+
+          // Create a generic error message
+          const errorMessageId = uuidv4();
+          const errorMessage: ChatMessage = {
+            id: errorMessageId,
+            role: 'assistant',
+            parts: [
+              {
+                type: 'text',
+                text: `[ERROR_MESSAGE] **Connection Error**\n\nFailed to send your message. This may be due to a temporary connectivity issue.\n\n**What you can do:**\n\n- Check your internet connection\n- Verify your model configuration\n- Try sending your message again\n- [Contact us](/contact) if the issue persists\n\nWe apologize for the inconvenience and are here to help resolve this issue.`,
+              },
+            ],
+          };
+
+          // Add the error message to the chat
+          setMessages(prev => [...prev, errorMessage]);
+
+          toast({
+            type: 'error',
+            description: 'Failed to send message. Please try again.',
+          });
+        }
       }
-    }
-  }, [id, userId, isCreatingChat, vllmTransport, mutate]);
+    },
+    [id, userId, isCreatingChat, vllmTransport, mutate]
+  );
 
   const stop = useCallback(() => {
     // Abort the ongoing request if there's one
@@ -318,9 +347,7 @@ export function Chat({
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
-        <ChatHeader
-          isReadonly={isReadonly}
-        />
+        <ChatHeader isReadonly={isReadonly} />
 
         <Messages
           chatId={id}
@@ -349,7 +376,10 @@ export function Chat({
           )}
         </form>
         <div className="mx-auto px-4 pb-1 md:pb-2 bg-background w-full md:max-w-3xl text-xs text-muted-foreground text-center space-y-1">
-          <p>AI model and website are hosted locally at Dalhousie University • All chat history is stored in your browser</p>
+          <p>
+            AI model and website are hosted locally at Dalhousie University •
+            All chat history is stored in your browser
+          </p>
         </div>
       </div>
     </>
