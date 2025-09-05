@@ -192,6 +192,22 @@ export async function saveMessages({
   }
 }
 
+// Keep your updateMessage function
+export async function updateMessage({
+  id,
+  parts,
+}: {
+  id: string;
+  parts: unknown;
+}) {
+  try {
+    return await db.message.update(id, { parts });
+  } catch (error) {
+    throw new ChatSDKError('bad_request:database', 'Failed to update message');
+  }
+}
+
+// Accept upstream formatting for getMessagesByChatId
 export async function getMessagesByChatId({ id }: { id: string }) {
   try {
     const messages = await db.message
