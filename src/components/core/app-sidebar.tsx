@@ -10,7 +10,11 @@ import {
   SidebarMenu,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -96,7 +100,9 @@ export function AppSidebar() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  className={cn("w-full justify-start cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive dark:text-red-500 hover:bg-destructive/15 hover:text-destructive h-8 px-2 text-sm font-normal bg-transparent border-0 rounded-sm gap-2")}
+                  className={cn(
+                    'w-full justify-start cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive dark:text-red-500 hover:bg-destructive/15 hover:text-destructive h-8 px-2 text-sm font-normal bg-transparent border-0 rounded-sm gap-2'
+                  )}
                   onClick={() => setShowDeleteAllDialog(true)}
                 >
                   <TrashIcon />
@@ -109,13 +115,16 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
 
-      <AlertDialog open={showDeleteAllDialog} onOpenChange={setShowDeleteAllDialog}>
+      <AlertDialog
+        open={showDeleteAllDialog}
+        onOpenChange={setShowDeleteAllDialog}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete All Chat History?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete all your
-              chat conversations and remove them from our servers.
+              This action cannot be undone. This will permanently delete all
+              your chat conversations and remove them from our servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

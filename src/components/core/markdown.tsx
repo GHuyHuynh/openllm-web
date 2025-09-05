@@ -3,11 +3,12 @@ import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from '@/components/core/code-block';
 
-const components: Partial<Components> = { 
+const components: Partial<Components> = {
   code: ({ node, inline, className, children, ...props }: any) => {
     // Check if this is inline code (no className with language- prefix and inline is true)
-    const isInlineCode = inline || (!className || !className.includes('language-'));
-    
+    const isInlineCode =
+      inline || !className || !className.includes('language-');
+
     if (isInlineCode) {
       return (
         <code
@@ -18,12 +19,23 @@ const components: Partial<Components> = {
         </code>
       );
     }
-    return <CodeBlock node={node} inline={false} className={className} children={children} {...props} />;
+    return (
+      <CodeBlock
+        node={node}
+        inline={false}
+        className={className}
+        children={children}
+        {...props}
+      />
+    );
   },
   pre: ({ children }) => <>{children}</>,
   p: ({ node, children, ...props }) => {
-    const hasCodeBlock = node?.children?.some((child: any) => 
-      child.type === 'element' && child.tagName === 'code' && child.properties?.className?.includes('language-')
+    const hasCodeBlock = node?.children?.some(
+      (child: any) =>
+        child.type === 'element' &&
+        child.tagName === 'code' &&
+        child.properties?.className?.includes('language-')
     );
     if (hasCodeBlock) {
       return <>{children}</>;
@@ -126,5 +138,5 @@ const NonMemoizedMarkdown = ({ children }: { children: string }) => {
 
 export const Markdown = memo(
   NonMemoizedMarkdown,
-  (prevProps, nextProps) => prevProps.children === nextProps.children,
+  (prevProps, nextProps) => prevProps.children === nextProps.children
 );

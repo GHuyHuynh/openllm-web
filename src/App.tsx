@@ -2,13 +2,13 @@
  * Main Layout Component
  */
 import { Toaster } from 'sonner';
-import { HomePage } from '@/pages/home/home-page'
-import { BrowserRouter, Routes, Route } from 'react-router'
-import { ChatPage } from '@/pages/chat/chat-page'
-import { ContactPage } from '@/pages/contact/contact-page'
-import { NotFoundPage } from '@/pages/error/not-found-page'
-import { ErrorPage } from '@/pages/error/error-page'
-import { ThemeProvider } from '@/components/ui/theme-provider'
+import { HomePage } from '@/pages/home/home-page';
+import { BrowserRouter, Routes, Route } from 'react-router';
+import { ChatPage } from '@/pages/chat/chat-page';
+import { ContactPage } from '@/pages/contact/contact-page';
+import { NotFoundPage } from '@/pages/error/not-found-page';
+import { ErrorPage } from '@/pages/error/error-page';
+import { ThemeProvider } from '@/components/ui/theme-provider';
 import { UserProvider } from '@/components/core/user-provider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Suspense, type ReactNode } from 'react';
@@ -36,9 +36,7 @@ function Providers({ children }: ProvidersProps) {
             <UserProvider>
               <SidebarProvider defaultOpen={false}>
                 <BrowserRouter basename={BASE_URL}>
-                  <DataStreamProvider>
-                    {children}
-                  </DataStreamProvider>
+                  <DataStreamProvider>{children}</DataStreamProvider>
                 </BrowserRouter>
               </SidebarProvider>
             </UserProvider>
@@ -54,9 +52,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AppSidebar />
-      <SidebarInset>
-        {children}
-      </SidebarInset>
+      <SidebarInset>{children}</SidebarInset>
     </>
   );
 }
@@ -69,14 +65,49 @@ function AppContent() {
 
       {/* Routes with Layout */}
       <Routes>
-        <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
-        <Route path="/chat/:id" element={<AppLayout><ChatPage /></AppLayout>} />
-        <Route path="/contact" element={<AppLayout><ContactPage /></AppLayout>} />
-        <Route path="/about" element={<AppLayout><AboutPage /></AppLayout>} />
-        <Route path="*" element={<AppLayout><NotFoundPage /></AppLayout>} />
+        <Route
+          path="/"
+          element={
+            <AppLayout>
+              <HomePage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/chat/:id"
+          element={
+            <AppLayout>
+              <ChatPage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <AppLayout>
+              <ContactPage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <AppLayout>
+              <AboutPage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <AppLayout>
+              <NotFoundPage />
+            </AppLayout>
+          }
+        />
       </Routes>
     </>
-  )
+  );
 }
 
 function App() {
@@ -84,7 +115,7 @@ function App() {
     <Providers>
       <AppContent />
     </Providers>
-  )
+  );
 }
 
-export default App
+export default App;

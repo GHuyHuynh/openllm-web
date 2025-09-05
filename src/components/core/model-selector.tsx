@@ -12,15 +12,14 @@ import { Info } from 'lucide-react';
 
 export function ModelSelector({
   className,
-}: {
-} & React.ComponentProps<typeof Button>) {
+}: {} & React.ComponentProps<typeof Button>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
           data-testid="model-selector"
           variant="outline"
-          className={cn("md:px-2 md:h-[34px]", className)}
+          className={cn('md:px-2 md:h-[34px]', className)}
         >
           <img src={meta} alt="Meta" className="w-4 h-4" />
           Llama 3.2 1B
@@ -36,7 +35,8 @@ export function ModelSelector({
           <div>
             <h4 className="font-medium text-sm">Llama 3.2 1B Instruct</h4>
             <p className="text-xs text-muted-foreground mt-1">
-              Multilingual large language model optimized for dialogue use cases and summarization tasks.
+              Multilingual large language model optimized for dialogue use cases
+              and summarization tasks.
             </p>
           </div>
           <div className="space-y-1">

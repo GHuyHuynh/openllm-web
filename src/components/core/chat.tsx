@@ -58,7 +58,7 @@ export function Chat({
 
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [status, setStatus] = useState<'ready' | 'submitted' | 'streaming'>(
-    'ready',
+    'ready'
   );
   const [isCreatingChat, setIsCreatingChat] = useState(false);
   const [abortController, setAbortController] =
@@ -67,7 +67,7 @@ export function Chat({
   const sendMessage = useCallback(
     async (message: ChatMessage) => {
       let currentMessages: ChatMessage[] = [];
-      setMessages((prevMessages) => {
+      setMessages(prevMessages => {
         currentMessages = [...prevMessages, message];
         return currentMessages;
       });
@@ -93,7 +93,7 @@ export function Chat({
 
             // Refresh sidebar after title generation and chat creation
             mutate(
-              unstable_serialize(createChatHistoryPaginationKeyGetter(userId)),
+              unstable_serialize(createChatHistoryPaginationKeyGetter(userId))
             );
           } finally {
             setIsCreatingChat(false);
@@ -144,7 +144,7 @@ export function Chat({
           parts: [{ type: 'text', text: '' }],
         };
 
-        setMessages((prev) => [...prev, assistantMessage]);
+        setMessages(prev => [...prev, assistantMessage]);
 
         // Initialize streaming state
         globalStreamingState.messageId = assistantMessageId;
@@ -174,15 +174,15 @@ export function Chat({
             // Throttle UI updates for smoother streaming
             const now = Date.now();
             if (now - lastUpdateTime > UPDATE_THROTTLE) {
-              setMessages((current) =>
-                current.map((msg) =>
+              setMessages(current =>
+                current.map(msg =>
                   msg.id === assistantMessageId
                     ? {
                         ...msg,
                         parts: [{ type: 'text', text: accumulatedContent }],
                       }
-                    : msg,
-                ),
+                    : msg
+                )
               );
               lastUpdateTime = now;
             }
@@ -190,12 +190,12 @@ export function Chat({
         }
 
         // Final update to ensure all content is displayed
-        setMessages((current) =>
-          current.map((msg) =>
+        setMessages(current =>
+          current.map(msg =>
             msg.id === assistantMessageId
               ? { ...msg, parts: [{ type: 'text', text: accumulatedContent }] }
-              : msg,
-          ),
+              : msg
+          )
         );
 
         globalStreamingState.isStreaming = false;
@@ -215,7 +215,7 @@ export function Chat({
         });
 
         mutate(
-          unstable_serialize(createChatHistoryPaginationKeyGetter(userId)),
+          unstable_serialize(createChatHistoryPaginationKeyGetter(userId))
         );
       } catch (error) {
         setStatus('ready');
@@ -234,7 +234,7 @@ export function Chat({
             'ChatSDKError detected:',
             error.type,
             error.surface,
-            error.message,
+            error.message
           );
 
           // Create an assistant message with the error (marked as error with special prefix)
@@ -251,7 +251,7 @@ export function Chat({
           };
 
           // Add the error message to the chat
-          setMessages((prev) => [...prev, errorMessage]);
+          setMessages(prev => [...prev, errorMessage]);
 
           // Save the error message to the database
           try {
@@ -293,7 +293,7 @@ export function Chat({
           };
 
           // Add the error message to the chat
-          setMessages((prev) => [...prev, errorMessage]);
+          setMessages(prev => [...prev, errorMessage]);
 
           toast({
             type: 'error',
@@ -302,7 +302,7 @@ export function Chat({
         }
       }
     },
-    [id, userId, isCreatingChat, vllmTransport, mutate],
+    [id, userId, isCreatingChat, vllmTransport, mutate]
   );
 
   const stop = useCallback(() => {
@@ -574,7 +574,7 @@ export function Chat({
 
   return (
     <>
-      <div className='flex flex-col min-w-0 h-dvh bg-background'>
+      <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader isReadonly={isReadonly} />
 
         <Messages
@@ -606,7 +606,7 @@ export function Chat({
             />
           )}
         </form>
-        <div className='mx-auto px-4 pb-1 md:pb-2 bg-background w-full md:max-w-3xl text-xs text-muted-foreground text-center space-y-1'>
+        <div className="mx-auto px-4 pb-1 md:pb-2 bg-background w-full md:max-w-3xl text-xs text-muted-foreground text-center space-y-1">
           <p>
             AI model and website are hosted locally at Dalhousie University •
             All chat history is stored in your browser

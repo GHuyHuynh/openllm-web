@@ -64,7 +64,7 @@ const PurePreviewMessage = ({
             {
               'w-full': mode === 'edit',
               'group-data-[role=user]/message:w-fit': mode !== 'edit',
-            },
+            }
           )}
         >
           {message.role === 'assistant' && (
@@ -74,18 +74,18 @@ const PurePreviewMessage = ({
                 {
                   'bg-red-100 dark:bg-red-900/30 ring-red-300 dark:ring-red-700 text-red-600 dark:text-red-400':
                     message.parts?.some(
-                      (part) =>
+                      part =>
                         part.type === 'text' &&
-                        part.text.startsWith('[ERROR_MESSAGE]'),
+                        part.text.startsWith('[ERROR_MESSAGE]')
                     ),
-                },
+                }
               )}
             >
-              <div className='translate-y-px'>
+              <div className="translate-y-px">
                 {message.parts?.some(
-                  (part) =>
+                  part =>
                     part.type === 'text' &&
-                    part.text.startsWith('[ERROR_MESSAGE]'),
+                    part.text.startsWith('[ERROR_MESSAGE]')
                 ) ? (
                   <WarningIcon size={14} />
                 ) : (
@@ -153,7 +153,7 @@ const PurePreviewMessage = ({
                           {sanitizeText(
                             displayText.startsWith('[ERROR_MESSAGE]')
                               ? displayText.replace('[ERROR_MESSAGE] ', '')
-                              : displayText,
+                              : displayText
                           )}
                         </Markdown>
                       </div>
@@ -210,7 +210,7 @@ export const PreviewMessage = memo(
     if (nextProps.isLoading) return false;
 
     return true;
-  },
+  }
 );
 
 export const ThinkingMessage = () => {
@@ -229,7 +229,7 @@ export const ThinkingMessage = () => {
           'flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl',
           {
             'group-data-[role=user]/message:bg-muted': true,
-          },
+          }
         )}
       >
         <div className='size-8 flex items-center rounded-full justify-center ring-1 shrink-0 ring-border'>

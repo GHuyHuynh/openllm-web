@@ -6,7 +6,7 @@ export async function deleteUserAndReinitialize(): Promise<string> {
   await db.user.clear();
   await db.chat.clear();
   await db.message.clear();
-  
+
   // Create new user
   return await initializeUser();
 }
@@ -14,14 +14,14 @@ export async function deleteUserAndReinitialize(): Promise<string> {
 export async function initializeUser(): Promise<string> {
   // Should only be one user in the database (1 row)
   const existingUsers = await db.user.toArray();
-  
+
   if (existingUsers.length > 0) {
     return existingUsers[0].id;
   }
-  
+
   const userId = uuidv4();
   const user: User = { id: userId };
-  
+
   await db.user.add(user);
   return userId;
 }

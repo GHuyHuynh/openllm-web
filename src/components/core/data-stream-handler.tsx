@@ -12,8 +12,7 @@ export function DataStreamHandler() {
     const newDeltas = dataStream.slice(lastProcessedIndex.current + 1);
     lastProcessedIndex.current = dataStream.length - 1;
 
-    newDeltas.forEach((delta) => {
-
+    newDeltas.forEach(delta => {
       switch (delta.type) {
         case 'data-id':
           return {

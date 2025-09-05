@@ -71,7 +71,7 @@ function PureMultimodalInput({
 
   const [localStorageInput, setLocalStorageInput] = useLocalStorage(
     'input',
-    '',
+    ''
   );
 
   useEffect(() => {
@@ -115,13 +115,7 @@ function PureMultimodalInput({
     if (width && width > 768) {
       textareaRef.current?.focus();
     }
-  }, [
-    sendMessage,
-    setInput,
-    setLocalStorageInput,
-    width,
-    input,
-  ]);
+  }, [sendMessage, setInput, setLocalStorageInput, width, input]);
 
   const { isAtBottom, scrollToBottom } = useScrollToBottom();
 
@@ -147,7 +141,11 @@ function PureMultimodalInput({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 20,
+            }}
             className="absolute left-1/2 bottom-28 -translate-x-1/2 z-50"
           >
             <Button
@@ -155,7 +153,7 @@ function PureMultimodalInput({
               className="rounded-full"
               size="icon"
               variant="outline"
-              onClick={(event) => {
+              onClick={event => {
                 event.preventDefault();
                 scrollToBottom();
               }}
@@ -167,10 +165,7 @@ function PureMultimodalInput({
       </AnimatePresence>
 
       {messages.length === 0 && (
-        <SuggestedActions
-          sendMessage={sendMessage}
-          chatId={chatId}
-        />
+        <SuggestedActions sendMessage={sendMessage} chatId={chatId} />
       )}
 
       <Textarea
@@ -181,17 +176,18 @@ function PureMultimodalInput({
         onChange={handleInput}
         className={cx(
           'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
-          className,
+          className
         )}
         rows={2}
         autoFocus
         autoComplete="new-password" // Special browser behavior to prevent autocomplete
         name="chat-input"
-        onKeyDown={(event) => {
+        onKeyDown={event => {
           if (
             event.key === 'Enter' &&
             !event.shiftKey &&
-            !event.nativeEvent.isComposing
+            !event.nativeEvent.isComposing &&
+            input.trim()
           ) {
             event.preventDefault();
 
@@ -208,10 +204,7 @@ function PureMultimodalInput({
         {status === 'submitted' || status === 'streaming' ? (
           <StopButton stop={stop} setMessages={setMessages} />
         ) : (
-          <SendButton
-            input={input}
-            submitForm={submitForm}
-          />
+          <SendButton input={input} submitForm={submitForm} />
         )}
       </div>
     </div>
@@ -225,7 +218,7 @@ export const MultimodalInput = memo(
     if (prevProps.status !== nextProps.status) return false;
 
     return true;
-  },
+  }
 );
 
 function PureStopButton({
@@ -239,10 +232,10 @@ function PureStopButton({
     <Button
       data-testid="stop-button"
       className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
-      onClick={(event) => {
+      onClick={event => {
         event.preventDefault();
         stop();
-        setMessages((messages) => messages);
+        setMessages(messages => messages);
       }}
     >
       <StopIcon size={14} />
@@ -263,7 +256,7 @@ function PureSendButton({
     <Button
       data-testid="send-button"
       className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
-      onClick={(event) => {
+      onClick={event => {
         event.preventDefault();
         submitForm();
       }}

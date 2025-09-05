@@ -34,7 +34,7 @@ export function useChatMessages(chatId: string): UseChatMessagesReturn {
 
         // First, check if the chat exists and belongs to the current user
         const chat = await getChatById({ id: chatId });
-        
+
         if (!chat) {
           setChatExists(false);
           setMessages([]);
@@ -43,20 +43,27 @@ export function useChatMessages(chatId: string): UseChatMessagesReturn {
         }
 
         if (chat.userId !== userId) {
-          throw new ChatSDKError('forbidden:chat', 'You do not have access to this chat');
+          throw new ChatSDKError(
+            'forbidden:chat',
+            'You do not have access to this chat'
+          );
         }
 
         setChatExists(true);
 
         const dbMessages = await getMessagesByChatId({ id: chatId });
-        
+
         if (!isCancelled) {
           const uiMessages = convertToUIMessages(dbMessages);
           setMessages(uiMessages);
         }
       } catch (err) {
         if (!isCancelled) {
-          setError(err instanceof Error ? err : new Error('Failed to load chat messages'));
+          setError(
+            err instanceof Error
+              ? err
+              : new Error('Failed to load chat messages')
+          );
         }
       } finally {
         if (!isCancelled) {

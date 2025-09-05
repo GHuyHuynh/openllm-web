@@ -20,12 +20,7 @@ export function HomePage() {
 
   return (
     <>
-      <Chat
-        key={chatKey}
-        id={chatId}
-        initialMessages={[]}
-        isReadonly={false}
-      />
+      <Chat key={chatKey} id={chatId} initialMessages={[]} isReadonly={false} />
       <DataStreamHandler />
     </>
   );

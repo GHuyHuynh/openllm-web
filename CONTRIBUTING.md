@@ -13,17 +13,20 @@ Thank you for your interest in contributing to OpenLLM Web App! This guide will 
 ### Development Setup
 
 1. **Fork and Clone**
+
    ```bash
    git clone https://github.com/yourusername/openllm-web.git
    cd openllm-web
    ```
 
 2. **Install Dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Start Development Server**
+
    ```bash
    pnpm dev
    ```
@@ -41,6 +44,7 @@ Thank you for your interest in contributing to OpenLLM Web App! This guide will 
 ### Contributing Process
 
 1. **Create a Feature Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -55,24 +59,27 @@ Thank you for your interest in contributing to OpenLLM Web App! This guide will 
    - Test your changes thoroughly
 
 3. **Test Your Code**
+
    ```bash
    # Run linting
    pnpm lint
-   
+
    # Build the project
    pnpm build
-   
+
    # Preview the build
    pnpm preview
    ```
 
 4. **Commit Your Changes**
+
    ```bash
    git add .
    git commit -m "feat: add new feature description"
    ```
 
 5. **Push Your Branch**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -112,6 +119,7 @@ src/
 ### Commit Message Format
 
 Use conventional commits:
+
 - `feat:` new features
 - `fix:` bug fixes
 - `docs:` documentation changes
@@ -132,7 +140,7 @@ Use conventional commits:
 
 1. User input → React state
 2. Message sent via VLLM transport → API
-3. Streaming response → Real-time UI updates  
+3. Streaming response → Real-time UI updates
 4. Complete message → IndexedDB storage
 
 ## Common Tasks
@@ -172,21 +180,25 @@ Use conventional commits:
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Tested locally
 - [ ] No console errors
 - [ ] Chat functionality works
 - [ ] Data persistence works
 
 ## Screenshots (if applicable)
+
 Add screenshots for UI changes
 ```
 

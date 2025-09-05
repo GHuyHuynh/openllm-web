@@ -21,9 +21,11 @@ export function NotFoundPage() {
           <div className="text-[10rem] sm:text-[16rem] font-bold text-muted-foreground/30 leading-none">
             404
           </div>
-          
+
           <div className="space-y-4">
-            <h1 className="text-5xl sm:text-6xl font-bold text-foreground">Page Not Found</h1>
+            <h1 className="text-5xl sm:text-6xl font-bold text-foreground">
+              Page Not Found
+            </h1>
             <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl">
               The page you're looking for doesn't exist or has been moved.
             </p>
@@ -38,7 +40,11 @@ export function NotFoundPage() {
                 </Button>
               </Link>
               <Link to="/contact">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-6">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="text-lg px-8 py-6"
+                >
                   Contact Support
                 </Button>
               </Link>
