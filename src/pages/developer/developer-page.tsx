@@ -1,10 +1,14 @@
 import { CodeBlock } from '@/components/ui/code-block';
+import pythonIcon from '@/assets/python.svg';
+import javascriptIcon from '@/assets/javascript.svg';
+import bashIcon from '@/assets/bash-icon.svg';
 
 export function DeveloperPage() {
   const codeExamples = [
     {
       language: 'python',
       label: 'Python',
+      languageIcon: <img src={pythonIcon} alt="Python" className="w-4 h-4" />,
       code: `print("Hello, World!")
       
 # Make API request
@@ -29,6 +33,7 @@ print(response.json())`,
     {
       language: 'javascript',
       label: 'JavaScript',
+      languageIcon: <img src={javascriptIcon} alt="JavaScript" className="w-4 h-4" />,
       code: `console.log("Hello, World!");
 
 // Make API request
@@ -52,6 +57,7 @@ console.log(data);`,
     {
       language: 'bash',
       label: 'cURL',
+      languageIcon: <img src={bashIcon} alt="Bash" className="w-4 h-4" />,
       code: `# Simple Hello World
 echo "Hello, World!"
 

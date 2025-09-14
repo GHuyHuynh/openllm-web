@@ -54,7 +54,7 @@ export function CodeBlock({ examples, title, className }: CodeBlockProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-xs text-muted-foreground uppercase hover:text-foreground"
+              className="text-xs text-muted-foreground hover:text-foreground"
             >
               {selectedExample.languageIcon} {selectedExample.label}
               <svg
