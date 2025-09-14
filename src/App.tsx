@@ -18,6 +18,7 @@ import { BASE_URL } from '@/constants/constants';
 import { DataStreamProvider } from '@/components/core/data-stream-provider';
 import { WaveLoaderScreen } from '@/components/ui/wave-loader';
 import { AboutPage } from '@/pages/about/about-page';
+import { DeveloperPage } from '@/pages/developer/developer-page';
 
 interface ProvidersProps {
   children: ReactNode;
@@ -94,6 +95,14 @@ function AppContent() {
           element={
             <AppLayout>
               <AboutPage />
+            </AppLayout>
+          }
+        />
+        <Route
+          path="/developer"
+          element={
+            <AppLayout>
+              <DeveloperPage />
             </AppLayout>
           }
         />

@@ -30,10 +30,8 @@ export function NavigationMenu() {
         <DropdownMenuItem onClick={() => navigate('/about')}>
           About
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem disabled className="text-muted-foreground">
-          API for Devs
-          <span className="ml-auto text-xs">Coming Soon</span>
+        <DropdownMenuItem onClick={() => navigate('/developer')}>
+          Developer API
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
