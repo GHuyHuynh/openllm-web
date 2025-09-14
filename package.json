@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:prepare && tsc -b && vite build && npm run build:cleanup",
+    "build:prepare": "node -e \"const fs=require('fs'); const content=fs.readFileSync('index.html','utf8'); fs.writeFileSync('index.html', content.replace('BUILD_TIMESTAMP', Date.now()));\"",
+    "build:cleanup": "node -e \"const fs=require('fs'); const content=fs.readFileSync('index.html','utf8'); fs.writeFileSync('index.html', content.replace(/\\?v=\\d+/, '?v=BUILD_TIMESTAMP'));\"",
     "lint": "eslint .",
     "preview": "vite preview"
   },
