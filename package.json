@@ -9,7 +9,8 @@
     "build:prepare": "node -e \"const fs=require('fs'); const content=fs.readFileSync('index.html','utf8'); fs.writeFileSync('index.html', content.replace('BUILD_TIMESTAMP', Date.now()));\"",
     "build:cleanup": "node -e \"const fs=require('fs'); const content=fs.readFileSync('index.html','utf8'); fs.writeFileSync('index.html', content.replace(/\\?v=\\d+/, '?v=BUILD_TIMESTAMP'));\"",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@ai-sdk/react": "2.0.0-beta.6",

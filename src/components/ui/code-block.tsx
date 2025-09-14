@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Button } from './button';
-import { CopyIcon } from './icons';
+import { Button } from '@/components/ui/button';
+import { CopyIcon } from '@/components/ui/icons';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
-} from './dropdown-menu';
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 
 interface CodeExample {
@@ -39,24 +39,49 @@ export function CodeBlock({ examples, title, className }: CodeBlockProps) {
   };
 
   return (
-    <div className={cn('relative group rounded-lg border bg-neutral-100 dark:bg-neutral-900 overflow-hidden', className)}>
+    <div
+      className={cn(
+        'relative group rounded-lg border bg-neutral-100 dark:bg-neutral-900 overflow-hidden',
+        className
+      )}
+    >
       <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
-        <span className="text-sm font-medium text-muted-foreground">{title || 'Code Example'}</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          {title || 'Code Example'}
+        </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="text-xs text-muted-foreground uppercase hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground uppercase hover:text-foreground"
+            >
               {selectedExample.languageIcon} {selectedExample.label}
-              <svg className="ml-1 h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <svg
+                className="ml-1 h-3 w-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {examples.map((example) => (
+            {examples.map(example => (
               <DropdownMenuItem
                 key={example.language}
                 onClick={() => setSelectedExample(example)}
-                className={selectedExample.language === example.language ? 'bg-accent' : ''}
+                className={
+                  selectedExample.language === example.language
+                    ? 'bg-accent'
+                    : ''
+                }
               >
                 {example.languageIcon} {example.label}
               </DropdownMenuItem>
@@ -103,9 +128,10 @@ export function CodeBlock({ examples, title, className }: CodeBlockProps) {
           }}
           codeTagProps={{
             style: {
-              fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+              fontFamily:
+                'ui-monospace, SFMono-Regular, "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
               textShadow: 'none',
-            }
+            },
           }}
         >
           {selectedExample.code}

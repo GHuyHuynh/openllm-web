@@ -24,7 +24,7 @@ response = requests.post(
     }
 )
 
-print(response.json())`
+print(response.json())`,
     },
     {
       language: 'javascript',
@@ -47,7 +47,7 @@ const response = await fetch("https://api.openllm-platform.com/v1/chat/completio
 });
 
 const data = await response.json();
-console.log(data);`
+console.log(data);`,
     },
     {
       language: 'bash',
@@ -64,8 +64,8 @@ curl -X POST "https://api.openllm-platform.com/v1/chat/completions" \\
     "messages": [
       {"role": "user", "content": "Hello!"}
     ]
-  }'`
-    }
+  }'`,
+    },
   ];
 
   return (
@@ -74,14 +74,13 @@ curl -X POST "https://api.openllm-platform.com/v1/chat/completions" \\
         <div>
           <h1 className="text-3xl font-bold mb-2">Developer Documentation</h1>
           <p className="text-muted-foreground">
-            Get started with our API using these code examples. Select a language from the dropdown and click the copy button to copy the code snippet.
+            Get started with our API using these code examples. Select a
+            language from the dropdown and click the copy button to copy the
+            code snippet.
           </p>
         </div>
 
-        <CodeBlock
-          examples={codeExamples}
-          title="API Examples"
-        />
+        <CodeBlock examples={codeExamples} title="API Examples" />
       </div>
     </div>
   );
