@@ -1,4 +1,4 @@
-import { CodeBlock } from '@/components/ui/code-block';
+import { CodeBlock } from '@/components/core/api-code-block';
 import pythonIcon from '@/assets/python.svg';
 import javascriptIcon from '@/assets/javascript.svg';
 import bashIcon from '@/assets/bash-icon.svg';

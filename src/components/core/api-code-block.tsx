@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Button } from '@/components/ui/button';
 import { CopyIcon } from '@/components/ui/icons';
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/components/ui/theme-provider';
 
 interface CodeExample {
   language: string;
@@ -27,7 +28,7 @@ interface CodeBlockProps {
 export function CodeBlock({ examples, title, className }: CodeBlockProps) {
   const [selectedExample, setSelectedExample] = useState(examples[0]);
   const [copied, setCopied] = useState(false);
-
+  const { theme } = useTheme();
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(selectedExample.code);
@@ -118,7 +119,7 @@ export function CodeBlock({ examples, title, className }: CodeBlockProps) {
 
         <SyntaxHighlighter
           language={selectedExample.language}
-          style={oneDark}
+          style={theme === 'dark' ? oneDark : oneLight}
           customStyle={{
             margin: 0,
             padding: '1rem',
