@@ -94,30 +94,36 @@ console.log(response.output_text);`,
   ];
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="space-y-6">
-        {/* Back Navigation */}
-        <div className="mb-8">
-          <Link to="/">
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft size={16} />
-              Back to Chat
-            </Button>
-          </Link>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <div className="space-y-8">
+          {/* Back Navigation */}
+          <div className="mb-6">
+            <Link to="/">
+              <Button variant="ghost" className="gap-2 hover:bg-muted/50 transition-colors">
+                <ArrowLeft size={16} />
+                Back to Chat
+              </Button>
+            </Link>
+          </div>
 
-        {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold mb-2">OpenLLM API Reference</h1>
-          <p className="text-muted-foreground">
-            OpenLLM API provides a RESTful API with OpenAI-compatible endpoints. You can use the below code examples to get started.
-          </p>
-          <p className="text-muted-foreground">
-            Pricing: Free!
-          </p>
-        </div>
+          {/* Hero Header */}
+          <div className="text-center space-y-6 py-8">
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                OpenLLM API Reference
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                OpenAI-compatible RESTful API that works seamlessly with the OpenAI SDK. Start building AI-powered applications with the code examples below.
+              </p>
+            </div>
+          </div>
 
-        <CodeBlock examples={codeExamples} title="API Examples" />
+          {/* Code Examples Section */}
+          <div className="space-y-6">
+            <CodeBlock examples={codeExamples} title="API Examples" />
+          </div>
+        </div>
       </div>
     </div>
   );
