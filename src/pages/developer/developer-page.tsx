@@ -107,7 +107,7 @@ main();`,
           <div className="text-center space-y-6 py-8">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                OpenLLM API Reference
+                OpenLLM Developer API
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 OpenAI-compatible RESTful API that works seamlessly with the
