@@ -2,7 +2,11 @@ import { CodeBlock } from '@/components/core/api-code-block';
 import pythonIcon from '@/assets/python.svg';
 import nodejsIcon from '@/assets/nodejs-icon.svg';
 import bashIcon from '@/assets/bash-icon.svg';
-import { VLLM_BASE_URL, VLLM_API_KEY, DEFAULT_VLLM_MODEL } from '@/constants/constants';
+import {
+  VLLM_BASE_URL,
+  VLLM_API_KEY,
+  DEFAULT_VLLM_MODEL,
+} from '@/constants/constants';
 import { Link } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -89,7 +93,10 @@ main();`,
           {/* Back Navigation */}
           <div className="mb-6">
             <Link to="/">
-              <Button variant="ghost" className="gap-2 hover:bg-muted/50 transition-colors">
+              <Button
+                variant="ghost"
+                className="gap-2 hover:bg-muted/50 transition-colors"
+              >
                 <ArrowLeft size={16} />
                 Back to Chat
               </Button>
@@ -103,7 +110,9 @@ main();`,
                 OpenLLM API Reference
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                OpenAI-compatible RESTful API that works seamlessly with the OpenAI SDK. Start building AI-powered applications with the code examples below.
+                OpenAI-compatible RESTful API that works seamlessly with the
+                OpenAI SDK. Start building AI-powered applications with the code
+                examples below.
               </p>
             </div>
           </div>

@@ -39,6 +39,83 @@ pnpm preview
 
 The application connects to OpenLLM Platform API (`https://api.openllm-platform.com/`) and uses `meta-llama/Llama-3.2-1B-Instruct` as the default model for both chat and title generation. The platform API the will route back to Timberlea server via HTTP.
 
+## Developer API Guide
+
+The application includes a comprehensive developer API guide accessible at `/developer` that provides OpenAI-compatible API examples for integrating with the OpenLLM Platform.
+
+### Python Example
+
+```python
+# Please install OpenAI SDK first with: pip3 install openai
+
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="your-api-key-here",
+    base_url="https://api.openllm-platform.com/v1"
+)
+
+response = client.chat.completions.create(
+    model="meta-llama/Llama-3.2-1B-Instruct",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant"},
+        {"role": "user", "content": "What is the capital of Nova Scotia?"},
+    ],
+)
+
+print(response.choices[0].message.content)
+```
+
+### Node.js Example
+
+```javascript
+// Please install OpenAI SDK first with: npm install openai
+
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  baseURL: 'https://api.openllm-platform.com/v1',
+  apiKey: 'your-api-key-here',
+});
+
+async function main() {
+  const completion = await openai.chat.completions.create({
+    messages: [
+      { role: 'system', content: 'You are a helpful assistant.' },
+      { role: 'user', content: 'What is the capital of Nova Scotia?' },
+    ],
+    model: 'meta-llama/Llama-3.2-1B-Instruct',
+  });
+
+  console.log(completion.choices[0].message.content);
+}
+
+main();
+```
+
+### cURL Example
+
+```bash
+curl https://api.openllm-platform.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-api-key-here" \
+  -d '{
+    "model": "meta-llama/Llama-3.2-1B-Instruct",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user",
+        "content": "What is the capital of Nova Scotia?"
+      }
+    ]
+  }'
+```
+
+All examples use the OpenAI-compatible endpoints and demonstrate API authentication, chat completion requests, and response handling. Visit the developer page in the application to access copy-paste ready code examples with pre-configured API keys and endpoints.
+
 ## Deployment
 
 Configured for Dal Server deployment with base URL `/~huyh/openllm` and build output to `openllm/` directory.
