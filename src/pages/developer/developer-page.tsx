@@ -1,8 +1,8 @@
 import { CodeBlock } from '@/components/core/api-code-block';
 import pythonIcon from '@/assets/python.svg';
-import javascriptIcon from '@/assets/javascript.svg';
+import nodejsIcon from '@/assets/nodejs-icon.svg';
 import bashIcon from '@/assets/bash-icon.svg';
-import { VLLM_BASE_URL, VLLM_API_KEY } from '@/constants/constants';
+import { VLLM_BASE_URL, VLLM_API_KEY, DEFAULT_VLLM_MODEL } from '@/constants/constants';
 import { Link } from 'react-router';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,83 +13,72 @@ export function DeveloperPage() {
       language: 'python',
       label: 'Python',
       languageIcon: <img src={pythonIcon} alt="Python" className="w-4 h-4" />,
-      code: `from openai import OpenAI
- 
+      code: `# Please install OpenAI SDK first with: pip3 install openai
+
+from openai import OpenAI
+
 client = OpenAI(
-    base_url="${VLLM_BASE_URL}v1",
-    api_key="${VLLM_API_KEY}"
+    api_key="${VLLM_API_KEY}", 
+    base_url="${VLLM_BASE_URL}v1"
 )
- 
-result = client.chat.completions.create(
-    model="meta-llama/Llama-3.2-1B-Instruct",
+
+response = client.chat.completions.create(
+    model="${DEFAULT_VLLM_MODEL}",
     messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "What is the capital of Nova Scotia?"}
-    ]
+        {"role": "system", "content": "You are a helpful assistant"},
+        {"role": "user", "content": "What is the capital of Nova Scotia?"},
+    ],
 )
- 
-print(result.choices[0].message.content)
- 
-response = client.responses.create(
-    model="meta-llama/Llama-3.2-1B-Instruct",
-    instructions="You are a helfpul assistant.",
-    input="What is the capital of Nova Scotia?"
-)
- 
-print(response.output_text)`,
+
+print(response.choices[0].message.content)`,
     },
     {
       language: 'javascript',
-      label: 'JavaScript',
-      languageIcon: <img src={javascriptIcon} alt="JavaScript" className="w-4 h-4" />,
-      code: `import OpenAI from 'openai';
+      label: 'Node.js',
+      languageIcon: <img src={nodejsIcon} alt="Node.js" className="w-4 h-4" />,
+      code: `// Please install OpenAI SDK first with: npm install openai
 
-const client = new OpenAI({
-  baseUrl: "${VLLM_BASE_URL}v1",
-  apiKey: "${VLLM_API_KEY}",
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  baseURL: '${VLLM_BASE_URL}v1',
+  apiKey: '${VLLM_API_KEY}'
 });
 
-const completion = await client.chat.completions.create({
-  model: 'meta-llama/Llama-3.2-1B-Instruct',
-  messages: [
-    { role: 'developer', content: 'You are a helpful assistant.' },
-    { role: 'user', content: 'What is the capital of Nova Scotia?' },
-  ],
-});
+async function main() {
+  const completion = await openai.chat.completions.create({
+    messages: [
+      { role: "system", content: "You are a helpful assistant." },
+      { role: "user", content: "What is the capital of Nova Scotia?" },
+    ],
+    model: "${DEFAULT_VLLM_MODEL}",
+  });
 
-console.log(completion.choices[0].message.content);
+  console.log(completion.choices[0].message.content);
+}
 
-const response = await client.responses.create({
-  model: 'meta-llama/Llama-3.2-1B-Instruct',
-  instructions: 'You are a helpful assistant.',
-  input: 'What is the capital of Nova Scotia?',
-});
-
-console.log(response.output_text);`,
+main();`,
     },
     {
       language: 'bash',
       label: 'cURL',
       languageIcon: <img src={bashIcon} alt="Bash" className="w-4 h-4" />,
-      code: `curl ${VLLM_BASE_URL}/v1/chat/completions \
-
-      -H "Content-Type: application/json" \
-
-      -H "Authorization: Bearer ${VLLM_API_KEY}" \
-
-      -d '{
-        "model": "meta-llama/Llama-3.2-1B-Instruct",
-        "messages": [
-          {
-            "role": "developer",
-            "content": "You are a helpful assistant."
-          },
-          {
-            "role": "user",
-            "content": "Hello!"
-          }
-        ]
-      }'`,
+      code: `curl ${VLLM_BASE_URL}v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer ${VLLM_API_KEY}" \\
+  -d '{
+    "model": "${DEFAULT_VLLM_MODEL}",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user",
+        "content": "What is the capital of Nova Scotia?"
+      }
+    ]
+  }'`,
     },
   ];
 
