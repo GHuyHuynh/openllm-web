@@ -9,6 +9,14 @@ export default defineConfig({
   base: '/~huyh/openllm/',
   build: {
     outDir: 'openllm',
+    rollupOptions: {
+      output: {
+        // Ensure content-based hashing for all assets
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
+      },
+    },
   },
   resolve: {
     alias: {

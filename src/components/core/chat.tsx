@@ -16,6 +16,7 @@ import {
   BASE_URL,
   VLLM_BASE_URL,
   DEFAULT_VLLM_MODEL,
+  VLLM_API_KEY,
 } from '@/constants/constants';
 import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
@@ -45,6 +46,7 @@ export function Chat({
     return new VLLMChatTransport({
       baseUrl: VLLM_BASE_URL,
       model: DEFAULT_VLLM_MODEL,
+      apiKey: VLLM_API_KEY,
       onStreamingUpdate: (messageId: string, content: string) => {
         globalStreamingState.messageId = messageId;
         globalStreamingState.content = content;
