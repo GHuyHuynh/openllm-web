@@ -319,14 +319,242 @@ export function Chat({
     globalStreamingState.isStreaming = false;
   }, [abortController]);
 
-  const regenerate = () => {
-    if (messages.length >= 2) {
-      const lastUserMessage = messages[messages.length - 2];
-      if (lastUserMessage.role === 'user') {
-        setMessages(messages.slice(0, -1));
-        sendMessage(lastUserMessage);
+  // Custom function to trigger AI response without saving user message (for edit functionality)
+  const triggerAIResponse = useCallback(
+    async (messages: ChatMessage[]) => {
+      setStatus('streaming');
+
+      try {
+        // Create abort controller for this request
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        // Create assistant message
+        const assistantMessageId = uuidv4();
+        const stream = await vllmTransport.sendMessages({
+          trigger: 'submit-message',
+          chatId: id,
+          messageId: assistantMessageId,
+          messages: messages,
+          abortSignal: controller.signal,
+        });
+
+        const assistantMessage: ChatMessage = {
+          id: assistantMessageId,
+          role: 'assistant',
+          parts: [{ type: 'text', text: '' }],
+        };
+
+        setMessages((prev) => [...prev, assistantMessage]);
+
+        // Initialize streaming state
+        globalStreamingState.messageId = assistantMessageId;
+        globalStreamingState.content = '';
+        globalStreamingState.isStreaming = true;
+
+        const reader = stream.getReader();
+        let accumulatedContent = '';
+        let lastUpdateTime = 0;
+        const UPDATE_THROTTLE = 1;
+
+        while (true) {
+          if (controller.signal.aborted) {
+            break;
+          }
+
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          if (value.type === 'text-delta' && value.textDelta) {
+            accumulatedContent += value.textDelta;
+
+            const now = Date.now();
+            if (now - lastUpdateTime >= UPDATE_THROTTLE) {
+              setMessages((prev) => {
+                const newMessages = [...prev];
+                const assistantIndex = newMessages.findIndex(
+                  (msg) => msg.id === assistantMessageId,
+                );
+                if (assistantIndex !== -1) {
+                  newMessages[assistantIndex] = {
+                    ...newMessages[assistantIndex],
+                    parts: [{ type: 'text', text: accumulatedContent }],
+                  };
+                }
+                return newMessages;
+              });
+              lastUpdateTime = now;
+            }
+          }
+        }
+
+        // Final update
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          const assistantIndex = newMessages.findIndex(
+            (msg) => msg.id === assistantMessageId,
+          );
+          if (assistantIndex !== -1) {
+            newMessages[assistantIndex] = {
+              ...newMessages[assistantIndex],
+              parts: [{ type: 'text', text: accumulatedContent }],
+            };
+          }
+          return newMessages;
+        });
+
+        // Save the assistant message to database
+        await saveMessages({
+          messages: [
+            {
+              id: assistantMessageId,
+              role: 'assistant',
+              parts: [{ type: 'text', text: accumulatedContent }],
+              createdAt: new Date(),
+              chatId: id,
+            },
+          ],
+        });
+
+        setStatus('ready');
+        globalStreamingState.isStreaming = false;
+      } catch (error) {
+        console.error('Failed to get AI response:', error);
+        setStatus('ready');
+        globalStreamingState.isStreaming = false;
       }
-    }
+    },
+    [id, vllmTransport],
+  );
+
+  // Custom function to replace a specific AI response in place (for edit functionality)
+  const replaceAIResponse = useCallback(
+    async (messages: ChatMessage[], targetIndex: number) => {
+      setStatus('streaming');
+
+      try {
+        // Create abort controller for this request
+        const controller = new AbortController();
+        setAbortController(controller);
+
+        // Create assistant message
+        const assistantMessageId = uuidv4();
+        const stream = await vllmTransport.sendMessages({
+          trigger: 'submit-message',
+          chatId: id,
+          messageId: assistantMessageId,
+          messages: messages,
+          abortSignal: controller.signal,
+        });
+
+        const assistantMessage: ChatMessage = {
+          id: assistantMessageId,
+          role: 'assistant',
+          parts: [{ type: 'text', text: '' }],
+        };
+
+        // Insert the new AI response at the specific target index
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages.splice(targetIndex, 0, assistantMessage);
+          return newMessages;
+        });
+
+        // Initialize streaming state
+        globalStreamingState.messageId = assistantMessageId;
+        globalStreamingState.content = '';
+        globalStreamingState.isStreaming = true;
+
+        const reader = stream.getReader();
+        let accumulatedContent = '';
+        let lastUpdateTime = 0;
+        const UPDATE_THROTTLE = 1;
+
+        while (true) {
+          if (controller.signal.aborted) {
+            break;
+          }
+
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          if (value.type === 'text-delta' && value.textDelta) {
+            accumulatedContent += value.textDelta;
+
+            const now = Date.now();
+            if (now - lastUpdateTime >= UPDATE_THROTTLE) {
+              setMessages((prev) => {
+                const newMessages = [...prev];
+                const assistantIndex = newMessages.findIndex(
+                  (msg) => msg.id === assistantMessageId,
+                );
+                if (assistantIndex !== -1) {
+                  newMessages[assistantIndex] = {
+                    ...newMessages[assistantIndex],
+                    parts: [{ type: 'text', text: accumulatedContent }],
+                  };
+                }
+                return newMessages;
+              });
+              lastUpdateTime = now;
+            }
+          }
+        }
+
+        // Final update
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          const assistantIndex = newMessages.findIndex(
+            (msg) => msg.id === assistantMessageId,
+          );
+          if (assistantIndex !== -1) {
+            newMessages[assistantIndex] = {
+              ...newMessages[assistantIndex],
+              parts: [{ type: 'text', text: accumulatedContent }],
+            };
+          }
+          return newMessages;
+        });
+
+        // Save the assistant message to database
+        await saveMessages({
+          messages: [
+            {
+              id: assistantMessageId,
+              role: 'assistant',
+              parts: [{ type: 'text', text: accumulatedContent }],
+              createdAt: new Date(),
+              chatId: id,
+            },
+          ],
+        });
+
+        setStatus('ready');
+        globalStreamingState.isStreaming = false;
+      } catch (error) {
+        console.error('Failed to get AI response:', error);
+        setStatus('ready');
+        globalStreamingState.isStreaming = false;
+      }
+    },
+    [id, vllmTransport],
+  );
+
+  const regenerate = () => {
+    setMessages((currentMessages) => {
+      if (currentMessages.length >= 2) {
+        const lastUserMessage = currentMessages[currentMessages.length - 2];
+        if (lastUserMessage.role === 'user') {
+          // Remove the last message and send the user message again
+          const newMessages = currentMessages.slice(0, -1);
+          setTimeout(() => {
+            sendMessage(lastUserMessage);
+          }, 0);
+          return newMessages;
+        }
+      }
+      return currentMessages;
+    });
   };
 
   const [searchParams] = useSearchParams();
@@ -369,9 +597,12 @@ export function Chat({
           regenerate={regenerate}
           isReadonly={isReadonly}
           isArtifactVisible={false}
+          sendMessage={sendMessage}
+          triggerAIResponse={triggerAIResponse}
+          replaceAIResponse={replaceAIResponse}
         />
 
-        <form className="flex mx-auto px-4 bg-background pb-1 md:pb-2 gap-2 w-full md:max-w-3xl">
+        <form className='flex mx-auto px-4 bg-background pb-1 md:pb-2 gap-2 w-full md:max-w-3xl'>
           {!isReadonly && (
             <MultimodalInput
               chatId={id}
