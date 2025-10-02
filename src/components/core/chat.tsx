@@ -21,6 +21,7 @@ import {
 import { VLLMChatTransport } from '@/ai-module/vllm-transport';
 import { saveMessages, saveChat, getChatById } from '@/lib/db/queries';
 import { generateTitleFromUserMessage } from '@/actions/actions';
+import { Banner } from '@/components/ui/banner';
 
 export const globalStreamingState = {
   messageId: '',
@@ -180,9 +181,9 @@ export function Chat({
                 current.map(msg =>
                   msg.id === assistantMessageId
                     ? {
-                        ...msg,
-                        parts: [{ type: 'text', text: accumulatedContent }],
-                      }
+                      ...msg,
+                      parts: [{ type: 'text', text: accumulatedContent }],
+                    }
                     : msg
                 )
               );
@@ -349,6 +350,14 @@ export function Chat({
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
+        <Banner
+          type="alert"
+          title="Due to high demand, we decided to limit API access and chat access to selected users."
+          description="If you are interested in using the API or chat, please "
+          linkText="contact us"
+          linkUrl={`${BASE_URL}/contact`}
+          defaultVisible={true}
+        />
         <ChatHeader isReadonly={isReadonly} />
 
         <Messages
