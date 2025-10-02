@@ -2,6 +2,8 @@
 
 An open-source, self-hosted, open access LLM chat application, featuring local-first (browser storage) data storage and real-time streaming responses.
 
+https://github.com/user-attachments/assets/8662e4ab-06d3-4fbc-b248-13d98e5dc6a9
+
 ## Features
 
 - **Real-time AI Chat**: Stream responses from OpenAI-compatible AI models
