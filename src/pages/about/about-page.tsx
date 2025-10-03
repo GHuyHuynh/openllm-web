@@ -10,6 +10,7 @@ import hassanImg from '@/assets/hassan.jpeg';
 import vanshImg from '@/assets/vansh.jpeg';
 import eduardImg from '@/assets/eduard.jpeg';
 import theoImg from '@/assets/theo.png';
+import sebImg from '@/assets/seb.jpeg';
 
 const data = {
   icon: <SparklesIcon size={24} />,
@@ -65,6 +66,12 @@ export const contributors = [
     name: 'Théo Bourgeois',
     github: 'https://github.com/theobourgeois',
     linkedin: 'https://www.linkedin.com/in/theobourgeois/',
+  },
+  {
+    imageSrc: sebImg,
+    name: 'Sebastian Kompan',
+    github: 'https://github.com/NoLimitCoder',
+    linkedin: 'https://www.linkedin.com/in/sebastian-dionicio-017a8b200/',
   },
 ];
 
