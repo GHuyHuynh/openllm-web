@@ -71,7 +71,7 @@ export const contributors = [
     imageSrc: sebImg,
     name: 'Sebastian Dionicio',
     github: 'https://github.com/NoLimitCoder',
-    linkedin: 'https://www.linkedin.com/in/sebastian-dionicio-017a8b200/',
+    linkedin: 'https://www.linkedin.com/in/sdionicio',
   },
 ];
 
