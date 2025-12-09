@@ -16,6 +16,12 @@ interface MessagesProps {
   regenerate: UseChatHelpers<ChatMessage>['regenerate'];
   isReadonly: boolean;
   isArtifactVisible: boolean;
+  sendMessage?: (message: ChatMessage) => void;
+  triggerAIResponse?: (messages: ChatMessage[]) => Promise<void>;
+  replaceAIResponse?: (
+    messages: ChatMessage[],
+    targetIndex: number,
+  ) => Promise<void>;
 }
 
 function PureMessages({
@@ -25,6 +31,9 @@ function PureMessages({
   setMessages,
   regenerate,
   isReadonly,
+  sendMessage,
+  triggerAIResponse,
+  replaceAIResponse,
 }: MessagesProps) {
   const {
     containerRef: messagesContainerRef,
@@ -42,7 +51,7 @@ function PureMessages({
   return (
     <div
       ref={messagesContainerRef}
-      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4 relative"
+      className='flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4 relative'
     >
       {messages.length === 0 && <Greeting />}
 
@@ -54,6 +63,10 @@ function PureMessages({
           setMessages={setMessages}
           regenerate={regenerate}
           isReadonly={isReadonly}
+          sendMessage={sendMessage}
+          triggerAIResponse={triggerAIResponse}
+          replaceAIResponse={replaceAIResponse}
+          chatId={chatId}
           requiresScrollPadding={
             hasSentMessage && index === messages.length - 1
           }
@@ -66,7 +79,7 @@ function PureMessages({
 
       <motion.div
         ref={messagesEndRef}
-        className="shrink-0 min-w-[24px] min-h-[24px]"
+        className='shrink-0 min-w-[24px] min-h-[24px]'
         onViewportLeave={onViewportLeave}
         onViewportEnter={onViewportEnter}
       />
